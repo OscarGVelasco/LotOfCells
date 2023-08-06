@@ -108,7 +108,7 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     original_disconcordant <- colSums(do.call(rbind,lapply(original_gamma_test,function(results)results[[2]])))
     original_gamma_cor <- mapply(FUN = function(nc,nd){(nc-nd)/(nc+nd)}, original_concordant, original_disconcordant)
 
-    random_gamma_cor <- sapply(seq_len(10),function(x){
+    random_gamma_cor <- sapply(seq_len(100),function(x){
       # Call gamma rank correlation
       null_gamma_test <- lapply(seq_len(1000),function(x){
         cellToGamma(covariable, groups, labelOrder, indexes, cellCrowd)})
@@ -118,6 +118,12 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
       # Goodman and Kruskal's gamma Formula
       return(mapply(FUN = function(nc,nd){(nc-nd)/(nc+nd)}, random_concordant, random_disconcordant))
     })
+    random_gamma_cor <- t(random_gamma_cor)
+    # calculate the p.value
+    higuer_in_null <- (rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor <= x}))+1) / (10+1)
+    lower_in_null <- (rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor >= x}))+1) / (10+1)
+    p.vals <- apply(rbind(original_gamma_cor, higuer_in_null, lower_in_null), 2, function(x)ifelse(x[1]>0, x[2], x[3]))
+    p.adj <- p.adjust(p = p.vals,method = "bonferroni")
 
   }else{
     # Fold-Change and Montecarlo Simulation #
