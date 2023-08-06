@@ -42,6 +42,21 @@
 #'           subtype_variable = "covariable",
 #'           labelOrder = c("B","A"),
 #'           permutations = 1000)
+#'
+#' # Data simulation with 3 or > groups
+#' groups1 <- c(rep("CellA",700),rep("CellB",300),rep("CellC",500),rep("CellD",1000))
+#' groups2 <- c(rep("CellA",1700),rep("CellB",350),rep("CellC",550),rep("CellD",800))
+#' groups3 <- c(rep("CellA",1200),rep("CellB",200),rep("CellC",420),rep("CellD",800))
+#' groups4 <- c(rep("CellA",500),rep("CellB",1000),rep("CellC",10),rep("CellD",1200))
+#' groups <- c(rep("A",length(groups1)),rep("B",length(groups2)),rep("C",length(groups3)),rep("D",length(groups4)))
+#' labelOrder <- c("D","B","A","C")
+#' covariable <- c(groups1, groups2,groups3,groups4)
+#' #' meta.data <- data.frame(groups, covariable)
+#' lotOfCell(scObject = meta.data,
+#'           main_variable = "groups",
+#'           subtype_variable = "covariable",
+#'           labelOrder = c("B","A","D","C"),
+#'           permutations = 1000)
 #' @author Oscar Gonzalez-Velasco
 #' @importFrom stats sd
 #' @importFrom utils head
@@ -86,29 +101,25 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     stop("You have to specify the order of the labels (labelOrder=c(label1,label2,labeln...)")
   }
   # Check Number of groups in main covariable
-  if(length(unique(groups))>2){
+  if(length(labelOrder)>2){
     ## Gamma Rank Correlation Analysis #
-    # Data simulation with 3 or > groups
-    groups1 <- c(rep("CellA",700),rep("CellB",300),rep("CellC",500),rep("CellD",1000))
-    groups2 <- c(rep("CellA",1700),rep("CellB",350),rep("CellC",550),rep("CellD",700))
-    groups3 <- c(rep("CellA",1200),rep("CellB",200),rep("CellC",420),rep("CellD",800))
-    groups <- c(rep("A",length(groups1)),rep("B",length(groups2)),rep("C",length(groups3)))
-    labelOrder <- c("B","A","C")
-    covariable <- c(groups1, groups2,groups3)
-
-
-    # Start
     # Set variables for the random permutation test:
+    message("More than 2 groups detected.")
+    message("Computing Goodman and Kruskal's gamma rank correlation coefficient.")
     indexes <- names(original_gamma_cor)
     cellCrowd <- round(c(table(groups)*1/10))
+    cellCrowd <- cellCrowd[labelOrder]
+    # Proportions
+    df <- data.frame(groups, covariable)
+    contig_tab <- t(apply(table(df),1,function(row){row/sum(row)}))[labelOrder,]
     # Call gamma rank correlation to perform a permutation test on the original sets
     original_gamma_test <- lapply(seq_len(permutations),function(x){
       cellToGammaOriginal(covariable, groups, labelOrder, indexes, cellCrowd)})
     original_concordant <- colSums(do.call(rbind,lapply(original_gamma_test,function(results)results[[1]])))
     original_disconcordant <- colSums(do.call(rbind,lapply(original_gamma_test,function(results)results[[2]])))
     original_gamma_cor <- mapply(FUN = function(nc,nd){(nc-nd)/(nc+nd)}, original_concordant, original_disconcordant)
-
-    random_gamma_cor <- sapply(seq_len(100),function(x){
+    main_permutations <- 100
+    random_gamma_cor <- sapply(seq_len(main_permutations),function(x){
       # Call gamma rank correlation
       null_gamma_test <- lapply(seq_len(1000),function(x){
         cellToGamma(covariable, groups, labelOrder, indexes, cellCrowd)})
@@ -120,20 +131,26 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     })
     random_gamma_cor <- t(random_gamma_cor)
     # calculate the p.value
-    higuer_in_null <- (rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor <= x}))+1) / (10+1)
-    lower_in_null <- (rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor >= x}))+1) / (10+1)
+    higuer_in_null <- (rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor <= x}))+1) / (main_permutations+1)
+    lower_in_null <- (rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor >= x}))+1) / (main_permutations+1)
     p.vals <- apply(rbind(original_gamma_cor, higuer_in_null, lower_in_null), 2, function(x)ifelse(x[1]>0, x[2], x[3]))
     p.adj <- p.adjust(p = p.vals,method = "bonferroni")
+    table.results <- data.frame(groupGammaCor=original_gamma_cor,round(t(contig_tab)[,labelOrder],3), p.adj)
+    colnames(table.results) <- c("groupGammaCor", c(sapply(labelOrder,function(label)paste0("percent_in_",label))), "p.adj")
+    return(table.results)
 
   }else{
     # Fold-Change and Montecarlo Simulation #
     # Only 2 covariable model:
     # We will perform a Montecarlo Test to create a random distribution and compare it with the original differences.
+    message("Only 2 groups detected.")
+    message("Computing Fold Change proportion over covariable using a Montecarlo test.")
     df <- data.frame(groups, covariable)
     contig_tab <- t(apply(table(df),1,function(row){row/sum(row)}))[labelOrder,]
     original_test <- log2(contig_tab[1,] / contig_tab[2,])
     indexes <- names(original_test)
     cellCrowd <- round(c(table(groups)*1/10))
+    cellCrowd <- cellCrowd[labelOrder]
     # We perform the Montecarlo test
     null_test <- lapply(seq_len(permutations),function(x){
       cellToMontecarlo(covariable, groups, labelOrder, indexes, cellCrowd)})
@@ -151,7 +168,9 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     # test 2 #
     # We calculate the Coefficient Intervals for the Montecarlo simulation of the real data:
     intervals <- apply(null_test_real[,indexes], 2, function(c)quantile(c,probs = c(0.025,0.975)))
-    return(data.frame(groupFC=original_test, p.adj, sd.montecarlo, CI95low=intervals[1,], CI95high=intervals[2,]))
+    table.results <- data.frame(groupFC=original_test, round(contig_tab[labelOrder[1],],3), round(contig_tab[labelOrder[2],],3), p.adj, sd.montecarlo, CI95low=intervals[1,], CI95high=intervals[2,])
+    colnames(table.results) <- c("groupFC", paste0("percent_in_",labelOrder[1]), paste0("percent_in_",labelOrder[2]), "p.adj", "sd.montecarlo", "CI95low", "CI95high")
+    return(table.results)
   }
 }
 
@@ -163,4 +182,19 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
 # covariable <- c(groups1, groups2)
 # meta.data <- data.frame(groups, covariable)
 # lotOfCell(scObject = meta.data, main_variable = "groups", subtype_variable = "covariable", labelOrder = c("B","A"), permutations = 1000)
+
+# Data simulation with 3 or > groups
+# groups1 <- c(rep("CellA",700),rep("CellB",300),rep("CellC",500),rep("CellD",1000))
+# groups2 <- c(rep("CellA",1700),rep("CellB",350),rep("CellC",550),rep("CellD",800))
+# groups3 <- c(rep("CellA",1200),rep("CellB",200),rep("CellC",420),rep("CellD",800))
+# groups4 <- c(rep("CellA",500),rep("CellB",1000),rep("CellC",10),rep("CellD",1200))
+# groups <- c(rep("A",length(groups1)),rep("B",length(groups2)),rep("C",length(groups3)),rep("D",length(groups4)))
+# labelOrder <- c("D","B","A","C")
+# covariable <- c(groups1, groups2,groups3,groups4)
+# meta.data <- data.frame(groups, covariable)
+# results <- lotOfCell(scObject = meta.data,
+#                      main_variable = "groups",
+#                      subtype_variable = "covariable",
+#                      labelOrder = c("D","B","A","C"),
+#                      permutations = 1000)
 
