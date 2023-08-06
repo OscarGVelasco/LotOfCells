@@ -32,10 +32,10 @@
 #'
 #' @examples
 #' Montecarlo simulation of groups
-#' groups1 <- c(rep("CellA",7000),rep("CellB",300),rep("CellB",500),rep("CellD",10000))
-#' groups2 <- c(rep("CellA",17000),rep("CellB",3000),rep("CellB",550),rep("CellD",7000))
-#' covariable <- c(rep("A",length(groups1)),rep("B",length(groups2)))
-#' groups <- c(groups1, groups2)
+#' groups1 <- c(rep("CellA",700),rep("CellB",300),rep("CellC",500),rep("CellD",1000),rep("CellF",80))
+#' groups2 <- c(rep("CellA",1700),rep("CellB",300),rep("CellC",550),rep("CellD",1200),rep("CellF",50))
+#' groups <- c(rep("A",length(groups1)),rep("B",length(groups2)))
+#' covariable <- c(groups1, groups2)
 #' meta.data <- data.frame(groups, covariable)
 #' lotOfCell(scObject = meta.data,
 #'           main_variable = "groups",
@@ -87,16 +87,42 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
   }
   # Check Number of groups in main covariable
   if(length(unique(groups))>2){
-    ## Gamma Rank Correlation Analysis
+    ## Gamma Rank Correlation Analysis #
+    # Data simulation with 3 or > groups
+    groups1 <- c(rep("CellA",700),rep("CellB",300),rep("CellC",500),rep("CellD",1000))
+    groups2 <- c(rep("CellA",1700),rep("CellB",350),rep("CellC",550),rep("CellD",700))
+    groups3 <- c(rep("CellA",1200),rep("CellB",200),rep("CellC",420),rep("CellD",800))
+    groups <- c(rep("A",length(groups1)),rep("B",length(groups2)),rep("C",length(groups3)))
+    labelOrder <- c("B","A","C")
+    covariable <- c(groups1, groups2,groups3)
 
-    #CALLGAMMARANK!
+
+    # Start
+    # Set variables for the random permutation test:
+    indexes <- names(original_gamma_cor)
+    cellCrowd <- round(c(table(groups)*1/10))
+    # Call gamma rank correlation to perform a permutation test on the original sets
+    original_gamma_test <- lapply(seq_len(permutations),function(x){
+      cellToGammaOriginal(covariable, groups, labelOrder, indexes, cellCrowd)})
+    original_concordant <- colSums(do.call(rbind,lapply(original_gamma_test,function(results)results[[1]])))
+    original_disconcordant <- colSums(do.call(rbind,lapply(original_gamma_test,function(results)results[[2]])))
+    original_gamma_cor <- mapply(FUN = function(nc,nd){(nc-nd)/(nc+nd)}, original_concordant, original_disconcordant)
+
+    random_gamma_cor <- sapply(seq_len(10),function(x){
+      # Call gamma rank correlation
+      null_gamma_test <- lapply(seq_len(1000),function(x){
+        cellToGamma(covariable, groups, labelOrder, indexes, cellCrowd)})
+      # Obtain the results and summarize
+      random_concordant <- colSums(do.call(rbind,lapply(null_gamma_test,function(results)results[[1]])))
+      random_disconcordant <- colSums(do.call(rbind,lapply(null_gamma_test,function(results)results[[2]])))
+      # Goodman and Kruskal's gamma Formula
+      return(mapply(FUN = function(nc,nd){(nc-nd)/(nc+nd)}, random_concordant, random_disconcordant))
+    })
 
   }else{
-    # load("kif5a.ALL.metadata.only.RData")
-    # groups <- tmp$cell.type
-    # labelOrder <- c("Control", "KIF5A")
-    # covariable <- tmp$status
-
+    # Fold-Change and Montecarlo Simulation #
+    # Only 2 covariable model:
+    # We will perform a Montecarlo Test to create a random distribution and compare it with the original differences.
     df <- data.frame(groups, covariable)
     contig_tab <- t(apply(table(df),1,function(row){row/sum(row)}))[labelOrder,]
     original_test <- log2(contig_tab[1,] / contig_tab[2,])
