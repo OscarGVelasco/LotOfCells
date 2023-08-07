@@ -1,4 +1,18 @@
-
+#' Calculate fold-changes from a random distribution of the given data.
+#'
+#' `cellToMontecarlo()` returns the fold-change from the data generated from the random sampling of the data provided.
+#'
+#' This function will perform a Montecarlo simulation from the groups and covariables provided. It will compute the fold-change from this generated distribution.
+#'
+#' @param covariable Vector. Labels corresponding with the covariable.
+#' @param groups Vector. Labels corresponding with the main group variable.
+#' @param labelOrder Vector. The labels in groups in the order of the desired comparison.
+#' @param indexes Vector. Order of the covariable as in the original data.
+#' @param cellCrowd Vector. Number of elements to be subsampled from each group.
+#' @return A list of the computated fold-changes from the random distribution created using a montecarlo test.
+#'
+#' @author Oscar Gonzalez-Velasco
+#' @keywords internal
 cellToMontecarlo <- function(covariable=NULL,groups=NULL, labelOrder, indexes, cellCrowd){
   # test 1 : the random distribution
   # We mix all the cells together and we subset at random sub-samples in proportion to the original samples
@@ -18,14 +32,3 @@ cellToMontecarlo <- function(covariable=NULL,groups=NULL, labelOrder, indexes, c
 
   return(list(log2(contig_tab[1,] / contig_tab[2,]), log2(contig_tab_origin[1,] / contig_tab_origin[2,])))
 }
-
-# cellToMontecarlo_slow <- function(covariable=NULL,groups=NULL, labelOrder, indexes, cellCrowd){
-#   dftmp <- data.table::data.table(groups=c(sample(groups,size = cellCrowd[1]),sample(groups,size = cellCrowd[2])),
-#                       covariable = c(rep(names(cellCrowd)[1],times=cellCrowd[1]),rep(names(cellCrowd)[2],times=cellCrowd[2])))
-#   contig_tab <- t(apply(table(dftmp),2,function(row){row/sum(row)}))[labelOrder, indexes]
-#
-#   dftmp <- dftmp[, .N, by=.(covariable,groups)]
-#   dftmp[, `:=`(percent, N/sum(N)), by = covariable]
-#   dftmp <- data.table::dcast(dftmp[, percent, by=.(covariable,groups)],covariable ~ groups,value.var = "percent")[labelOrder, on="covariable"]
-#   return(log2( dftmp[1,-1] / dftmp[2,-1]))
-#   }

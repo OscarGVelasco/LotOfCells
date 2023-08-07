@@ -1,14 +1,16 @@
-#' Calculate the gene mean expression Fold Change between all possible combinations of clusters.
+#' Calculate the Goodman and Kruskal's gamma rank correlation for the specified variables for the original observations
 #'
 #' `cellToGammaOriginal()` returns a list of list of the concordant and discordant value pairs calculated.
 #'
-#' This function will perform
+#' This function will perform a Goodman and Kruskal's gamma rank correlation, by creating first a random distribution of samples from the observed data,
+#' taking into account the group size, i.e. each random subset is generated using the original group distribution.
 #'
-#' @param covariable Dataframe. Normalized counts containint gene expression.
-#' @param groups Factor. A vector of corresponding cluster for each sample of (x).
-#' @param labelOrder Numeric. Number of random samplings of cells to achieve fold change stability.
-#' @param indexes
-#' @param cellCrowd
+#' @param covariable Vector. Labels corresponding with the covariable.
+#' @param groups Vector. Labels corresponding with the main group variable.
+#' @param labelOrder Vector. The labels in groups in the order of the desired comparison.
+#' @param indexes Vector. Order of the covariable as in the original data.
+#' @param cellCrowd Vector. Number of elements to be subsampled from each group.
+#' @param rank_index vector. The ranked values of the ordered set of groups as 1:length(labelOrder).
 #' @return A list of the concordant and discordant pairs calculated as per Goodman and Kruskal's gamma rank correlation.
 #'
 #' @author Oscar Gonzalez-Velasco

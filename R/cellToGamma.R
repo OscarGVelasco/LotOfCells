@@ -1,7 +1,24 @@
+#' Calculate the Goodman and Kruskal's gamma rank correlation for the specified variables on a generated random distribution.
+#'
+#' `cellToGamma()` returns a list of list of the concordant and discordant value pairs calculated.
+#'
+#' This function will perform a Goodman and Kruskal's gamma rank correlation, by creating first a random distribution of samples from the observed data,
+#' in this case the distribution is generated completely at random from all the covariable labels mixed.
+#'
+#' @param covariable Vector. Labels corresponding with the covariable.
+#' @param groups Vector. Labels corresponding with the main group variable.
+#' @param labelOrder Vector. The labels in groups in the order of the desired comparison.
+#' @param indexes Vector. Order of the covariable as in the original data.
+#' @param cellCrowd Vector. Number of elements to be subsampled from each group.
+#' @param rank_index vector. The ranked values of the ordered set of groups as 1:length(labelOrder).
+#' @return A list of the concordant and discordant pairs calculated as per Goodman and Kruskal's gamma rank correlation.
+#'
+#' @author Oscar Gonzalez-Velasco
+#' @keywords internal
 cellToGamma <- function(covariable=NULL,groups=NULL, labelOrder, indexes, cellCrowd, rank_index){
   # Test 1 : the random distribution
   # We mix all the cells together and we subset at random sub-samples in proportion to the original samples
-  dftmp <- data.frame(covariable=unlist(sapply(cellCrowd, function(ammount)sample(covariable, size = ammount))),
+  dftmp <- data.frame(covariable=unlist(sapply(cellCrowd, function(ammount)sample(covariable, size = ammount, replace = TRUE))),
                       groups = unlist(mapply(function(name,ammount)rep(name,times=ammount), names(cellCrowd),cellCrowd)))
   dftmp <- table(dftmp)
   dftmp[dftmp == 0] = 1

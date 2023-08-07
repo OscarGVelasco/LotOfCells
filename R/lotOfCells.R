@@ -49,7 +49,7 @@
 #' groups4 <- c(rep("CellA",500),rep("CellB",1000),rep("CellC",10),rep("CellD",1200))
 #' groups <- c(rep("A",length(groups1)),rep("B",length(groups2)),rep("C",length(groups3)),rep("D",length(groups4)))
 #' covariable <- c(groups1, groups2,groups3,groups4)
-#' #' meta.data <- data.frame(groups, covariable)
+#' meta.data <- data.frame(groups, covariable)
 #' lotOfCell(scObject = meta.data,
 #'           main_variable = "groups",
 #'           subtype_variable = "covariable",
@@ -57,8 +57,8 @@
 #'           permutations = 1000)
 #'
 #' @author Oscar Gonzalez-Velasco
-#' @importFrom stats sd
-#' @importFrom utils
+#' @importFrom stats sd p.adjust quantile
+#' @importFrom methods is
 #' @export
 lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, labelOrder=c(""), permutations=1000){
   if(is.null(scObject)){
@@ -91,6 +91,10 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
   ## Select metadata table
   if(isSce){ main_metadata <- SingleCellExperiment::colLabels(scObject)}
   if(isSeurat){ main_metadata <- scObject[[]] }
+  # Test that all groups are in the data:
+  if(isFALSE(all(labelOrder %in% unique(main_metadata[, main_variable])))){
+    stop(paste("Some groups in labelOrder are not on the data:",paste(labelOrder,collapse = " ")))
+  }
   # Subset only the main groups stated in labelOrder:
   main_metadata <- main_metadata[main_metadata[, main_variable] %in% labelOrder ,]
   groups <- main_metadata[, main_variable]
@@ -104,12 +108,13 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     # Set variables for the random permutation test:
     message("More than 2 groups detected.")
     message(paste("Computing Goodman and Kruskal's gamma rank correlation coefficient in the following order:",paste(labelOrder,collapse = ' vs ')))
-    indexes <- names(original_gamma_cor)
     cellCrowd <- round(c(table(groups)*(1/10)))
     cellCrowd <- cellCrowd[labelOrder]
     # Proportions
     df <- data.frame(groups, covariable)
+    print(t(apply(table(df),1,function(row){row/sum(row)})))
     contig_tab <- t(apply(table(df),1,function(row){row/sum(row)}))[labelOrder,]
+    indexes <- colnames(contig_tab)
     rank_index <- c(1:length(labelOrder))
     godKrusGamma <- function(nc,nd){(nc-nd)/(nc+nd)}
     # Call gamma rank correlation to perform a permutation test on the original sets
@@ -176,26 +181,23 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     return(table.results)
   }
 }
-
-
 # Data simulation with 3 or > groups
-groups1 <- c(rep("CellA",700),rep("CellB",300),rep("CellC",500),rep("CellD",1000))
-groups2 <- c(rep("CellA",1700),rep("CellB",350),rep("CellC",550),rep("CellD",800))
-groups3 <- c(rep("CellA",1200),rep("CellB",200),rep("CellC",420),rep("CellD",800))
-groups4 <- c(rep("CellA",500),rep("CellB",1000),rep("CellC",10),rep("CellD",1200))
-groups <- c(rep("A",length(groups1)),rep("B",length(groups2)),rep("C",length(groups3)),rep("D",length(groups4)))
-labelOrder <- c("D","B","A","C")
-covariable <- c(groups1, groups2,groups3,groups4)
-meta.data <- data.frame(groups, covariable)
-system.time(
-results <- lotOfCell(scObject = meta.data,
-                     main_variable = "groups",
-                     subtype_variable = "covariable",
-                     labelOrder = c("A","B","C","D"),
-                     permutations = 1000)
-  )
+# groups1 <- c(rep("CellA",700),rep("CellB",300),rep("CellC",500),rep("CellD",1000))
+# groups2 <- c(rep("CellA",1700),rep("CellB",350),rep("CellC",550),rep("CellD",800))
+# groups3 <- c(rep("CellA",1200),rep("CellB",200),rep("CellC",420),rep("CellD",800))
+# groups4 <- c(rep("CellA",500),rep("CellB",1000),rep("CellC",10),rep("CellD",1200))
+# groups <- c(rep("A",length(groups1)),rep("B",length(groups2)),rep("C",length(groups3)),rep("D",length(groups4)))
+# labelOrder <- c("D","B","A","C")
+# covariable <- c(groups1, groups2,groups3,groups4)
+# meta.data <- data.frame(groups, covariable)
+# system.time(
+# results <- lotOfCell(scObject = meta.data,
+#                      main_variable = "groups",
+#                      subtype_variable = "covariable",
+#                      labelOrder = c("D","B","C","A"),
+#                      permutations = 1000)
+#   )
 
 # - Starting gamma rank permutation analysis, this could take a while...
 # user  system elapsed
 # 178.417  10.512 192.036
-
