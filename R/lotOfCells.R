@@ -2,7 +2,7 @@
 #'
 #' `lotOfCell()` returns a dataframe containing the results and statistics for the given variables and covariables.
 #'
-#' This function will calculate ... #'Goodman and Kruskal's gamma rank correlation
+#' This function will calculate ... Goodman and Kruskal's gamma rank correlation
 #'
 #' @param scObject Object or DataFrame. An object of class Single Cell Experiments or Seurat, or a dataframe containing the metadata information.
 #' @param main_variable Character. Name of the column on the metadata dataframe containing the main variable to be contrasted (e.g.: disease_status)
@@ -20,9 +20,9 @@
 #'    \tab \cr
 #'    \code{sd.montecarlo} \tab If groups = 2: standard deviation of the fold changes simulated values. \cr
 #'    \tab \cr
-#'    \code{CI95low} \tab If groups = 2: lower 95% confidence interval for the observed fold change (groupFC). \cr
+#'    \code{CI95low} \tab If groups = 2: lower 95\% confidence interval for the observed fold change (groupFC). \cr
 #'    \tab \cr
-#'    \code{CI95high} \tab If groups = 2: lower 95% confidence interval for the observed fold change (groupFC). \cr
+#'    \code{CI95high} \tab If groups = 2: lower 95\% confidence interval for the observed fold change (groupFC). \cr
 #' }
 #'
 #' @examples
@@ -58,6 +58,7 @@
 #'
 #' @author Oscar Gonzalez-Velasco
 #' @importFrom stats sd p.adjust quantile
+#' @importFrom SingleCellExperiment colLabels
 #' @importFrom methods is
 #' @export
 lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, labelOrder=c(""), permutations=1000){
@@ -112,7 +113,6 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     cellCrowd <- cellCrowd[labelOrder]
     # Proportions
     df <- data.frame(groups, covariable)
-    print(t(apply(table(df),1,function(row){row/sum(row)})))
     contig_tab <- t(apply(table(df),1,function(row){row/sum(row)}))[labelOrder,]
     indexes <- colnames(contig_tab)
     rank_index <- c(1:length(labelOrder))
@@ -123,25 +123,23 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     original_concordant <- colSums(do.call(rbind,lapply(original_gamma_test,function(results)results[[1]])))
     original_disconcordant <- colSums(do.call(rbind,lapply(original_gamma_test,function(results)results[[2]])))
     original_gamma_cor <- mapply(FUN = godKrusGamma, original_concordant, original_disconcordant)
-    main_permutations <- 100
     message("- Starting gamma rank permutation analysis, this could take a while...")
-    random_gamma_cor <- sapply(seq_len(main_permutations),function(x){
+    random_gamma_cor <- sapply(seq_len(permutations),function(x){
       # Call gamma rank correlation
-      null_gamma_test <- lapply(seq_len(1000),function(x){
+      null_gamma_test <- lapply(seq_len(100),function(x){
         cellToGamma(covariable, groups, labelOrder, indexes, cellCrowd, rank_index)})
       # Obtain the results and summarize
       random_concordant <- colSums(do.call(rbind,lapply(null_gamma_test,function(results)results[[1]])))
-      #system.time(random_concordant <- Reduce(`+`, lapply(null_gamma_test,function(results)results[[1]])))
       random_disconcordant <- colSums(do.call(rbind,lapply(null_gamma_test,function(results)results[[2]])))
       # Goodman and Kruskal's gamma Formula
       return(mapply(FUN = godKrusGamma, random_concordant, random_disconcordant))
     })
     random_gamma_cor <- t(random_gamma_cor)
     # calculate the p.value
-    higuer_in_null <- (rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor <= x}))+1) / (main_permutations+1)
-    lower_in_null <- (rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor >= x}))+1) / (main_permutations+1)
+    higuer_in_null <- (rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor <= x}))+1) / (permutations+1)
+    lower_in_null <- (rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor >= x}))+1) / (permutations+1)
     p.vals <- apply(rbind(original_gamma_cor, higuer_in_null, lower_in_null), 2, function(x)ifelse(x[1]>0, x[2], x[3]))
-    p.adj <- p.adjust(p = p.vals,method = "bonferroni")
+    p.adj <- round(p.adjust(p = p.vals,method = "bonferroni"), digits = 5)
     table.results <- data.frame(groupGammaCor=original_gamma_cor,round(t(contig_tab)[,labelOrder],3), p.adj)
     colnames(table.results) <- c("groupGammaCor", c(sapply(labelOrder,function(label)paste0("percent_in_",label))), "p.adj")
     return(table.results)
@@ -171,7 +169,7 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     higuer_in_null <- (rowSums(apply(null_test_fcs[,indexes],1, function(x){original_test <= x}))+1) / (permutations+1)
     lower_in_null <- (rowSums(apply(null_test_fcs[,indexes],1, function(x){original_test >= x}))+1) / (permutations+1)
     p.vals <- apply(rbind(original_test, higuer_in_null, lower_in_null), 2, function(x)ifelse(x[1]>0, x[2], x[3]))
-    p.adj <- p.adjust(p = p.vals,method = "bonferroni")
+    p.adj <- round(p.adjust(p = p.vals,method = "bonferroni"), digits = 5)
     sd.montecarlo <- apply(null_test_fcs, 2, sd)
     # test 2 #
     # We calculate the Coefficient Intervals for the Montecarlo simulation of the real data:
@@ -194,10 +192,12 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
 # results <- lotOfCell(scObject = meta.data,
 #                      main_variable = "groups",
 #                      subtype_variable = "covariable",
-#                      labelOrder = c("D","B","C","A"),
+#                      labelOrder = c("D","B","A"),
 #                      permutations = 1000)
 #   )
 
+# using do.call rbind:
 # - Starting gamma rank permutation analysis, this could take a while...
 # user  system elapsed
-# 178.417  10.512 192.036
+# 142.981   0.766 144.658
+

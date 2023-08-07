@@ -34,16 +34,16 @@ The function returns a DataFrame containing the results and statistics tested fo
    \tab \cr
    \code{sd.montecarlo} \tab If groups = 2: standard deviation of the fold changes simulated values. \cr
    \tab \cr
-   \code{CI95low} \tab If groups = 2: lower 95% confidence interval for the observed fold change (groupFC). \cr
+   \code{CI95low} \tab If groups = 2: lower 95\% confidence interval for the observed fold change (groupFC). \cr
    \tab \cr
-   \code{CI95high} \tab If groups = 2: lower 95% confidence interval for the observed fold change (groupFC). \cr
+   \code{CI95high} \tab If groups = 2: lower 95\% confidence interval for the observed fold change (groupFC). \cr
 }
 }
 \description{
 `lotOfCell()` returns a dataframe containing the results and statistics for the given variables and covariables.
 }
 \details{
-This function will calculate ... #'Goodman and Kruskal's gamma rank correlation
+This function will calculate ... Goodman and Kruskal's gamma rank correlation
 }
 \examples{
 # Montecarlo simulation of groups
