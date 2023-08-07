@@ -54,7 +54,7 @@
 #'           main_variable = "groups",
 #'           subtype_variable = "covariable",
 #'           labelOrder = c("B","A","D","C"), # Order of the constrast, for gamma correlation it will test for an upward/downward pattern through B -> A -> D -> C
-#'           permutations = 1000)
+#'           permutations = 100)
 #'
 #' @author Oscar Gonzalez-Velasco
 #' @importFrom stats sd p.adjust quantile
@@ -126,7 +126,7 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     message("- Starting gamma rank permutation analysis, this could take a while...")
     random_gamma_cor <- sapply(seq_len(permutations),function(x){
       # Call gamma rank correlation
-      null_gamma_test <- lapply(seq_len(100),function(x){
+      null_gamma_test <- lapply(seq_len(5),function(x){
         cellToGamma(covariable, groups, labelOrder, indexes, cellCrowd, rank_index)})
       # Obtain the results and summarize
       random_concordant <- colSums(do.call(rbind,lapply(null_gamma_test,function(results)results[[1]])))
@@ -136,14 +136,13 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     })
     random_gamma_cor <- t(random_gamma_cor)
     # calculate the p.value
-    higuer_in_null <- (rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor <= x}))+1) / (permutations+1)
-    lower_in_null <- (rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor >= x}))+1) / (permutations+1)
+    higuer_in_null <- (rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor <= x}), na.rm = TRUE)+1) / (permutations+1)
+    lower_in_null <- (rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor >= x}), na.rm = TRUE)+1) / (permutations+1)
     p.vals <- apply(rbind(original_gamma_cor, higuer_in_null, lower_in_null), 2, function(x)ifelse(x[1]>0, x[2], x[3]))
     p.adj <- round(p.adjust(p = p.vals,method = "bonferroni"), digits = 5)
-    table.results <- data.frame(groupGammaCor=original_gamma_cor,round(t(contig_tab)[,labelOrder],3), p.adj)
+    table.results <- data.frame(groupGammaCor=round(original_gamma_cor, 3), round(t(contig_tab)[,labelOrder],3), p.adj)
     colnames(table.results) <- c("groupGammaCor", c(sapply(labelOrder,function(label)paste0("percent_in_",label))), "p.adj")
     return(table.results)
-
   }else{
     # Fold-Change and Montecarlo Simulation #
     # Only 2 covariable model:
@@ -185,14 +184,15 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
 # groups3 <- c(rep("CellA",1200),rep("CellB",200),rep("CellC",420),rep("CellD",800))
 # groups4 <- c(rep("CellA",500),rep("CellB",1000),rep("CellC",10),rep("CellD",1200))
 # groups <- c(rep("A",length(groups1)),rep("B",length(groups2)),rep("C",length(groups3)),rep("D",length(groups4)))
-# labelOrder <- c("D","B","A","C")
+# labelOrder <- c("C","B","A","D")
 # covariable <- c(groups1, groups2,groups3,groups4)
 # meta.data <- data.frame(groups, covariable)
+# rownames(meta.data) <- as.character(1:nrow(meta.data))
 # system.time(
 # results <- lotOfCell(scObject = meta.data,
 #                      main_variable = "groups",
 #                      subtype_variable = "covariable",
-#                      labelOrder = c("D","B","A"),
+#                      labelOrder = labelOrder,
 #                      permutations = 1000)
 #   )
 

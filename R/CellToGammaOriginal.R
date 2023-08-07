@@ -17,7 +17,7 @@
 #' @keywords internal
 cellToGammaOriginal <- function(covariable=NULL,groups=NULL, labelOrder, indexes, cellCrowd, rank_index){
   # Test 2:
-  dforigin <- data.frame(covariable=unlist(mapply(function(ammount,label)sample(covariable[groups %in% label],size = ammount),cellCrowd,labelOrder)),
+  dforigin <- data.frame(covariable=unlist(mapply(function(ammount,label)sample(covariable[groups %in% label],size = ammount, replace = TRUE),cellCrowd,labelOrder)),
                          groups = unlist(mapply(function(name,ammount)rep(name,times=ammount), names(cellCrowd),cellCrowd)))
   dforigin <- table(dforigin)
   dforigin[dforigin == 0] = 1 # Minimum of 1 observation per label
