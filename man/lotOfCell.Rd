@@ -74,7 +74,7 @@ lotOfCell(scObject = meta.data,
           main_variable = "groups",
           subtype_variable = "covariable",
           labelOrder = c("B","A","D","C"), # Order of the constrast, for gamma correlation it will test for an upward/downward pattern through B -> A -> D -> C
-          permutations = 1000)
+          permutations = 100)
 
 }
 \author{
