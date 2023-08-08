@@ -94,7 +94,7 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
   if(isSeurat){ main_metadata <- scObject[[]] }
   # Test that all groups are in the data:
   if(isFALSE(all(labelOrder %in% unique(main_metadata[, main_variable])))){
-    stop(paste("Some groups in labelOrder are not on the data:",paste(labelOrder,collapse = " ")))
+    stop(paste("Some groups in labelOrder are not on the data:",paste(labelOrder, collapse = " ")))
   }
   # Subset only the main groups stated in labelOrder:
   main_metadata <- main_metadata[main_metadata[, main_variable] %in% labelOrder ,]
