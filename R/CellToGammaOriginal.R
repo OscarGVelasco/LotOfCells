@@ -17,7 +17,7 @@
 #' @keywords internal
 cellToGammaOriginal <- function(covariable=NULL,groups=NULL, labelOrder, indexes, cellCrowd, rank_index){
   # Test 2:
-  dforigin <- data.frame(covariable=unlist(mapply(function(ammount,label)sample(covariable[groups %in% label],size = ammount, replace = TRUE),cellCrowd,labelOrder)),
+  dforigin <- data.frame(covariable=unlist(mapply(function(ammount,label)sample(covariable[groups %in% label],size = ammount, replace = FALSE),cellCrowd,labelOrder)),
                          groups = unlist(mapply(function(name,ammount)rep(name,times=ammount), names(cellCrowd),cellCrowd)))
   dforigin <- table(dforigin)
   dforigin[dforigin == 0] = 1 # Minimum of 1 observation per label
@@ -37,16 +37,5 @@ cellToGammaOriginal <- function(covariable=NULL,groups=NULL, labelOrder, indexes
         return(0)}
       sum(sign((cell_vector[i] - cell_vector[i_pri])) != sign((rank_index[i] - rank_index[i_pri])))
     })})
-  # nconcordant_origin <- apply(ranked_percent_origin, 2, function(cell_vector){
-  #   sapply(1:(length(rank_index)-1), function(i){sign((cell_vector[i]-cell_vector[i+1])) == sign((rank_index[i] - rank_index[i+1]))})
-  # })
-  # ndiscordant_origin <- apply(ranked_percent_origin, 2, function(cell_vector){
-  #   sapply(1:(length(rank_index)-1), function(i){
-  #     if(cell_vector[i] == cell_vector[i+1]){
-  #       return(FALSE) # Special case for the tied ranks (we have to discard the tied ranks)
-  #     }else{
-  #       sign((cell_vector[i] - cell_vector[i+1])) != sign((rank_index[i] - rank_index[i+1]))
-  #     }})})
-
   return(list(colSums(nconcordant_origin),colSums(ndiscordant_origin)))
 }

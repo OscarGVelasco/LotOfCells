@@ -116,6 +116,7 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     contig_tab <- t(apply(table(df),1,function(row){row/sum(row)}))[labelOrder,]
     indexes <- colnames(contig_tab)
     rank_index <- c(1:length(labelOrder))
+    # Goodman and Kruskal's gamma function:
     godKrusGamma <- function(nc,nd){(nc-nd)/(nc+nd)}
     # Call gamma rank correlation to perform a permutation test on the original sets
     original_gamma_test <- lapply(seq_len(permutations),function(x){
@@ -123,6 +124,15 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     original_concordant <- colSums(do.call(rbind,lapply(original_gamma_test,function(results)results[[1]])))
     original_disconcordant <- colSums(do.call(rbind,lapply(original_gamma_test,function(results)results[[2]])))
     original_gamma_cor <- mapply(FUN = godKrusGamma, original_concordant, original_disconcordant)
+    # Calculate the Confidence Interval for the gamma cor:
+    subsampled_gamma_cor <- lapply(seq_len(10),function(subsample){
+      subsample_gamma_test <- lapply(seq_len(100),function(x){
+        cellToGammaOriginal(covariable, groups, labelOrder, indexes, cellCrowd, rank_index)})
+      subsample_concordant <- colSums(do.call(rbind,lapply(subsample_gamma_test,function(results)results[[1]])))
+      subsample_disconcordant <- colSums(do.call(rbind,lapply(subsample_gamma_test,function(results)results[[2]])))
+      return(mapply(FUN = godKrusGamma, subsample_concordant, subsample_disconcordant))
+    })
+    subsampled_gamma_CI <- apply(do.call(rbind,subsampled_gamma_cor),2,function(c)quantile(c,probs = c(0.025,0.975)))
     message("- Starting gamma rank permutation analysis, this could take a while...")
     random_gamma_cor <- sapply(seq_len(permutations),function(x){
       # Call gamma rank correlation
@@ -140,8 +150,8 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     lower_in_null <- (rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor >= x}), na.rm = TRUE)+1) / (permutations+1)
     p.vals <- apply(rbind(original_gamma_cor, higuer_in_null, lower_in_null), 2, function(x)ifelse(x[1]>0, x[2], x[3]))
     p.adj <- round(p.adjust(p = p.vals,method = "bonferroni"), digits = 5)
-    table.results <- data.frame(groupGammaCor=round(original_gamma_cor, 3), round(t(contig_tab)[,labelOrder],3), p.adj)
-    colnames(table.results) <- c("groupGammaCor", c(sapply(labelOrder,function(label)paste0("percent_in_",label))), "p.adj")
+    table.results <- data.frame(groupGammaCor=round(original_gamma_cor, 4), round(t(contig_tab)[,labelOrder],3), p.adj, CI95low=round(subsampled_gamma_CI[1,indexes],4), CI95high=round(subsampled_gamma_CI[2,indexes],4))
+    colnames(table.results) <- c("groupGammaCor", c(sapply(labelOrder,function(label)paste0("percent_in_",label))), "p.adj","CI95low", "CI95high")
     return(table.results)
   }else{
     # Fold-Change and Montecarlo Simulation #
