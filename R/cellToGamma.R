@@ -21,8 +21,13 @@ cellToGamma <- function(covariable=NULL,groups=NULL, labelOrder, indexes, cellCr
   dftmp <- data.frame(covariable=unlist(sapply(cellCrowd, function(ammount)sample(covariable, size = ammount, replace = TRUE))),
                       groups = unlist(mapply(function(name,ammount)rep(name,times=ammount), names(cellCrowd),cellCrowd)))
   dftmp <- table(dftmp)
-  dftmp[dftmp == 0] = 1
-  contig_tab <- t(apply(dftmp,2,function(row){row/(sum(row))}))[labelOrder, indexes]
+  if(!all(indexes %in% rownames(dftmp))){
+    tmp <- do.call(rbind, rep(list(rep(0,ncol(dftmp))), sum(!(indexes %in% rownames(dftmp)))))
+    rownames(tmp) <- indexes[!(indexes %in% rownames(dftmp))]
+    dftmp <- rbind(dftmp, tmp)[indexes,]
+  }
+  # dftmp[dftmp == 0] = 1
+  contig_tab <- t(apply(dftmp,2,function(row){row/(sum(row)+0.1)}))[labelOrder, indexes]
   ranked_percent <- t(apply(contig_tab,1,rank))
   # Calculate the concordant and discortant pairs
   # Faster version with the comparisong vs -1 : this is due to the rank_index being always monotonic 1,2,...,N and sign(rank_index[i]-rank_index[i+1]) always = -1

@@ -20,8 +20,13 @@ cellToGammaOriginal <- function(covariable=NULL,groups=NULL, labelOrder, indexes
   dforigin <- data.frame(covariable=unlist(mapply(function(ammount,label)sample(covariable[groups %in% label],size = ammount, replace = FALSE),cellCrowd,labelOrder)),
                          groups = unlist(mapply(function(name,ammount)rep(name,times=ammount), names(cellCrowd),cellCrowd)))
   dforigin <- table(dforigin)
-  dforigin[dforigin == 0] = 1 # Minimum of 1 observation per label
-  contig_tab_origin <- t(apply(dforigin,2,function(row){row/(sum(row))}))[labelOrder, indexes]
+  if(!all(indexes %in% rownames(dforigin))){
+    tmp <- do.call(rbind, rep(list(rep(0,ncol(dforigin))), sum(!(indexes %in% rownames(dforigin)))))
+    rownames(tmp) <- indexes[!(indexes %in% rownames(dforigin))]
+    dforigin <- rbind(dforigin, tmp)[indexes,]
+    }
+  # dforigin[dforigin == 0] = 1 # Minimum of 1 observation per label
+  contig_tab_origin <- t(apply(dforigin,2,function(row){row/(sum(row)+0.1)}))[labelOrder, indexes]
   ranked_percent_origin <- t(apply(contig_tab_origin,1,rank))
   # Calculate the concordant and discortant pairs
   nconcordant_origin <- apply(ranked_percent_origin, 2, function(cell_vector){

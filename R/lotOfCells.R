@@ -98,8 +98,13 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
   }
   # Subset only the main groups stated in labelOrder:
   main_metadata <- main_metadata[main_metadata[, main_variable] %in% labelOrder ,]
-  groups <- main_metadata[, main_variable]
-  covariable <- main_metadata[, subtype_variable]
+  groups <- as.character(main_metadata[, main_variable])
+  covariable <- as.character(main_metadata[, subtype_variable])
+  # ###
+  # covariable <- milk.metadata$General_Celltype
+  # groups <- as.character(as.numeric(milk.metadata$time_post_partum_days))
+  # labelOrder <- as.character(sort(unique(as.numeric(milk.metadata$time_post_partum_days))))
+  # ###
   if(length(labelOrder)<2){
     stop("You have to specify the order of testing for the labels (labelOrder=c(label1,label2,labeln...)")
   }
