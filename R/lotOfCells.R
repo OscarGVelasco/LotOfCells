@@ -200,6 +200,7 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
 # groups4 <- c(rep("CellA",500),rep("CellB",1000),rep("CellC",10),rep("CellD",1200))
 # groups <- c(rep("A",length(groups1)),rep("B",length(groups2)),rep("C",length(groups3)),rep("D",length(groups4)))
 # labelOrder <- c("C","B","A","D")
+# labelOrder <- c("B","D")
 # covariable <- c(groups1, groups2,groups3,groups4)
 # meta.data <- data.frame(groups, covariable)
 # rownames(meta.data) <- as.character(1:nrow(meta.data))
@@ -210,7 +211,6 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
 #                      labelOrder = labelOrder,
 #                      permutations = 1000)
 #   )
-
 # using do.call rbind:
 # - Starting gamma rank permutation analysis, this could take a while...
 # user  system elapsed
