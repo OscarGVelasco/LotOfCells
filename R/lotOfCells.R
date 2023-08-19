@@ -9,6 +9,7 @@
 #' @param subtype_variable Character. Name of the column on the metadata dataframe containing the covariable to be analyzed (e.g.: cell_type, time_point, ...)
 #' @param labelOrder Character Vector. Covariables found on the subtype_variable column in order to be contrasted (e.g.: c("type_A","type_B" will contrast type_A vs type_B))
 #' @param permutations Numeric. Number of random permutations for the montecarlo test (2 label for main_variable case) or the gamma null distribution (main_variable > 2 labels) (default 1000).
+#' @param parallel Boolean. Whether to use parallel computing with BiocParallel or not (default FALSE).
 #'
 #' @return The function returns a DataFrame containing the results and statistics tested for each covariables found in subtype_variable contrasting the main_variable labels. Column values are:
 #' \tabular{ll}{
@@ -60,8 +61,9 @@
 #' @importFrom stats sd p.adjust quantile
 #' @importFrom SingleCellExperiment colLabels
 #' @importFrom methods is
+#' @importFrom BiocParallel bplapply
 #' @export
-lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, labelOrder=c(""), permutations=1000){
+lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, labelOrder=c(""), permutations=1000, parallel=FALSE){
   if(is.null(scObject)){
     stop("At least a Single Cell Experiments object is needed.")
   }
@@ -88,7 +90,12 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     }else{
       stop("One or more objects in the input list is neither of class Seurat nor SingleDataExperiment.")
       }
-    }
+  }
+  if(isTRUE(parallel)){
+    functToApply <- BiocParallel::bplapply
+  }else{
+    functToApply <- base::lapply
+  }
   ## Select metadata table
   if(isSce){ main_metadata <- SingleCellExperiment::colLabels(scObject)}
   if(isSeurat){ main_metadata <- scObject[[]] }
@@ -124,13 +131,13 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     # Goodman and Kruskal's gamma function:
     godKrusGamma <- function(nc,nd){(nc-nd)/(nc+nd)}
     # Call gamma rank correlation to perform a permutation test on the original sets
-    original_gamma_test <- lapply(seq_len(permutations),function(x){
+    original_gamma_test <- functToApply(seq_len(permutations),function(x){
       cellToGammaOriginal(covariable, groups, labelOrder, indexes, cellCrowd, rank_index)})
     original_concordant <- colSums(do.call(rbind,lapply(original_gamma_test,function(results)results[[1]])))
     original_disconcordant <- colSums(do.call(rbind,lapply(original_gamma_test,function(results)results[[2]])))
     original_gamma_cor <- mapply(FUN = godKrusGamma, original_concordant, original_disconcordant)
     # Calculate the Confidence Interval for the gamma cor:
-    subsampled_gamma_cor <- lapply(seq_len(10),function(subsample){
+    subsampled_gamma_cor <- functToApply(seq_len(10),function(subsample){
       subsample_gamma_test <- lapply(seq_len(100),function(x){
         cellToGammaOriginal(covariable, groups, labelOrder, indexes, cellCrowd, rank_index)})
       subsample_concordant <- colSums(do.call(rbind,lapply(subsample_gamma_test,function(results)results[[1]])))
@@ -139,9 +146,9 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     })
     subsampled_gamma_CI <- apply(do.call(rbind,subsampled_gamma_cor),2,function(c)quantile(c,probs = c(0.025,0.975)))
     message("- Starting gamma rank permutation analysis, this could take a while...")
-    random_gamma_cor <- sapply(seq_len(permutations),function(x){
+    random_gamma_cor <- functToApply(seq_len(permutations),function(x){
       # Call gamma rank correlation
-      null_gamma_test <- lapply(seq_len(5),function(x){
+      null_gamma_test <- lapply(seq_len(10),function(x){
         cellToGamma(covariable, groups, labelOrder, indexes, cellCrowd, rank_index)})
       # Obtain the results and summarize
       random_concordant <- colSums(do.call(rbind,lapply(null_gamma_test,function(results)results[[1]])))
@@ -149,7 +156,9 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
       # Goodman and Kruskal's gamma Formula
       return(mapply(FUN = godKrusGamma, random_concordant, random_disconcordant))
     })
-    random_gamma_cor <- t(random_gamma_cor)
+    random_gamma_cor <- do.call(rbind, random_gamma_cor)
+    #print(random_gamma_cor)
+    #random_gamma_cor <- t(random_gamma_cor)
     # calculate the p.value
     higuer_in_null <- (rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor <= x}), na.rm = TRUE)+1) / (permutations+1)
     lower_in_null <- (rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor >= x}), na.rm = TRUE)+1) / (permutations+1)

@@ -49,6 +49,11 @@ entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
   relative_entropies <- apply(contig_tab,1,function(x){
     abs(log2((x[1]*log2(x[2])) / (x[1]*log2(x[1]))))
   })
+  relative_entropies2 <- apply(contig_tab,1,function(x){
+    abs(log2((x[2]*log2(x[2])) / (x[1]*log2(x[1]))))
+  })
+  print(relative_entropies2)
+  print(exp(mean(log(relative_entropies2))))
   geometric_mean <- exp(mean(log(relative_entropies)))
   g <- ggplot2::ggplot(reshape2::melt(contig_tab),ggplot2::aes(x=covariable,y=value,fill=groups)) +
     ggplot2::geom_bar(stat="identity", position=ggplot2::position_dodge()) +
@@ -64,7 +69,7 @@ groups3 <- c(rep("CellA",1200),rep("CellB",200),rep("CellC",420),rep("CellD",800
 groups4 <- c(rep("CellA",500),rep("CellB",1000),rep("CellC",10),rep("CellD",1200))
 groups <- c(rep("A",length(groups1)),rep("B",length(groups2)),rep("C",length(groups3)),rep("D",length(groups4)))
 labelOrder <- c("C","B","A","D")
-labelOrder <- c("B","C")
+labelOrder <- c("D","C")
 covariable <- c(groups1, groups2,groups3,groups4)
 meta.data <- data.frame(groups, covariable)
 rownames(meta.data) <- as.character(1:nrow(meta.data))

@@ -1,6 +1,6 @@
 Package: LotOfCells
 Type: Package
-Title: Compute proportion tests on single-cell data metadata.
+Title: Compute proportion tests statistics on single-cell data metadata.
 Version: 0.1.0
 Author: Who wrote it
 Maintainer: The package maintainer <yourself@somewhere.net>
@@ -11,7 +11,8 @@ Encoding: UTF-8
 Imports: 
     methods,
     Seurat,
-    SingleCellExperiment
+    SingleCellExperiment,
+    BiocParallel
 Suggests: 
     knitr,
     rmarkdown
