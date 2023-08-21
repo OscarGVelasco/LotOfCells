@@ -91,10 +91,9 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
       stop("One or more objects in the input list is neither of class Seurat nor SingleDataExperiment.")
       }
   }
+  functToApply <- base::lapply
   if(isTRUE(parallel)){
     functToApply <- BiocParallel::bplapply
-  }else{
-    functToApply <- base::lapply
   }
   ## Select metadata table
   if(isSce){ main_metadata <- SingleCellExperiment::colLabels(scObject)}

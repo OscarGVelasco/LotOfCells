@@ -63,7 +63,7 @@
 #' @importFrom methods is
 #' @importFrom BiocParallel bplapply
 #' @export
-entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, labelOrder=c("")){
+entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, labelOrder=c(""), permutations=1000, parallel=FALSE){
   if(is.null(scObject)){
     stop("At least a Single Cell Experiments object is needed.")
   }
@@ -105,25 +105,50 @@ entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
   if(length(labelOrder)<2){
     stop("You have to specify the order of testing for the labels (labelOrder=c(label1,label2,labeln...)")
   }
+  functToApply <- base::lapply
+  if(isTRUE(parallel)){
+    functToApply <- BiocParallel::bplapply
+  }
   message("Only 2 groups detected.")
-  message(paste("Computing Fold Change proportion over covariables for groups:",labelOrder[1],"vs",labelOrder[2]))
+  message(paste("Computing Entropy proportion over covariables for groups:",labelOrder[1],"vs",labelOrder[2]))
   df <- data.frame(groups, covariable)
   contig_tab <- apply(table(df),1,function(row){row/sum(row)})[,labelOrder]
   relative_entropies <- apply(contig_tab,1,function(x){
     abs(log2((x[1]*log2(x[2])) / (x[1]*log2(x[1]))))
   })
-  relative_entropies2 <- apply(contig_tab,1,function(x){
-    abs(log2((x[2]*log2(x[2])) / (x[1]*log2(x[1]))))
+  relative_entropies <- relative_entropies / log2(length(relative_entropies))
+  #entropy_score <- mean(relative_entropies)
+  #geometric_mean <- exp(mean(log(relative_entropies)))
+  entropy_score <- log2(sum(apply(contig_tab,1,function(x){x[1]*log2(x[2])}))/sum(apply(contig_tab,1,function(x){x[1]*log2(x[1])})))
+  # Montecarlo test for random entropy distribution
+  cellCrowd <- round(c(table(groups)*(1/10)))[labelOrder]
+  message(paste("Starting montecarlo simulation with n. permutations:",permutations))
+  # for parallelization purposes it is better to split in 2 sub-loops so each thread has (permutation/10) computations
+  entropy_list <- functToApply(seq(10),function(iteration){
+    sapply(seq(permutations/10),function(permutation){
+      dftmp <- data.frame(covariable=c(sample(covariable,size = cellCrowd[1]),sample(covariable,size = cellCrowd[2])),
+                          groups = c(rep(names(cellCrowd)[1],times=cellCrowd[1]),rep(names(cellCrowd)[2],times=cellCrowd[2])))
+      dftmp <- table(dftmp)
+      dftmp[dftmp == 0] = 1
+      contig_tab_random <- t(apply(dftmp,2,function(row){row/(sum(row)+1)}))[labelOrder, ]
+      # random_entropies <- apply(contig_tab_random,2,function(x){
+      #   abs(log2((x[1]*log2(x[2])) / (x[1]*log2(x[1]))))})
+      random_entropies <- abs(log2(sum(apply(contig_tab_random,1,function(x){x[1]*log2(x[2])}))/sum(apply(contig_tab,1,function(x){x[1]*log2(x[1])}))))
+    })
   })
-  print(relative_entropies2)
-  print(exp(mean(log(relative_entropies2))))
-  geometric_mean <- exp(mean(log(relative_entropies)))
-  g <- ggplot2::ggplot(reshape2::melt(contig_tab),ggplot2::aes(x=covariable,y=value,fill=groups)) +
+  # Unpack results
+  null_test_entropy <- unlist(entropy_list)
+  # test 1 #
+  # Calculate how extreme our observed values are in comparison with the random distribution
+  # We want to see if the FoldChanges on the random distribution are lower or higher than the observed FoldChange
+  p.vals <- sum(null_test_entropy >= entropy_score) / (permutations+1)
+  p.adj <- round(p.adjust(p = p.vals,method = "bonferroni"), digits = 5)
+  g <- ggplot2::ggplot(reshape2::melt(contig_tab),ggplot2::aes(x=covariable,y=value,fill=factor(groups))) +
     ggplot2::geom_bar(stat="identity", position=ggplot2::position_dodge()) +
     ggplot2::scale_fill_brewer(palette="Blues") +
     ggplot2::theme_minimal()
   print(g)
-  return(c(relative_entropies,"geometric_mean"=geometric_mean))
+  return(c(relative_entropies,"entropy_score"=entropy_score,"p.val.adj"=p.adj))
 }
 
 # groups1 <- c(rep("CellA",700),rep("CellB",300),rep("CellC",500),rep("CellD",1000))
@@ -132,12 +157,30 @@ entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
 # groups4 <- c(rep("CellA",500),rep("CellB",1000),rep("CellC",10),rep("CellD",1200))
 # groups <- c(rep("A",length(groups1)),rep("B",length(groups2)),rep("C",length(groups3)),rep("D",length(groups4)))
 # labelOrder <- c("C","B","A","D")
-# labelOrder <- c("D","C")
+# labelOrder <- c("D","B")
 # covariable <- c(groups1, groups2,groups3,groups4)
 # meta.data <- data.frame(groups, covariable)
 # rownames(meta.data) <- as.character(1:nrow(meta.data))
 #
-# entropyScore(scObject = meta.data,
+# res1 <- entropyScore(scObject = meta.data,
 #           main_variable = "groups",
 #           subtype_variable = "covariable",
-#           labelOrder = labelOrder)
+#           permutations = 10000,
+#           labelOrder = labelOrder,
+#           parallel = TRUE)
+#
+# res1[1:4]/log2(4)
+#
+# entropyScore(scObject = tmp,
+#              main_variable = "status",
+#              subtype_variable = "cell.type",
+#              permutations = 10000,
+#              labelOrder = c("KIF5A","Control"),
+#              parallel = TRUE)
+#
+# entropyScore(scObject = tmp,
+#              main_variable = "batch",
+#              subtype_variable = "cell.type",
+#              permutations = 10000,
+#              labelOrder = c("1","2"),
+#              parallel = TRUE)
