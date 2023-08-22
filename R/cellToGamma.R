@@ -47,5 +47,3 @@ cellToGamma <- function(covariable=NULL,groups=NULL, labelOrder, indexes, cellCr
     })})
   return(list(colSums(nconcordant),colSums(ndiscordant)))
 }
-
-

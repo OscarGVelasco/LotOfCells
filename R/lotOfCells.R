@@ -1,6 +1,6 @@
 #' Compute proportion tests on single-cell data metadata.
 #'
-#' `lotOfCell()` returns a dataframe containing the results and statistics for the given variables and covariables.
+#' `lotOfCells()` returns a dataframe containing the results and statistics for the given variables and covariables.
 #'
 #' This function will calculate ... Goodman and Kruskal's gamma rank correlation
 #'
@@ -35,7 +35,7 @@
 #' covariable <- c(groups1, groups2)
 #' # We construct a metadata dataframe
 #' meta.data <- data.frame(groups, covariable)
-#' lotOfCell(scObject = meta.data,
+#' lotOfCells(scObject = meta.data,
 #'           main_variable = "groups", # The column in meta.data to be used as the main variable (groups A and B)
 #'           subtype_variable = "covariable", # The column in meta.data to be used as covariable (cell types)
 #'           labelOrder = c("B","A"), # Order of the constrast, we will obtain the fold changes as: B vs A
@@ -51,7 +51,7 @@
 #' groups <- c(rep("A",length(groups1)),rep("B",length(groups2)),rep("C",length(groups3)),rep("D",length(groups4)))
 #' covariable <- c(groups1, groups2,groups3,groups4)
 #' meta.data <- data.frame(groups, covariable)
-#' lotOfCell(scObject = meta.data,
+#' lotOfCells(scObject = meta.data,
 #'           main_variable = "groups",
 #'           subtype_variable = "covariable",
 #'           labelOrder = c("B","A","D","C"), # Order of the constrast, for gamma correlation it will test for an upward/downward pattern through B -> A -> D -> C
@@ -63,7 +63,7 @@
 #' @importFrom methods is
 #' @importFrom BiocParallel bplapply
 #' @export
-lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, labelOrder=c(""), permutations=1000, parallel=FALSE){
+lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, labelOrder=c(""), permutations=1000, parallel=FALSE){
   if(is.null(scObject)){
     stop("At least a Single Cell Experiments object is needed.")
   }
@@ -122,26 +122,31 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     message(paste("Computing Goodman and Kruskal's gamma rank correlation coefficient in the following order:",paste(labelOrder,collapse = ' vs ')))
     cellCrowd <- round(c(table(groups)*(1/10)))
     cellCrowd <- cellCrowd[labelOrder]
+    kendallDenominator <- (length(labelOrder) * (length(labelOrder)-1)) / 2 #n. of pairs to be compared: (N * (N-1)) / 2
     # Proportions
     df <- data.frame(groups, covariable)
     contig_tab <- t(apply(table(df),1,function(row){row/sum(row)}))[labelOrder,]
     indexes <- colnames(contig_tab)
     rank_index <- c(1:length(labelOrder))
     # Goodman and Kruskal's gamma function:
-    godKrusGamma <- function(nc,nd){(nc-nd)/(nc+nd)}
+    #godKrusGamma <- function(nc,nd){(nc-nd)/(nc+nd)}
+    godKrusGamma <- function(nc,nd,N){(nc-nd)/(N)}
     # Call gamma rank correlation to perform a permutation test on the original sets
-    original_gamma_test <- functToApply(seq_len(permutations),function(x){
-      cellToGammaOriginal(covariable, groups, labelOrder, indexes, cellCrowd, rank_index)})
-    original_concordant <- colSums(do.call(rbind,lapply(original_gamma_test,function(results)results[[1]])))
-    original_disconcordant <- colSums(do.call(rbind,lapply(original_gamma_test,function(results)results[[2]])))
-    original_gamma_cor <- mapply(FUN = godKrusGamma, original_concordant, original_disconcordant)
+    original_gamma_test <- functToApply(seq_len(round(sqrt(permutations))),function(x){
+      original_gamma_test_sub <- lapply(seq_len(permutations/round(sqrt(permutations))),function(y){
+        cellToGammaOriginal(covariable, groups, labelOrder, indexes, cellCrowd, rank_index)
+        })
+    })
+    original_concordant <- colSums(do.call(rbind, lapply(original_gamma_test,function(l)do.call(rbind,lapply(l,function(results)results[[1]])))))
+    original_disconcordant <- colSums(do.call(rbind, lapply(original_gamma_test,function(l)do.call(rbind,lapply(l,function(results)results[[2]])))))
+    original_gamma_cor <- mapply(FUN = godKrusGamma, original_concordant, original_disconcordant,kendallDenominator*permutations)
     # Calculate the Confidence Interval for the gamma cor:
     subsampled_gamma_cor <- functToApply(seq_len(10),function(subsample){
       subsample_gamma_test <- lapply(seq_len(100),function(x){
         cellToGammaOriginal(covariable, groups, labelOrder, indexes, cellCrowd, rank_index)})
       subsample_concordant <- colSums(do.call(rbind,lapply(subsample_gamma_test,function(results)results[[1]])))
       subsample_disconcordant <- colSums(do.call(rbind,lapply(subsample_gamma_test,function(results)results[[2]])))
-      return(mapply(FUN = godKrusGamma, subsample_concordant, subsample_disconcordant))
+      return(mapply(FUN = godKrusGamma, subsample_concordant, subsample_disconcordant,kendallDenominator*100))
     })
     subsampled_gamma_CI <- apply(do.call(rbind,subsampled_gamma_cor),2,function(c)quantile(c,probs = c(0.025,0.975)))
     message("- Starting gamma rank permutation analysis, this could take a while...")
@@ -153,14 +158,14 @@ lotOfCell <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
       random_concordant <- colSums(do.call(rbind,lapply(null_gamma_test,function(results)results[[1]])))
       random_disconcordant <- colSums(do.call(rbind,lapply(null_gamma_test,function(results)results[[2]])))
       # Goodman and Kruskal's gamma Formula
-      return(mapply(FUN = godKrusGamma, random_concordant, random_disconcordant))
+      return(mapply(FUN = godKrusGamma, random_concordant, random_disconcordant, kendallDenominator*10))
     })
     random_gamma_cor <- do.call(rbind, random_gamma_cor)
     #print(random_gamma_cor)
     #random_gamma_cor <- t(random_gamma_cor)
     # calculate the p.value
-    higuer_in_null <- (rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor <= x}), na.rm = TRUE)+1) / (permutations+1)
-    lower_in_null <- (rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor >= x}), na.rm = TRUE)+1) / (permutations+1)
+    higuer_in_null <- (rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor <= x}), na.rm = TRUE)) / (permutations)
+    lower_in_null <- (rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor >= x}), na.rm = TRUE)) / (permutations)
     p.vals <- apply(rbind(original_gamma_cor, higuer_in_null, lower_in_null), 2, function(x)ifelse(x[1]>0, x[2], x[3]))
     p.adj <- round(p.adjust(p = p.vals,method = "bonferroni"), digits = 5)
     table.results <- data.frame(groupGammaCor=round(original_gamma_cor, 4), round(t(contig_tab)[,labelOrder],3), p.adj, CI95low=round(subsampled_gamma_CI[1,indexes],4), CI95high=round(subsampled_gamma_CI[2,indexes],4))

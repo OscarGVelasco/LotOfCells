@@ -105,18 +105,20 @@ entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
   if(length(labelOrder)<2){
     stop("You have to specify the order of testing for the labels (labelOrder=c(label1,label2,labeln...)")
   }
+  if(length(labelOrder)>2){
+    stop(paste("Only 2 labels are allowed for computing the entropy estimation, found:",paste(labelOrder,collapse = ", ")))
+  }
   functToApply <- base::lapply
   if(isTRUE(parallel)){
     functToApply <- BiocParallel::bplapply
   }
-  message("Only 2 groups detected.")
   message(paste("Computing Entropy proportion over covariables for groups:",labelOrder[1],"vs",labelOrder[2]))
   df <- data.frame(groups, covariable)
   contig_tab <- apply(table(df),1,function(row){row/sum(row)})[,labelOrder]
   relative_entropies <- apply(contig_tab,1,function(x){
     abs(log2((x[1]*log2(x[2])) / (x[1]*log2(x[1]))))
   })
-  relative_entropies <- relative_entropies / log2(length(relative_entropies))
+  relative_entropies <- relative_entropies / log2(length(relative_entropies)) # Normalice each independent entropy by the dimension N
   #entropy_score <- mean(relative_entropies)
   #geometric_mean <- exp(mean(log(relative_entropies)))
   entropy_score <- log2(sum(apply(contig_tab,1,function(x){x[1]*log2(x[2])}))/sum(apply(contig_tab,1,function(x){x[1]*log2(x[1])})))
