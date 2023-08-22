@@ -87,4 +87,3 @@ ggplot(data=data.2.plot, aes(x=variable, y=value, group=variable, col=variable))
   theme(plot.title = element_text(size=14, face="bold.italic", hjust = 0.5))
 
 
-
