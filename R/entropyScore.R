@@ -148,7 +148,14 @@ entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
   g <- ggplot2::ggplot(reshape2::melt(contig_tab),ggplot2::aes(x=covariable,y=value,fill=factor(groups))) +
     ggplot2::geom_bar(stat="identity", position=ggplot2::position_dodge()) +
     ggplot2::scale_fill_brewer(palette="Blues") +
-    ggplot2::theme_minimal()
+    ggplot2::theme_minimal() +
+    ggplot2::ggtitle(paste("Global entropy score:",round(entropy_score,digits = 3),"p.val.adj:",round(p.adj,digits = 3))) +
+    ggplot2::theme(
+      title = ggplot2::element_text(face="bold", size=ggplot2::rel(1.2)),
+      strip.text=ggplot2::element_text(face="bold", size=ggplot2::rel(0.8)),
+      axis.title.x=ggplot2::element_text(),
+      axis.text.x=ggplot2::element_text(angle=45, vjust=1, hjust=1,size = 12)
+    )
   print(g)
   return(c(relative_entropies,"entropy_score"=entropy_score,"p.val.adj"=p.adj))
 }
