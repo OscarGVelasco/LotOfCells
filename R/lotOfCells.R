@@ -178,7 +178,18 @@ lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL,
     message("Only 2 groups detected.")
     message(paste("Computing Fold Change proportion over covariables for groups:",labelOrder[1],"vs",labelOrder[2]))
     df <- data.frame(groups, covariable)
-    contig_tab <- t(apply(table(df),1,function(row){row/sum(row)}))[labelOrder,]
+    df <- table(df)
+    # df[df==0] <- 1
+    contig_tab <- t(apply(df,1,function(row){row/sum(row)}))[labelOrder,]
+    # # CONTRUCTION
+    # log2(apply(contig_tab,2,function(x){
+    #   if(any(x==0)){
+    #     (x[1]+(sqrt((x[1]*x[1])+0.01))) / (x[2]+(sqrt((x[2]*x[2])+0.01)))}
+    #     else{
+    #       x[1] / x[2]
+    #     }
+    # }))
+    # #
     original_test <- log2(contig_tab[1,] / contig_tab[2,])
     indexes <- names(original_test)
     cellCrowd <- round(c(table(groups)*1/10))

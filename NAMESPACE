@@ -2,6 +2,10 @@
 
 export(entropyScore)
 export(lotOfCells)
+export(waffle_chart)
+import(dplyr)
+import(ggplot2)
+import(gridExtra)
 importFrom(BiocParallel,bplapply)
 importFrom(SingleCellExperiment,colLabels)
 importFrom(methods,is)
