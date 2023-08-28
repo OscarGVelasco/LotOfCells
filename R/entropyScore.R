@@ -140,6 +140,8 @@ entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
   })
   # Unpack results
   null_test_entropy <- unlist(entropy_list)
+  sd_entropies <- sd(null_test_entropy)
+  mean_entropies <- mean(null_test_entropy)
   # test 1 #
   # Calculate how extreme our observed values are in comparison with the random distribution
   # We want to see if the FoldChanges on the random distribution are lower or higher than the observed FoldChange
@@ -157,7 +159,7 @@ entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
       axis.text.x=ggplot2::element_text(angle=45, vjust=1, hjust=1,size = 12)
     )
   print(g)
-  return(c(relative_entropies,"entropy_score"=entropy_score,"p.val.adj"=p.adj))
+  return(c(relative_entropies,"entropy_score"=entropy_score,"p.val.adj"=p.adj, "mean.random.entropy"= mean_entropies, "sd.random.entropy"=sd_entropies))
 }
 
 # groups1 <- c(rep("CellA",700),rep("CellB",300),rep("CellC",500),rep("CellD",1000))
