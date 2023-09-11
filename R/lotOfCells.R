@@ -164,10 +164,10 @@ lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL,
     #print(random_gamma_cor)
     #random_gamma_cor <- t(random_gamma_cor)
     # calculate the p.value
-    higuer_in_null <- (rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor <= x}), na.rm = TRUE)) / (permutations)
-    lower_in_null <- (rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor >= x}), na.rm = TRUE)) / (permutations)
+    higuer_in_null <- round((rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor <= x}), na.rm = TRUE)) / (permutations), digits=5)
+    lower_in_null <- round((rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor >= x}), na.rm = TRUE)) / (permutations), digits=5)
     p.vals <- apply(rbind(original_gamma_cor, higuer_in_null, lower_in_null), 2, function(x)ifelse(x[1]>0, x[2], x[3]))
-    p.adj <- round(p.adjust(p = p.vals,method = "bonferroni"), digits = 5)
+    p.adj <- round(p.adjust(p=p.vals, method="bonferroni"), digits=5)
     table.results <- data.frame(groupGammaCor=round(original_gamma_cor, 4), round(t(contig_tab)[,labelOrder],3), p.adj, CI95low=round(subsampled_gamma_CI[1,indexes],4), CI95high=round(subsampled_gamma_CI[2,indexes],4))
     colnames(table.results) <- c("groupGammaCor", c(sapply(labelOrder,function(label)paste0("percent_in_",label))), "p.adj","CI95low", "CI95high")
     return(table.results)
