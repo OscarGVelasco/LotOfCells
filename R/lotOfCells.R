@@ -130,7 +130,8 @@ lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL,
     rank_index <- c(1:length(labelOrder))
     # Goodman and Kruskal's gamma function:
     #godKrusGamma <- function(nc,nd){(nc-nd)/(nc+nd)}
-    godKrusGamma <- function(nc,nd,N){(nc-nd)/(N)}
+    # godKrusGamma <- function(nc, nd, N){(nc-nd)/(N)}
+    godKrusGamma <- function(nc, nd, N){(nc-nd)/exp(mean(log(N)))}
     # Call gamma rank correlation to perform a permutation test on the original sets
     original_gamma_test <- functToApply(seq_len(round(sqrt(permutations))),function(x){
       original_gamma_test_sub <- lapply(seq_len(permutations/round(sqrt(permutations))),function(y){
@@ -141,24 +142,25 @@ lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL,
     original_disconcordant <- colSums(do.call(rbind, lapply(original_gamma_test,function(l)do.call(rbind,lapply(l,function(results)results[[2]])))))
     original_gamma_cor <- mapply(FUN = godKrusGamma, original_concordant, original_disconcordant,kendallDenominator*permutations)
     # Calculate the Confidence Interval for the gamma cor:
-    subsampled_gamma_cor <- functToApply(seq_len(10),function(subsample){
-      subsample_gamma_test <- lapply(seq_len(100),function(x){
+    subsampled_gamma_cor <- functToApply(seq_len(10), function(subsample){
+      subsample_gamma_test <- lapply(seq_len(100), function(x){
         cellToGammaOriginal(covariable, groups, labelOrder, indexes, cellCrowd, rank_index)})
-      subsample_concordant <- colSums(do.call(rbind,lapply(subsample_gamma_test,function(results)results[[1]])))
-      subsample_disconcordant <- colSums(do.call(rbind,lapply(subsample_gamma_test,function(results)results[[2]])))
-      return(mapply(FUN = godKrusGamma, subsample_concordant, subsample_disconcordant,kendallDenominator*100))
+      subsample_concordant <- colSums(do.call(rbind, lapply(subsample_gamma_test, function(results)results[[1]])))
+      subsample_disconcordant <- colSums(do.call(rbind, lapply(subsample_gamma_test, function(results)results[[2]])))
+      return(mapply(FUN = godKrusGamma, subsample_concordant, subsample_disconcordant, kendallDenominator*100))
     })
     subsampled_gamma_CI <- apply(do.call(rbind,subsampled_gamma_cor),2,function(c)quantile(c,probs = c(0.025,0.975)))
     message("- Starting gamma rank permutation analysis, this could take a while...")
-    random_gamma_cor <- functToApply(seq_len(permutations),function(x){
+    nRandomObservations <- 10
+    random_gamma_cor <- functToApply(seq_len(permutations), function(x){
       # Call gamma rank correlation
-      null_gamma_test <- lapply(seq_len(10),function(x){
+      null_gamma_test <- lapply(seq_len(nRandomObservations),function(x){
         cellToGamma(covariable, groups, labelOrder, indexes, cellCrowd, rank_index)})
       # Obtain the results and summarize
       random_concordant <- colSums(do.call(rbind,lapply(null_gamma_test,function(results)results[[1]])))
       random_disconcordant <- colSums(do.call(rbind,lapply(null_gamma_test,function(results)results[[2]])))
       # Goodman and Kruskal's gamma Formula
-      return(mapply(FUN = godKrusGamma, random_concordant, random_disconcordant, kendallDenominator*10))
+      return(mapply(FUN = godKrusGamma, random_concordant, random_disconcordant, kendallDenominator*nRandomObservations))
     })
     random_gamma_cor <- do.call(rbind, random_gamma_cor)
     #print(random_gamma_cor)

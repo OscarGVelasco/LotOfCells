@@ -1,10 +1,8 @@
-#
-#
 # library(devtools)
 # install_github("OscarGVelasco/lotOfCells")
 # library(LotOfCells)
 #
-# Data simulation with 4 conditions and 4 cell-types:
+# #Data simulation with 4 conditions and 4 cell-types:
 # sample1 <- c(rep("CellA",700),rep("CellB",300),rep("CellC",500),rep("CellD",1000))
 #
 # sample1 <- c(rep("CellA",700),rep("CellB",300),rep("CellC",500),rep("CellD",0))
@@ -15,7 +13,6 @@
 # covariable <- c(sample1, sample2,sample3,sample4)
 # meta.data <- data.frame(sample, covariable)
 # rownames(meta.data) <- as.character(1:nrow(meta.data))
-
 ###                   TEST - 1
 #####################################################################
 # Test of 2 conditions using montecarlo and differences in percentage
@@ -60,7 +57,7 @@
 #   results.4.conditions <- lotOfCells(scObject = meta.data,
 #                                   main_variable = "sample",
 #                                   subtype_variable = "covariable",
-#                                   permutations = 10000,
+#                                   permutations = 1000,
 #                                   labelOrder = labelOrder,
 #                                   parallel = T)
 # )
@@ -86,6 +83,4 @@
 #   labs(y = "proportion",
 #        title = "Proportion of cells per type") +
 #   theme_minimal() +
-#   theme(plot.title = element_text(size=14, face="bold.italic", hjust = 0.5))
-#
-#
+# theme(plot.title = element_text(size=14, face="bold.italic", hjust = 0.5))
