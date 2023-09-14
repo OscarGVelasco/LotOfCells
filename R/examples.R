@@ -2,27 +2,41 @@
 # install_github("OscarGVelasco/lotOfCells")
 # library(LotOfCells)
 #
-# #Data simulation with 4 conditions and 4 cell-types:
+#Data simulation with 4 conditions and 4 cell-types:
 # sample1 <- c(rep("CellA",700),rep("CellB",300),rep("CellC",500),rep("CellD",1000))
-#
-# sample1 <- c(rep("CellA",700),rep("CellB",300),rep("CellC",500),rep("CellD",0))
+# #sample1 <- c(rep("CellA",700),rep("CellB",300),rep("CellC",500),rep("CellD",0))
 # sample2 <- c(rep("CellA",1700),rep("CellB",350),rep("CellC",550),rep("CellD",800))
 # sample3 <- c(rep("CellA",1200),rep("CellB",200),rep("CellC",420),rep("CellD",800))
 # sample4 <- c(rep("CellA",500),rep("CellB",1000),rep("CellC",10),rep("CellD",1200))
 # sample <- c(rep("A",length(sample1)),rep("B",length(sample2)),rep("C",length(sample3)),rep("D",length(sample4)))
 # covariable <- c(sample1, sample2,sample3,sample4)
 # meta.data <- data.frame(sample, covariable)
+# meta.data$condition <- "wt"
+# meta.data[meta.data$sample %in% c("C","D"),]$condition <- "mut"
+# sample_id="sample"
+# main_variable="condition"
 # rownames(meta.data) <- as.character(1:nrow(meta.data))
 ###                   TEST - 1
 #####################################################################
 # Test of 2 conditions using montecarlo and differences in percentage
-# labelOrder <- c("A","B")
+#labelOrder <- c("A","B")
+# labelOrder <- c("mut","wt")
 # results.2.conditions <- lotOfCells(scObject = meta.data,
-#                                       main_variable = "sample",
+#                                       main_variable = "condition",
 #                                       subtype_variable = "covariable",
+#                                       sample_id = "sample",
 #                                       permutations = 1000,
 #                                       labelOrder = labelOrder,
 #                                       parallel = TRUE)
+#
+# results.2.conditions.nosamples <- lotOfCells(scObject = meta.data,
+#                                    main_variable = "condition",
+#                                    subtype_variable = "covariable",
+#                                    permutations = 10000,
+#                                    labelOrder = labelOrder,
+#                                    parallel = TRUE)
+# # Comparing simulations with sample_id and NO sample_id
+# rbind(results.2.conditions, results.2.conditions.nosamples)
 # # For this case: 2 conditions and multiple second co-variable:
 # # Data to be ploted:
 # #   1 - ratio of percentages (Fold changes) with confidence intervals & sd-montecarlo

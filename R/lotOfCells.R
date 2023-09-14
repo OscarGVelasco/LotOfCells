@@ -63,7 +63,7 @@
 #' @importFrom methods is
 #' @importFrom BiocParallel bplapply
 #' @export
-lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, labelOrder=c(""), permutations=1000, parallel=FALSE){
+lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, labelOrder=c(""), sample_id=NULL, permutations=1000, parallel=FALSE){
   if(is.null(scObject)){
     stop("At least a Single Cell Experiments object is needed.")
   }
@@ -179,6 +179,14 @@ lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL,
     # We will perform a Montecarlo Test to create a random distribution and compare it with the original differences.
     message("Only 2 groups detected.")
     message(paste("Computing Fold Change proportion over covariables for groups:",labelOrder[1],"vs",labelOrder[2]))
+    if(!is.null(sample_id)){
+      samples <- as.character(main_metadata[, sample_id])
+      nPerSample <- table(data.frame(groups,samples))[labelOrder,]
+      cellCrowd <- apply(nPerSample, 1, function(perCond){list(perCond[perCond!=0]*(1/10))})
+      cellCrowd <- cellCrowd[labelOrder]
+      #df <- data.frame(groups=paste(groups,samples,sep = "_"),covariable)
+      #nPerSample <- table(paste(groups,samples,sep = "_"))
+    }
     df <- data.frame(groups, covariable)
     df <- table(df)
     # df[df==0] <- 1
@@ -194,15 +202,25 @@ lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL,
     # #
     original_test <- log2(contig_tab[1,] / contig_tab[2,])
     indexes <- names(original_test)
-    cellCrowd <- round(c(table(groups)*1/10))
-    cellCrowd <- cellCrowd[labelOrder]
+    if(is.null(sample_id)){
+      cellCrowd <- round(c(table(groups)*1/10))
+      cellCrowd <- cellCrowd[labelOrder]
+    }
     # We perform the Montecarlo test
     message("- Starting montecarlo simulation of fold changes")
-    null_test <- lapply(seq_len(permutations),function(x){
-      cellToMontecarlo(covariable, groups, labelOrder, indexes, cellCrowd)})
+    null_test <- functToApply(seq_len(round(sqrt(permutations))), function(nParallelInstances){
+      null_test_sub <- lapply(seq_len(permutations/round(sqrt(permutations))), function(permutationsPerInstance){
+        cellToMontecarlo(covariable, groups, labelOrder, indexes, cellCrowd)
+        })
+    })
+    # null_test <- lapply(seq_len(permutations),function(x){
+    #   cellToMontecarlo(covariable, groups, labelOrder, indexes, cellCrowd)
+    # })
     # Unpack results
-    null_test_fcs <- do.call(rbind,lapply(null_test,function(l)l[[1]]))
-    null_test_real <- do.call(rbind,lapply(null_test,function(l)l[[2]]))
+    null_test_fcs <- do.call(rbind, lapply(null_test,function(l)do.call(rbind,lapply(l,function(results)results[[1]]))))
+    null_test_real <- do.call(rbind, lapply(null_test,function(l)do.call(rbind,lapply(l,function(results)results[[2]]))))
+    # null_test_fcs <- do.call(rbind,lapply(null_test,function(l)l[[1]]))
+    # null_test_real <- do.call(rbind,lapply(null_test,function(l)l[[2]]))
     # test 1 #
     # Calculate how extreme our observed values are in comparison with the random distribution
     # We want to see if the FoldChanges on the random distribution are lower or higher than the observed FoldChange
