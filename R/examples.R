@@ -16,6 +16,11 @@
 # sample_id="sample"
 # main_variable="condition"
 # rownames(meta.data) <- as.character(1:nrow(meta.data))
+#
+# ###                   TEST - PLOTS
+# #####################################################################
+# # Test of Waffles and more
+# waffle_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample", subtype_only = "CellD")
 ###                   TEST - 1
 #####################################################################
 # Test of 2 conditions using montecarlo and differences in percentage

@@ -6,7 +6,7 @@
 #' @import dplyr
 #' @import gridExtra
 #' @export
-waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, sample_id=NULL){
+waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, sample_id=NULL, subtype_only=NULL){
   library(dplyr)
   library(ggplot2)
   library(gridExtra)
@@ -43,6 +43,9 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
              col = colour[[index]]) %>%
       as.data.frame()
     df.p[,"col"] <- factor(df.p[,"col"], levels = order)
+    if(!is.null(subtype_only)){
+      df.p <- df.p %>% filter(col==subtype_only)
+    }
     # df.s <- percentages[percentages<1]
     ggplot(df.p, aes(x=y,y=x,fill = col)) +
       geom_tile(aes(width = 0.85, height = 0.85)) +
