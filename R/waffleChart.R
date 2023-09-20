@@ -13,13 +13,12 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
   # Compute
   main_metadata <- scObject
   # #
-  # main_variable="status"
-  # subtype_variable="cell.type"
-  # sample_id="mouse"
-  #main_metadata <- main_metadata[main_metadata[, main_variable] %in% labelOrder ,]
   groups <- as.character(main_metadata[, main_variable])
   covariable <- as.character(main_metadata[, subtype_variable])
-  order <- names(sort(table(covariable),decreasing = TRUE))
+  order <- rev(names(sort(table(covariable),decreasing = TRUE)))
+  if(!is.null(subtype_only)){
+    order <- c(order[!(order %in% subtype_only)], subtype_only)
+  }
   if(!is.null(sample_id)){
     samples <- as.character(main_metadata[, sample_id])
     df <- data.frame(groups,covariable,samples)
@@ -34,7 +33,7 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
                        "#DBECDA","#F28D35","#3C7DA6","#86608E","#301934")
   # Plot the waffles
   g.list <- lapply(seq(ncol(contig_tab)), function(indx){
-    percentages <- contig_tab[,indx]*100
+    percentages <- contig_tab[order,indx]*100
     colour <- names(percentages)
     df.p <- expand.grid(x = 0:9,
                         y = 0:9) %>%

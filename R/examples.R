@@ -2,7 +2,7 @@
 # install_github("OscarGVelasco/lotOfCells")
 # library(LotOfCells)
 #
-#Data simulation with 4 conditions and 4 cell-types:
+# Data simulation with 4 conditions and 4 cell-types:
 # sample1 <- c(rep("CellA",700),rep("CellB",300),rep("CellC",500),rep("CellD",1000))
 # #sample1 <- c(rep("CellA",700),rep("CellB",300),rep("CellC",500),rep("CellD",0))
 # sample2 <- c(rep("CellA",1700),rep("CellB",350),rep("CellC",550),rep("CellD",800))
@@ -20,7 +20,9 @@
 # ###                   TEST - PLOTS
 # #####################################################################
 # # Test of Waffles and more
-# waffle_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample", subtype_only = "CellD")
+# scObject=meta.data;main_variable = "condition";subtype_variable = "covariable"; sample_id = "sample"; subtype_only = "CellD"
+# waffle_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample")
+# waffle_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample",subtype_only = "CellC")
 ###                   TEST - 1
 #####################################################################
 # Test of 2 conditions using montecarlo and differences in percentage
