@@ -22,7 +22,7 @@
 # # Test of Waffles and more
 # scObject=meta.data;main_variable = "condition";subtype_variable = "covariable"; sample_id = "sample"; subtype_only = "CellD"
 # waffle_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample")
-# waffle_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample",subtype_only = "CellC")
+# waffle_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample",subtype_only = "CellD")
 ###                   TEST - 1
 #####################################################################
 # Test of 2 conditions using montecarlo and differences in percentage

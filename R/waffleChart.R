@@ -16,7 +16,10 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
   groups <- as.character(main_metadata[, main_variable])
   covariable <- as.character(main_metadata[, subtype_variable])
   order <- rev(names(sort(table(covariable),decreasing = TRUE)))
+  colorOrder <- rev(seq(1, length(order)))
+  names(colorOrder) <- order
   if(!is.null(subtype_only)){
+    colorOrder <- c(colorOrder[names(colorOrder)!=subtype_only],colorOrder[names(colorOrder)==subtype_only])
     order <- c(order[!(order %in% subtype_only)], subtype_only)
   }
   if(!is.null(sample_id)){
@@ -54,7 +57,7 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
       #ggplot2::coord_flip() +
       # Modify the color and fill of the tiles
       #geom_text(aes(label = paste0(index, "%")), size = 4, fontface = "bold") +
-      scale_fill_manual(values = colores, drop=FALSE) +
+      scale_fill_manual(values = colores[colorOrder], drop=FALSE) +
       #scale_fill_discrete(drop=FALSE) +
       guides(fill = guide_legend(title = "Class",drop=FALSE)) +
       ggtitle(group_names[indx])
