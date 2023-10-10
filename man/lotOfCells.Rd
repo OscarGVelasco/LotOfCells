@@ -9,6 +9,7 @@ lotOfCells(
   main_variable = NULL,
   subtype_variable = NULL,
   labelOrder = c(""),
+  sample_id = NULL,
   permutations = 1000,
   parallel = FALSE
 )

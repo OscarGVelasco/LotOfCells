@@ -234,6 +234,7 @@ lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL,
     intervals <- apply(null_test_real[,indexes], 2, function(c)quantile(c,probs = c(0.025,0.975)))
     table.results <- data.frame(groupFC=original_test, round(contig_tab[labelOrder[1],],3), round(contig_tab[labelOrder[2],],3), p.adj, sd.montecarlo, CI95low=intervals[1,], CI95high=intervals[2,])
     colnames(table.results) <- c("groupFC", paste0("percent_in_",labelOrder[1]), paste0("percent_in_",labelOrder[2]), "p.adj", "sd.montecarlo", "CI95low", "CI95high")
+    show(plotAbundanceTest(tableResults=table.results, subtype_variable=subtype_variable))
     return(table.results)
   }
 }

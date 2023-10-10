@@ -2,6 +2,7 @@
 
 export(entropyScore)
 export(lotOfCells)
+export(plotAbundanceTest)
 export(waffle_chart)
 import(dplyr)
 import(ggplot2)

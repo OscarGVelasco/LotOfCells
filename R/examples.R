@@ -2,9 +2,22 @@
 # install_github("OscarGVelasco/lotOfCells")
 # library(LotOfCells)
 #
+
+#
+# load("kif5a.ALL.metadata.only.RData")
+#
+# tmp
+# results.2.conditions <- lotOfCells(scObject = tmp,
+#                                       main_variable = "status",
+#                                       subtype_variable = "cell.type",
+#                                       sample_id = "mouse",
+#                                       permutations = 100,
+#                                       labelOrder = c("KIF5A","Control"),
+#                                       parallel = TRUE)
+
 # Data simulation with 4 conditions and 4 cell-types:
 # sample1 <- c(rep("CellA",700),rep("CellB",300),rep("CellC",500),rep("CellD",1000))
-# #sample1 <- c(rep("CellA",700),rep("CellB",300),rep("CellC",500),rep("CellD",0))
+#sample1 <- c(rep("CellA",700),rep("CellB",300),rep("CellC",500),rep("CellD",0))
 # sample2 <- c(rep("CellA",1700),rep("CellB",350),rep("CellC",550),rep("CellD",800))
 # sample3 <- c(rep("CellA",1200),rep("CellB",200),rep("CellC",420),rep("CellD",800))
 # sample4 <- c(rep("CellA",500),rep("CellB",1000),rep("CellC",10),rep("CellD",1200))
@@ -26,7 +39,7 @@
 ###                   TEST - 1
 #####################################################################
 # Test of 2 conditions using montecarlo and differences in percentage
-#labelOrder <- c("A","B")
+# labelOrder <- c("A","B")
 # labelOrder <- c("mut","wt")
 # results.2.conditions <- lotOfCells(scObject = meta.data,
 #                                       main_variable = "condition",
