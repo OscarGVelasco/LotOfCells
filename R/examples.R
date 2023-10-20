@@ -11,16 +11,18 @@
 #                                       main_variable = "status",
 #                                       subtype_variable = "cell.type",
 #                                       sample_id = "mouse",
-#                                       permutations = 100,
+#                                       permutations = 1000,
 #                                       labelOrder = c("KIF5A","Control"),
 #                                       parallel = TRUE)
+# bar_chart(scObject = tmp, main_variable = "status", subtype_variable = "cell.type", sample_id = "mouse")
+# bar_chart(scObject = tmp, main_variable = "status", subtype_variable = "cell.type", sample_id = "mouse", subtype_only = "Fibroblasts")
 
 # Data simulation with 4 conditions and 4 cell-types:
 # sample1 <- c(rep("CellA",700),rep("CellB",300),rep("CellC",500),rep("CellD",1000))
-#sample1 <- c(rep("CellA",700),rep("CellB",300),rep("CellC",500),rep("CellD",0))
-# sample2 <- c(rep("CellA",1700),rep("CellB",350),rep("CellC",550),rep("CellD",800))
-# sample3 <- c(rep("CellA",1200),rep("CellB",200),rep("CellC",420),rep("CellD",800))
-# sample4 <- c(rep("CellA",500),rep("CellB",1000),rep("CellC",10),rep("CellD",1200))
+# sample1 <- c(rep("CellTypeA",700),rep("CellTypeB",300),rep("CellTypeC",500),rep("CellTypeD",0))
+# sample2 <- c(rep("CellTypeA",1700),rep("CellTypeB",350),rep("CellTypeC",550),rep("CellTypeD",800))
+# sample3 <- c(rep("CellTypeA",1200),rep("CellTypeB",200),rep("CellTypeC",420),rep("CellTypeD",800))
+# sample4 <- c(rep("CellTypeA",500),rep("CellTypeB",1000),rep("CellTypeC",10),rep("CellTypeD",1200))
 # sample <- c(rep("A",length(sample1)),rep("B",length(sample2)),rep("C",length(sample3)),rep("D",length(sample4)))
 # covariable <- c(sample1, sample2,sample3,sample4)
 # meta.data <- data.frame(sample, covariable)
@@ -32,10 +34,15 @@
 #
 # ###                   TEST - PLOTS
 # #####################################################################
-# # Test of Waffles and more
-# scObject=meta.data;main_variable = "condition";subtype_variable = "covariable"; sample_id = "sample"; subtype_only = "CellD"
+# # Test of Waffles charts:
 # waffle_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample")
-# waffle_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample",subtype_only = "CellD")
+# # One-Class only:
+# waffle_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample",subtype_only = "CellTypeD")
+# # # Test of barplot charts:
+# bar_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample")
+# # One-Class only:
+# bar_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample", subtype_only = "CellTypeD")
+
 ###                   TEST - 1
 #####################################################################
 # Test of 2 conditions using montecarlo and differences in percentage
@@ -98,23 +105,11 @@
 # # Around 1 minute & 40 seconds with Parallel & permutations=10000
 # # user  system elapsed
 # # 598.120  16.432 107.683
-#
+# PLOT Results for correlation
 # # For this case: >2 conditions and multiple second co-variables:
-# # Lot of info... number of conditions can be very large (I have a dataset that has around 28 conditions/time points)
 # # Data to be ploted:
 # #   1 - Correlation coefficients with significance & confidence intervals -> maybe a dotplot with correlation in x-axis and continuous color by significance p-val
 # #   2 - Percentage per cell-type(covariable) across all conditions and ordered by labelOrder: dotplot with line across the dots ? build a grid of plots with a plot per co-variable??
-#
 # # Example of the percentage across conditions using points:
-# library(ggplot2)
-# data.2.plot <- reshape2::melt(results.4.conditions[3,2:5])
-# ggplot(data=data.2.plot, aes(x=variable, y=value, group=variable, col=variable)) +
-#   geom_point(aes(color=variable), size = 3.5) +
-#   #geom_errorbar(aes(ymin=var_mean-var_sd, ymax=var_mean+var_sd), width=.1) +
-#   #geom_ribbon(aes(ymin = var_mean-var_sd, ymax = var_mean+var_sd, fill=patient), alpha = 0.2, color=NA) +
-#   scale_color_brewer(palette="Pastel1") +
-#   scale_fill_brewer(palette="Pastel1") +
-#   labs(y = "proportion",
-#        title = "Proportion of cells per type") +
-#   theme_minimal() +
-# theme(plot.title = element_text(size=14, face="bold.italic", hjust = 0.5))
+# dynamics_chart(results.4.conditions)
+
