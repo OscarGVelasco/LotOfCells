@@ -114,39 +114,52 @@ entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
   }
   message(paste("Computing Entropy proportion over covariables for groups:",labelOrder[1],"vs",labelOrder[2]))
   df <- data.frame(groups, covariable)
-  contig_tab <- apply(table(df),1,function(row){row/sum(row)})[,labelOrder]
+  df <- table(df)
+  df[df==0] <- 1
+  contig_tab <- apply(df, 1, function(row){row/sum(row)})[,labelOrder]
   relative_entropies <- apply(contig_tab,1,function(x){
     abs(log2((x[1]*log2(x[2])) / (x[1]*log2(x[1]))))
   })
   relative_entropies <- relative_entropies / log2(length(relative_entropies)) # Normalice each independent entropy by the dimension N
   #entropy_score <- mean(relative_entropies)
   #geometric_mean <- exp(mean(log(relative_entropies)))
-  entropy_score <- log2(sum(apply(contig_tab,1,function(x){x[1]*log2(x[2])}))/sum(apply(contig_tab,1,function(x){x[1]*log2(x[1])})))
+  entropy_score <- abs(log2(sum(apply(contig_tab,1,function(x){x[1]*log2(x[2])}))/sum(apply(contig_tab,1,function(x){x[1]*log2(x[1])}))))
+  entropy_score2 <- abs(log2(sum(apply(contig_tab,1,function(x){x[2]*log2(x[1])}))/sum(apply(contig_tab,1,function(x){x[2]*log2(x[2])}))))
+  entropy_score <- sqrt(entropy_score + entropy_score2)
   # Montecarlo test for random entropy distribution
   cellCrowd <- round(c(table(groups)*(1/10)))[labelOrder]
   message(paste("Starting montecarlo simulation with n. permutations:",permutations))
   # for parallelization purposes it is better to split in 2 sub-loops so each thread has (permutation/10) computations
   entropy_list <- functToApply(seq(10),function(iteration){
     sapply(seq(permutations/10),function(permutation){
-      dftmp <- data.frame(covariable=c(sample(covariable,size = cellCrowd[1]),sample(covariable,size = cellCrowd[2])),
+      dftmp <- data.frame(covariable=c(sample(covariable, size=cellCrowd[1], replace=FALSE), sample(covariable, size=cellCrowd[2], replace=FALSE)),
                           groups = c(rep(names(cellCrowd)[1],times=cellCrowd[1]),rep(names(cellCrowd)[2],times=cellCrowd[2])))
       dftmp <- table(dftmp)
-      dftmp[dftmp == 0] = 1
-      contig_tab_random <- t(apply(dftmp,2,function(row){row/(sum(row)+1)}))[labelOrder, ]
+      dftmp[dftmp == 0] <- 1
+      contig_tab_random <- apply(dftmp,2,function(row){row/(sum(row)+1)})[,labelOrder]
       # random_entropies <- apply(contig_tab_random,2,function(x){
       #   abs(log2((x[1]*log2(x[2])) / (x[1]*log2(x[1]))))})
       random_entropies <- abs(log2(sum(apply(contig_tab_random,1,function(x){x[1]*log2(x[2])}))/sum(apply(contig_tab,1,function(x){x[1]*log2(x[1])}))))
+      random_entropies2 <- abs(log2(sum(apply(contig_tab_random,1,function(x){x[2]*log2(x[1])}))/sum(apply(contig_tab,1,function(x){x[2]*log2(x[2])}))))
+      random_entropies <- sqrt(random_entropies + random_entropies2)
     })
   })
   # Unpack results
   null_test_entropy <- unlist(entropy_list)
   sd_entropies <- sd(null_test_entropy)
   mean_entropies <- mean(null_test_entropy)
+  g.entropies <- ggplot2::ggplot(reshape2::melt(null_test_entropy),aes(y=value,x=factor(1))) +
+    geom_point(position = position_jitter(width = 0.35), color= "#D5BADB") +
+    geom_point(aes(y=entropy_score, x=factor(1)), size=4, color="#F08080") +
+    theme_classic() +
+    theme(axis.ticks.x = element_blank(), axis.text.x = element_blank()) +
+    xlab("") +
+    ylab("entropies")
   # test 1 #
   # Calculate how extreme our observed values are in comparison with the random distribution
   # We want to see if the FoldChanges on the random distribution are lower or higher than the observed FoldChange
-  p.vals <- sum(null_test_entropy >= entropy_score) / (permutations+1)
-  p.adj <- round(p.adjust(p = p.vals,method = "bonferroni"), digits = 5)
+  p.vals <- sum(null_test_entropy >= entropy_score) / (permutations)
+  p.adj <- round(p.adjust(p = p.vals, method = "bonferroni"), digits = 5)
   g <- ggplot2::ggplot(reshape2::melt(contig_tab),ggplot2::aes(x=covariable,y=value,fill=factor(groups))) +
     ggplot2::geom_bar(stat="identity", position=ggplot2::position_dodge()) +
     ggplot2::scale_fill_brewer(palette="Blues") +
@@ -158,7 +171,8 @@ entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
       axis.title.x=ggplot2::element_text(),
       axis.text.x=ggplot2::element_text(angle=45, vjust=1, hjust=1,size = 12)
     )
-  print(g)
+  #print(g)
+  gridExtra::grid.arrange(g,g.entropies,nrow=1,ncol=2,widths=c(1,0.2))
   return(c(relative_entropies,"entropy_score"=entropy_score,"p.val.adj"=p.adj, "mean.random.entropy"= mean_entropies, "sd.random.entropy"=sd_entropies))
 }
 

@@ -23,8 +23,9 @@
 # sample2 <- c(rep("CellTypeA",1700),rep("CellTypeB",350),rep("CellTypeC",550),rep("CellTypeD",800))
 # sample3 <- c(rep("CellTypeA",1200),rep("CellTypeB",200),rep("CellTypeC",420),rep("CellTypeD",800))
 # sample4 <- c(rep("CellTypeA",500),rep("CellTypeB",1000),rep("CellTypeC",10),rep("CellTypeD",1200))
-# sample <- c(rep("A",length(sample1)),rep("B",length(sample2)),rep("C",length(sample3)),rep("D",length(sample4)))
-# covariable <- c(sample1, sample2,sample3,sample4)
+# sample5 <- c(rep("CellTypeA",550),rep("CellTypeB",990),rep("CellTypeC",10),rep("CellTypeD",1100))
+# sample <- c(rep("A",length(sample1)),rep("B",length(sample2)),rep("C",length(sample3)),rep("D",length(sample4)),rep("E",length(sample5)))
+# covariable <- c(sample1, sample2,sample3,sample4,sample5)
 # meta.data <- data.frame(sample, covariable)
 # meta.data$condition <- "wt"
 # meta.data[meta.data$sample %in% c("C","D"),]$condition <- "mut"
@@ -56,10 +57,18 @@
 #                                       labelOrder = labelOrder,
 #                                       parallel = TRUE)
 #
+# labelOrder <- c("D","E")
+# results.2.conditions <- lotOfCells(scObject = meta.data,
+#                                    main_variable = "sample",
+#                                    subtype_variable = "covariable",
+#                                    permutations = 1000,
+#                                    labelOrder = labelOrder,
+#                                    parallel = TRUE)
+#
 # results.2.conditions.nosamples <- lotOfCells(scObject = meta.data,
 #                                    main_variable = "condition",
 #                                    subtype_variable = "covariable",
-#                                    permutations = 10000,
+#                                    permutations = 1000,
 #                                    labelOrder = labelOrder,
 #                                    parallel = TRUE)
 # # Comparing simulations with sample_id and NO sample_id
@@ -83,6 +92,23 @@
 #           permutations = 1000,
 #           labelOrder = labelOrder,
 #           parallel = FALSE)
+# #
+# labelOrder <- c("D","E")
+# results.2.conditions.entropy <- entropyScore(scObject = meta.data,
+#                                              main_variable = "sample",
+#                                              subtype_variable = "covariable",
+#                                              permutations = 1000,
+#                                              labelOrder = labelOrder,
+#                                              parallel = FALSE)
+# #
+# labelOrder <- c("C","A")
+# results.2.conditions.entropy <- entropyScore(scObject = meta.data,
+#                                              main_variable = "sample",
+#                                              subtype_variable = "covariable",
+#                                              permutations = 1000,
+#                                              labelOrder = labelOrder,
+#                                              parallel = FALSE)
+
 # # For this case: 2 conditions and multiple second co-variable:
 # # Data to be ploted:
 # #   1 - individual entropies && general entropy score ??
@@ -93,7 +119,7 @@
 # ###                   TEST - 3
 # ###########################################################################
 # # Test of correlation for SEVERAL conditions using Kendall rank correlation
-# labelOrder <- c("A","B","C","D")
+# labelOrder <- c("A","B","C","D","E")
 # system.time(
 #   results.4.conditions <- lotOfCells(scObject = meta.data,
 #                                   main_variable = "sample",

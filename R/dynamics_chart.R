@@ -25,6 +25,36 @@ dynamics_chart <- function(gammaResults=NULL, subtype_only=NULL){
          title = paste("Proportion dynamics across groups")) +
     theme_minimal() +
     theme(plot.title = element_text(size=14, face="bold.italic", hjust = 0.5)) +
-    geom_text(aes(label = label), hjust=-0.1, vjust=-0.4)
-  return(g)
+    geom_text(aes(label = label), hjust=-0.1, vjust=-0.4, fontface='bold')
+  #
+  gammas <- cbind.data.frame(gammaResults[,c("groupGammaCor","p.adj","CI95low", "CI95high")],
+                             covar = factor(rownames(gammaResults),levels = rownames(gammaResults)[order(gammaResults[,"groupGammaCor"])]),
+                             col=colores[seq(nrow(gammaResults))])
+  g2 <- ggplot(gammas, aes(x=covar, y=groupGammaCor, fill=col)) +
+    geom_point(aes(size=abs(groupGammaCor)), pch=21) +
+    ggplot2::scale_fill_identity() +
+    theme_minimal() +
+    theme(panel.grid.minor.y = element_blank()) +
+    ggplot2::ylim(c(-1,1)) +
+    ylab("Kendall correlation") +
+    xlab("") +
+    ggplot2::geom_hline(yintercept = 0,
+                      color = "darkgrey", linewidth=0.6) +
+    ggplot2::geom_errorbar(ggplot2::aes(ymin=CI95low, ymax=CI95high),
+                           width = 0.1, position = position_dodge(width = 0.2), colour="#70508E")
+
+  #   scale_fill_gradientn(colours=rev(c(#"#3C7DA6", # Dark Blue
+  #     #"#D9E8F5", # Light Blue
+  #     "#F2D377",
+  #              "#F2D377", # Yellow
+  #              "#F2D377", # Yellow
+  #              "#F2D377", # Yellow
+  #              "#F2D377", # Yellow
+  #              "#F28D35", # Ligh red
+  #              "#F28D35",
+  #              "#F28D35", # Ligh red
+  #              "#D94D1A"))
+  #   )
+  gridExtra::grid.arrange(g, g2, nrow=2,ncol=1, heights=c(1.4, 0.6))
+  #return(g)
 }

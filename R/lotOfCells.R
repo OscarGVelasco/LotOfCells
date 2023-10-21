@@ -174,6 +174,7 @@ lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL,
     colnames(table.results) <- c("groupGammaCor", c(sapply(labelOrder,function(label)paste0("percent_in_",label))), "p.adj","CI95low", "CI95high")
     return(table.results)
   }else{
+    #########################################
     # Fold-Change and Montecarlo Simulation #
     # Only 2 covariable model:
     # We will perform a Montecarlo Test to create a random distribution and compare it with the original differences.

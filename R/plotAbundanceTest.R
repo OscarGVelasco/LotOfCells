@@ -16,7 +16,7 @@
 #' @import ggplot2
 #' @author Oscar Gonzalez-Velasco
 #' @export
-plotAbundanceTest <- function(tableResults=NULL, subtype_variable=subtype_variable){
+plotAbundanceTest <- function(tableResults=NULL, subtype_variable){
   df <- cbind.data.frame(tableResults, classLabel=factor(rownames(tableResults)))
   guide <- abs(round(max(df[,"groupFC"]))) + 1.5
   #  "groupFC", paste0("percent_in_",labelOrder[1]), paste0("percent_in_",labelOrder[2]), "p.adj", "sd.montecarlo", "CI95low", "CI95high"
