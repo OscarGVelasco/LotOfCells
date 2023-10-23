@@ -105,10 +105,9 @@
 # results.2.conditions.entropy <- entropyScore(scObject = meta.data,
 #                                              main_variable = "sample",
 #                                              subtype_variable = "covariable",
-#                                              permutations = 1000,
+#                                              permutations = 10000,
 #                                              labelOrder = labelOrder,
 #                                              parallel = FALSE)
-
 # # For this case: 2 conditions and multiple second co-variable:
 # # Data to be ploted:
 # #   1 - individual entropies && general entropy score ??
