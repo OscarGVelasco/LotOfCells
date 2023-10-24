@@ -124,21 +124,27 @@ entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
   relative_entropies <- relative_entropies / log2(length(relative_entropies)) # Normalice each independent entropy by the dimension N
   #entropy_score <- mean(relative_entropies)
   #geometric_mean <- exp(mean(log(relative_entropies)))
-  # entropy_score <- abs(log2(sum(apply(contig_tab,1,function(x){x[1]*log2(x[2])}))/sum(apply(contig_tab,1,function(x){x[1]*log2(x[1])}))))
+  kl_score <- apply(contig_tab, 1, function(x){x[1]*log2(x[1]/x[2])})
+  kl_score <- median(kl_score)
+  #kl_score <- abs(prod(kl_score)) ^ (1 / length(kl_score))
+  kl_score2 <- apply(contig_tab, 1, function(x){x[2]*log2(x[2]/x[1])})
+  kl_score2 <- median(kl_score2)
+  #kl_score2 <- abs(prod(kl_score2)) ^ (1 / length(kl_score2))
+  #entropy_score <- abs(log2(sum(apply(contig_tab,1,function(x){x[1]*log2(x[2])}))/sum(apply(contig_tab,1,function(x){x[1]*log2(x[1])}))))
   # entropy_score2 <- abs(log2(sum(apply(contig_tab,1,function(x){x[2]*log2(x[1])}))/sum(apply(contig_tab,1,function(x){x[2]*log2(x[2])}))))
   # entropy_score <- sqrt(entropy_score + entropy_score2)
   # ratios <- apply(contig_tab, 1, function(percents){(log2(percents[1]/percents[2]))})
   # entropy_score <- exp(mean(log(abs(ratios))))
-  information <- abs(apply(contig_tab,2,function(x)sum(vapply(x,function(z)z*log2(z),FUN.VALUE = double(1)))))
-  entropy_score <- abs(log2(information[1]/information[2]))
-
+  #information <- abs(apply(contig_tab,2,function(x)sum(vapply(x,function(z)z*log2(z),FUN.VALUE = double(1)))))
+  #entropy_score <- abs(log2(information[1]/information[2]))
+  entropy_score <- kl_score + kl_score2
   # Montecarlo test for random entropy distribution
   cellCrowd <- round(c(table(groups)*(1/10)))[labelOrder]
   message(paste("Starting montecarlo simulation with n. permutations:",permutations))
   # for parallelization purposes it is better to split in 2 sub-loops so each thread has (permutation/10) computations
   entropy_list <- functToApply(seq(10),function(iteration){
     sapply(seq(permutations/10),function(permutation){
-      dftmp <- data.frame(covariable=c(sample(covariable, size=cellCrowd[1], replace=TRUE), sample(covariable, size=cellCrowd[2], replace=TRUE)),
+      dftmp <- data.frame(covariable=c(sample(covariable, size=cellCrowd[1], replace=FALSE), sample(covariable, size=cellCrowd[2], replace=FALSE)),
                           groups = c(rep(names(cellCrowd)[1],times=cellCrowd[1]),rep(names(cellCrowd)[2],times=cellCrowd[2])))
       dftmp <- table(dftmp)
       dftmp[dftmp == 0] <- 1
@@ -150,12 +156,20 @@ entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
       # random_entropies <- sqrt(random_entropies + random_entropies2)
       # ratios <- apply(contig_tab_random, 1, function(percents){(log2(percents[1]/percents[2]))})
       # random_entropies <- exp(mean(log(abs(ratios))))
-      information <- abs(apply(contig_tab_random,2,function(x)sum(vapply(x,function(z)z*log2(z),FUN.VALUE = double(1)))))
-      entropy_score <- abs(log2(information[1]/information[2]))
+      #information <- abs(apply(contig_tab_random,2,function(x)sum(vapply(x,function(z)z*log2(z),FUN.VALUE = double(1)))))
+      #entropy_score <- abs(log2(information[1]/information[2]))
+      kl_score <- apply(contig_tab_random, 1, function(x){x[1]*log2(x[1]/x[2])})
+      kl_score <- median(kl_score)
+      #kl_score <- abs(prod(kl_score)) ^ (1 / length(kl_score))
+      kl_score2 <- apply(contig_tab_random, 1, function(x){x[2]*log2(x[2]/x[1])})
+      kl_score2 <- median(kl_score2)
+      #kl_score2 <- abs(prod(kl_score2)) ^ (1 / length(kl_score2))
+      entropy_score <- kl_score + kl_score2
     })
   })
   # Unpack results
   null_test_entropy <- unlist(entropy_list)
+  print(length(null_test_entropy))
   sd_entropies <- sd(null_test_entropy)
   mean_entropies <- mean(null_test_entropy)
   g.entropies <- ggplot2::ggplot(reshape2::melt(null_test_entropy), ggplot2::aes(y=value,x=factor(1))) +
@@ -169,7 +183,7 @@ entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
   # Calculate how extreme our observed values are in comparison with the random distribution
   # We want to see if the FoldChanges on the random distribution are lower or higher than the observed FoldChange
   p.vals <- sum(null_test_entropy >= entropy_score) / (permutations)
-  p.adj <- round(p.adjust(p = p.vals, method = "bonferroni",n = length(null_test_entropy)), digits = 5)
+  p.adj <- round(p.adjust(p = p.vals, method = "bonferroni"), digits = 5)
   g <- ggplot2::ggplot(reshape2::melt(contig_tab),ggplot2::aes(x=covariable,y=value,fill=factor(groups))) +
     ggplot2::geom_bar(stat="identity", position=ggplot2::position_dodge()) +
     ggplot2::scale_fill_brewer(palette="Blues") +

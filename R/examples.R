@@ -2,8 +2,6 @@
 # install_github("OscarGVelasco/lotOfCells")
 # library(LotOfCells)
 #
-
-#
 # load("kif5a.ALL.metadata.only.RData")
 #
 # tmp
@@ -17,9 +15,9 @@
 # bar_chart(scObject = tmp, main_variable = "status", subtype_variable = "cell.type", sample_id = "mouse")
 # bar_chart(scObject = tmp, main_variable = "status", subtype_variable = "cell.type", sample_id = "mouse", subtype_only = "Fibroblasts")
 
-# Data simulation with 4 conditions and 4 cell-types:
-# sample1 <- c(rep("CellA",700),rep("CellB",300),rep("CellC",500),rep("CellD",1000))
-# sample1 <- c(rep("CellTypeA",700),rep("CellTypeB",300),rep("CellTypeC",500),rep("CellTypeD",0))
+# # Data simulation with 4 conditions and 4 cell-types:
+# sample1 <- c(rep("CellTypeA",700),rep("CellTypeB",300),rep("CellTypeC",500),rep("CellTypeD",1000))
+# # sample1 <- c(rep("CellTypeA",700),rep("CellTypeB",300),rep("CellTypeC",500),rep("CellTypeD",0))
 # sample2 <- c(rep("CellTypeA",1700),rep("CellTypeB",350),rep("CellTypeC",550),rep("CellTypeD",800))
 # sample3 <- c(rep("CellTypeA",1200),rep("CellTypeB",200),rep("CellTypeC",420),rep("CellTypeD",800))
 # sample4 <- c(rep("CellTypeA",500),rep("CellTypeB",1000),rep("CellTypeC",10),rep("CellTypeD",1200))
@@ -32,10 +30,10 @@
 # sample_id="sample"
 # main_variable="condition"
 # rownames(meta.data) <- as.character(1:nrow(meta.data))
-#
-# ###                   TEST - PLOTS
-# #####################################################################
-# # Test of Waffles charts:
+# #
+# # ###                   TEST - PLOTS
+# # #####################################################################
+# # # Test of Waffles charts:
 # waffle_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample")
 # # One-Class only:
 # waffle_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample",subtype_only = "CellTypeD")
@@ -89,17 +87,17 @@
 # results.2.conditions.entropy <- entropyScore(scObject = meta.data,
 #           main_variable = "sample",
 #           subtype_variable = "covariable",
-#           permutations = 1000,
+#           permutations = 10000,
 #           labelOrder = labelOrder,
-#           parallel = FALSE)
+#           parallel = TRUE)
 # #
 # labelOrder <- c("D","E")
 # results.2.conditions.entropy <- entropyScore(scObject = meta.data,
 #                                              main_variable = "sample",
 #                                              subtype_variable = "covariable",
-#                                              permutations = 1000,
+#                                              permutations = 10000,
 #                                              labelOrder = labelOrder,
-#                                              parallel = FALSE)
+#                                              parallel = TRUE)
 # #
 # labelOrder <- c("C","A")
 # results.2.conditions.entropy <- entropyScore(scObject = meta.data,
@@ -107,7 +105,7 @@
 #                                              subtype_variable = "covariable",
 #                                              permutations = 10000,
 #                                              labelOrder = labelOrder,
-#                                              parallel = FALSE)
+#                                              parallel = TRUE)
 # # For this case: 2 conditions and multiple second co-variable:
 # # Data to be ploted:
 # #   1 - individual entropies && general entropy score ??
