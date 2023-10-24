@@ -4,7 +4,7 @@
 \alias{plotAbundanceTest}
 \title{Beautiful plot of the test results of the montecarlo simulation}
 \usage{
-plotAbundanceTest(tableResults = NULL, subtype_variable = subtype_variable)
+plotAbundanceTest(tableResults = NULL, subtype_variable)
 }
 \arguments{
 \item{covariable}{Vector. Labels corresponding with the covariable.}
