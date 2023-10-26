@@ -10,9 +10,8 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
   library(dplyr)
   library(ggplot2)
   library(gridExtra)
-  # Compute
-  main_metadata <- scObject
-  # #
+  # Obtain the single-cell metadata
+  main_metadata <- getMetadata(scObject)
   groups <- as.character(main_metadata[, main_variable])
   covariable <- as.character(main_metadata[, subtype_variable])
   order <- rev(names(sort(table(covariable),decreasing = TRUE)))
@@ -24,19 +23,30 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
   }
   if(!is.null(sample_id)){
     samples <- as.character(main_metadata[, sample_id])
-    df <- data.frame(groups,covariable,samples)
-    df <- data.frame(groups=paste(groups,samples,sep = "_"),covariable)
+    df <- data.frame(groups=paste(groups,samples,sep = "_"), covariable)
+    if(!is.null(subtype_only)){
+      ncells <- table(df)[,subtype_only]
+    }else{
+      ncells <- rowSums(table(df))
+    }
+    ncells <- format(ncells, big.mark = ",", scientific = F)
     contig_tab <- apply(table(df),1,function(row){row/sum(row)})
   }else{
     df <- data.frame(groups, covariable)
-    contig_tab <- apply(table(df),1,function(row){row/sum(row)})
+    if(!is.null(subtype_only)){
+      ncells <- table(df)[,subtype_only]
+    }else{
+      ncells <- rowSums(table(df))
+    }
+    ncells <- format(ncells, big.mark = ",", scientific = F)
+    contig_tab <- apply(table(df), 1, function(row){row/sum(row)})
   }
   group_names <- colnames(contig_tab)
   colores = c("#D5BADB","#7EB6D9","#92C791","#F2D377","#D9E8F5","#F08080","#4AA147",
                        "#DBECDA","#F28D35","#3C7DA6","#86608E","#301934")
   # Plot the waffles
   g.list <- lapply(seq(ncol(contig_tab)), function(indx){
-    percentages <- contig_tab[order,indx]*100
+    percentages <- contig_tab[order, indx]*100
     colour <- names(percentages)
     df.p <- expand.grid(x = 0:9,
                         y = 0:9) %>%
@@ -49,18 +59,15 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
       df.p <- df.p %>% filter(col==subtype_only)
     }
     # df.s <- percentages[percentages<1]
-    ggplot(df.p, aes(x=y,y=x,fill = col)) +
-      geom_tile(aes(width = 0.85, height = 0.85)) +
-      #geom_tile(df.s, aes(width = 0.9, height = 0.9),position = "dodge") +
-      coord_equal() +
-      theme_void() +
-      #ggplot2::coord_flip() +
-      # Modify the color and fill of the tiles
-      #geom_text(aes(label = paste0(index, "%")), size = 4, fontface = "bold") +
-      scale_fill_manual(values = colores[colorOrder], drop=FALSE) +
-      #scale_fill_discrete(drop=FALSE) +
-      guides(fill = guide_legend(title = "Class",drop=FALSE)) +
-      ggtitle(group_names[indx])
+    ggplot(df.p, ggplot2::aes(x=y,y=x,fill = col)) +
+      ggplot2::geom_tile(aes(width = 0.85, height = 0.85)) +
+      ggplot2::coord_equal() +
+      ggplot2::theme_void() +
+      ggplot2::theme(plot.caption = element_text(color = "grey", face = "italic", vjust=5, size=10)) +
+      ggplot2::scale_fill_manual(values = colores[colorOrder], drop=FALSE) +
+      ggplot2::guides(fill = guide_legend(title = "Class",drop=FALSE)) +
+      ggplot2::ggtitle(group_names[indx]) +
+      ggplot2::labs(caption = paste("n. cells:", ncells[group_names[indx]]))
   })
   do.call("grid.arrange", c(g.list,nrow=length(unique(groups))))
 }

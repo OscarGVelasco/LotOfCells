@@ -10,8 +10,8 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
   library(dplyr)
   library(ggplot2)
   library(gridExtra)
-  # Compute
-  main_metadata <- scObject
+  # Obtain the single-cell metadata
+  main_metadata <- getMetadata(scObject)
   # #
   groups <- as.character(main_metadata[, main_variable])
   covariable <- as.character(main_metadata[, subtype_variable])
@@ -43,7 +43,7 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
   g <- ggplot2::ggplot(contig_tab_resh, ggplot2::aes(x=groups, y=value, group_by=covariable, fill = covariable)) +
     ggplot2::geom_bar(position="stack", stat="identity") +
     ggplot2::theme_minimal() +
-    # Modify the color and fill of the tiles
+    ggplot2::theme(axis.text.x=ggplot2::element_text(angle=45, vjust=1, hjust=1,size = 12)) +
     ggplot2::scale_fill_manual(values = colores[colorOrder], drop=FALSE) +
     ggplot2::ggtitle(paste("Proportions of", subtype_variable, "by", main_variable)) +
     ggplot2::scale_y_continuous(name="percentage", breaks =  seq(0, 1, by=0.1), labels = seq(0, 100, by=10))

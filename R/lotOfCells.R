@@ -64,43 +64,15 @@
 #' @importFrom BiocParallel bplapply
 #' @export
 lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, labelOrder=c(""), sample_id=NULL, permutations=1000, parallel=FALSE){
-  if(is.null(scObject)){
-    stop("At least a Single Cell Experiments object is needed.")
-  }
-  isSeurat <- FALSE
-  isSce <- FALSE
-  ## Function starts by loading dependencies
-  if(is(scObject, 'Seurat')){
-    if (!requireNamespace("Seurat", quietly=TRUE)) {
-      stop("Package \"Seurat\" needed for this function to work. Please install it.",
-           call.=FALSE)}
-    isSeurat <- TRUE
-    isSce <- FALSE
-  }
-  if(is(scObject, 'SingleCellExperiment')){
-    if (!requireNamespace("SingleCellExperiment", quietly=TRUE)) {
-      stop("Package \"SingleCellExperiment\" needed for this function to work. Please install it.",
-           call.=FALSE)}
-    isSeurat <- FALSE
-    isSce <- TRUE
-  }
-  if (!isSeurat & !isSce){
-    if(is.data.frame(scObject)){
-      main_metadata <- scObject
-    }else{
-      stop("One or more objects in the input list is neither of class Seurat nor SingleDataExperiment.")
-      }
+  # Obtain the single-cell metadata
+  main_metadata <- getMetadata(scObject)
+  # Test that all groups are in the data:
+  if(isFALSE(all(labelOrder %in% unique(main_metadata[, main_variable])))){
+    stop(paste("Some groups in labelOrder are not on the data:",paste(labelOrder, collapse = " ")))
   }
   functToApply <- base::lapply
   if(isTRUE(parallel)){
     functToApply <- BiocParallel::bplapply
-  }
-  ## Select metadata table
-  if(isSce){ main_metadata <- SingleCellExperiment::colLabels(scObject)}
-  if(isSeurat){ main_metadata <- scObject[[]] }
-  # Test that all groups are in the data:
-  if(isFALSE(all(labelOrder %in% unique(main_metadata[, main_variable])))){
-    stop(paste("Some groups in labelOrder are not on the data:",paste(labelOrder, collapse = " ")))
   }
   # Subset only the main groups stated in labelOrder:
   main_metadata <- main_metadata[main_metadata[, main_variable] %in% labelOrder ,]

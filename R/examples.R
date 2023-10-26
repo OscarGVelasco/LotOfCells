@@ -30,22 +30,23 @@
 # sample_id="sample"
 # main_variable="condition"
 # rownames(meta.data) <- as.character(1:nrow(meta.data))
-# #
-# # ###                   TEST - PLOTS
-# # #####################################################################
-# # # Test of Waffles charts:
+# # #
+# # # ###                   TEST - PLOTS
+# # # #####################################################################
+# # # # Test of Waffles charts:
 # waffle_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample")
-# # One-Class only:
+# # # All cells together for every group
+# waffle_chart(meta.data, main_variable = "condition",subtype_variable = "covariable")
+# # # One-Class only:
 # waffle_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample",subtype_only = "CellTypeD")
-# # # Test of barplot charts:
+# # # # Test of barplot charts:
 # bar_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample")
-# # One-Class only:
-# bar_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample", subtype_only = "CellTypeD")
+# # # One-Class only:
+# # bar_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample", subtype_only = "CellTypeD")
 
 ###                   TEST - 1
 #####################################################################
 # Test of 2 conditions using montecarlo and differences in percentage
-# labelOrder <- c("A","B")
 # labelOrder <- c("mut","wt")
 # results.2.conditions <- lotOfCells(scObject = meta.data,
 #                                       main_variable = "condition",
@@ -121,7 +122,7 @@
 #   results.4.conditions <- lotOfCells(scObject = meta.data,
 #                                   main_variable = "sample",
 #                                   subtype_variable = "covariable",
-#                                   permutations = 1000,
+#                                   permutations = 10000,
 #                                   labelOrder = labelOrder,
 #                                   parallel = T)
 # )

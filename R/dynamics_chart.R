@@ -13,6 +13,7 @@ dynamics_chart <- function(gammaResults=NULL, subtype_only=NULL){
                        "#DBECDA","#F28D35","#3C7DA6","#86608E","#301934")
   coreTable[,"label"] <- ""
   coreTable[coreTable[,"variable"] %in% lastLabel, "label"] <- paste("cor.",round(gammaResults[,"groupGammaCor"], digits = 2))
+  xlabels = paste("proportion",unlist(lapply(strsplit(colnames(gammaResults)[2:(length(gammaResults)-3)], "_"),function(x)x[3])))
   g <- ggplot(data=coreTable, aes(x=variable, y=value, group=covar, col=covar)) +
     geom_line(aes(color=covar), size=1) +
     #geom_errorbar(aes(ymin=var_mean-var_sd, ymax=var_mean+var_sd), width=.1) +
@@ -24,25 +25,36 @@ dynamics_chart <- function(gammaResults=NULL, subtype_only=NULL){
          x = "groups",
          title = paste("Proportion dynamics across groups")) +
     theme_minimal() +
-    theme(plot.title = element_text(size=14, face="bold.italic", hjust = 0.5)) +
+    scale_x_discrete(labels=xlabels) +
+    theme(plot.title = element_text(size=14, face="bold.italic", hjust = 0.5),
+          axis.text.x=ggplot2::element_text(vjust=1, hjust=1,size = 10)) +
     geom_text(aes(label = label), hjust=-0.1, vjust=-0.4, fontface='bold')
   #
   gammas <- cbind.data.frame(gammaResults[,c("groupGammaCor","p.adj","CI95low", "CI95high")],
                              covar = factor(rownames(gammaResults),levels = rownames(gammaResults)[order(gammaResults[,"groupGammaCor"])]),
                              col=colores[seq(nrow(gammaResults))])
-  g2 <- ggplot(gammas, aes(x=covar, y=groupGammaCor, fill=col)) +
-    geom_point(aes(size=abs(groupGammaCor)), pch=21) +
-    ggplot2::scale_fill_identity() +
-    theme_minimal() +
-    theme(panel.grid.minor.y = element_blank()) +
-    ggplot2::ylim(c(-1,1)) +
-    ylab("Kendall correlation") +
-    xlab("") +
-    ggplot2::geom_hline(yintercept = 0,
-                      color = "darkgrey", linewidth=0.6) +
-    ggplot2::geom_errorbar(ggplot2::aes(ymin=CI95low, ymax=CI95high),
-                           width = 0.1, position = position_dodge(width = 0.2), colour="#70508E")
-
+  n=5
+  rects <- data.frame(ymin=seq(0.4,0.95,by=0.5/(n*2)), ymax=seq(0.45,1,by=0.5/(n*2)),alpha=seq(0.30,0.85,by=0.5/(n*2)))
+  rects_min <- data.frame(ymin=seq(-0.4,-0.95,by=-0.5/(n*2)), ymax=seq(-0.45,-1,by=-0.5/(n*2)),alpha=seq(0.30,0.85,by=0.5/(n*2)))
+  g2 <- ggplot2::ggplot(gammas, ggplot2::aes(x=covar, y=groupGammaCor, fill=col)) +
+  ggplot2::geom_rect(ggplot2::aes(x = NULL,y = NULL, xmin = -Inf, xmax = Inf, ymin = ymin, ymax = ymax, alpha=alpha), rects,
+                     fill = "#F28D35",inherit.aes = FALSE) +
+  ggplot2::geom_rect(ggplot2::aes(x = NULL,y = NULL, xmin = -Inf, xmax = Inf, ymin = ymin, ymax = ymax, alpha=alpha), rects_min,
+                       fill = "#F28D35",inherit.aes = FALSE) +
+  ggplot2::scale_alpha_continuous(range = c(0.02,0.30)) +
+  ggplot2::geom_hline(yintercept = 0,
+                        color = "darkgrey", linewidth=0.6) +
+  geom_point(size=6, pch=21) +
+  ggplot2::scale_fill_identity() +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(panel.grid.minor.y = element_blank()) +
+  ggplot2::ylim(c(-1,1)) +
+  ggplot2::ylab("Kendall correlation") +
+  ggplot2::xlab("")
+  # geom_rect(data=data.frame(alpha=seq(0.5,1,by=0.05)),
+  #           aes(xmin=-Inf, xmax=Inf,
+  #               ymin=0.5, ymax=1,
+  #               alpha=alpha), fill="blue")
   #   scale_fill_gradientn(colours=rev(c(#"#3C7DA6", # Dark Blue
   #     #"#D9E8F5", # Light Blue
   #     "#F2D377",
