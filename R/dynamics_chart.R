@@ -34,13 +34,13 @@ dynamics_chart <- function(gammaResults=NULL, subtype_only=NULL){
                              covar = factor(rownames(gammaResults),levels = rownames(gammaResults)[order(gammaResults[,"groupGammaCor"])]),
                              col=colores[seq(nrow(gammaResults))])
   n=5
-  rects <- data.frame(ymin=seq(0.4,0.95,by=0.5/(n*2)), ymax=seq(0.45,1,by=0.5/(n*2)),alpha=seq(0.30,0.85,by=0.5/(n*2)))
-  rects_min <- data.frame(ymin=seq(-0.4,-0.95,by=-0.5/(n*2)), ymax=seq(-0.45,-1,by=-0.5/(n*2)),alpha=seq(0.30,0.85,by=0.5/(n*2)))
+  rects <- data.frame(ymin=seq(0.4,0.95,by=0.5/(n*2)), ymax=seq(0.45,1,by=0.5/(n*2)),alpha=seq(0.25,0.80,by=0.5/(n*2)))
+  rects_min <- data.frame(ymin=seq(-0.4,-0.95,by=-0.5/(n*2)), ymax=seq(-0.45,-1,by=-0.5/(n*2)),alpha=seq(0.25,0.80,by=0.5/(n*2)))
   g2 <- ggplot2::ggplot(gammas, ggplot2::aes(x=covar, y=groupGammaCor, fill=col)) +
   ggplot2::geom_rect(ggplot2::aes(x = NULL,y = NULL, xmin = -Inf, xmax = Inf, ymin = ymin, ymax = ymax, alpha=alpha), rects,
-                     fill = "#F28D35",inherit.aes = FALSE) +
+                     fill = "#F28D35",inherit.aes = FALSE, show.legend = F) +
   ggplot2::geom_rect(ggplot2::aes(x = NULL,y = NULL, xmin = -Inf, xmax = Inf, ymin = ymin, ymax = ymax, alpha=alpha), rects_min,
-                       fill = "#F28D35",inherit.aes = FALSE) +
+                       fill = "#F28D35",inherit.aes = FALSE, show.legend = F) +
   ggplot2::scale_alpha_continuous(range = c(0.02,0.30)) +
   ggplot2::geom_hline(yintercept = 0,
                         color = "darkgrey", linewidth=0.6) +

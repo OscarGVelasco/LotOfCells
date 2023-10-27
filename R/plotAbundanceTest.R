@@ -19,7 +19,6 @@
 plotAbundanceTest <- function(tableResults=NULL, subtype_variable){
   df <- cbind.data.frame(tableResults, classLabel=factor(rownames(tableResults)))
   guide <- abs(round(max(df[,"groupFC"]))) + 1.5
-  #  "groupFC", paste0("percent_in_",labelOrder[1]), paste0("percent_in_",labelOrder[2]), "p.adj", "sd.montecarlo", "CI95low", "CI95high"
   df$CI95low[is.na(df$CI95low)] <- 0.2
   df$CI95low[is.na(df$CI95high)] <- 0.2
   ggplot2::ggplot(df, ggplot2::aes(x=groupFC, y=classLabel)) +
