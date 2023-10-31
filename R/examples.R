@@ -44,6 +44,9 @@
 # bar_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample")
 # # One-Class only:
 # bar_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample", subtype_only = "CellTypeD")
+# Test of circle polar plot:
+# polar_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample")
+
 ###                   TEST - 1
 #####################################################################
 # # Test of 2 conditions using montecarlo and differences in percentage
