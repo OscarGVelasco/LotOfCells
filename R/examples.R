@@ -30,6 +30,7 @@
 # sample_id="sample"
 # main_variable="condition"
 # rownames(meta.data) <- as.character(1:nrow(meta.data))
+# head(meta.data)
 # # #
 # # # ###                   TEST - PLOTS
 # # # #####################################################################
@@ -43,10 +44,9 @@
 # bar_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample")
 # # One-Class only:
 # bar_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample", subtype_only = "CellTypeD")
-
 ###                   TEST - 1
 #####################################################################
-# Test of 2 conditions using montecarlo and differences in percentage
+# # Test of 2 conditions using montecarlo and differences in percentage
 # labelOrder <- c("mut","wt")
 # results.2.conditions <- lotOfCells(scObject = meta.data,
 #                                       main_variable = "condition",
@@ -96,7 +96,7 @@
 #           permutations = 10000,
 #           labelOrder = labelOrder,
 #           parallel = F)
-# #
+# # #
 # labelOrder <- c("D","E")
 # results.2.conditions.entropy <- entropyScore(scObject = meta.data,
 #                                              main_variable = "sample",
@@ -104,7 +104,7 @@
 #                                              permutations = 1000,
 #                                              labelOrder = labelOrder,
 #                                              parallel = F)
-# #
+# # #
 # labelOrder <- c("C","A")
 # results.2.conditions.entropy <- entropyScore(scObject = meta.data,
 #                                              main_variable = "sample",
@@ -122,7 +122,7 @@
 # ###                   TEST - 3
 # ###########################################################################
 # # Test of correlation for SEVERAL conditions using Kendall rank correlation
-# labelOrder <- c("time 0h","time 1h","time 2h","time 3h","time 4h")
+# labelOrder <- c("time 0h","time 1h","time 2h","time 3h")#,"time 4h")
 # system.time(
 #   results.4.conditions <- lotOfCells(scObject = meta.data,
 #                                   main_variable = "times",
@@ -140,5 +140,5 @@
 # #   1 - Correlation coefficients with significance & confidence intervals -> maybe a dotplot with correlation in x-axis and continuous color by significance p-val
 # #   2 - Percentage per cell-type(covariable) across all conditions and ordered by labelOrder: dotplot with line across the dots ? build a grid of plots with a plot per co-variable??
 # # Example of the percentage across conditions using points:
-#dynamics_chart(results.4.conditions)
+# dynamics_chart(results.4.conditions)
 
