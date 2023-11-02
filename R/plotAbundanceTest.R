@@ -18,9 +18,11 @@
 #' @export
 plotAbundanceTest <- function(tableResults=NULL, subtype_variable){
   df <- cbind.data.frame(tableResults, classLabel=factor(rownames(tableResults)))
+  onRight <- strsplit(colnames(df)[2], "percent_in_")[[1]][2]
+  onLeft <- strsplit(colnames(df)[3], "percent_in_")[[1]][2]
   guide <- abs(round(max(df[,"groupFC"]))) + 1.5
-  df$CI95low[is.na(df$CI95low)] <- 0.2
-  df$CI95low[is.na(df$CI95high)] <- 0.2
+  df$CI95low[is.na(df$CI95low)] <- 0.1
+  df$CI95low[is.na(df$CI95high)] <- 0.1
   ggplot2::ggplot(df, ggplot2::aes(x=groupFC, y=classLabel)) +
     #ggplot2::geom_boxplot(col="#D5BADB") +
     ggplot2::geom_point(ggplot2::aes(fill = p.adj), pch=21, stroke=0, size=8, alpha=0.8) +
@@ -33,6 +35,8 @@ plotAbundanceTest <- function(tableResults=NULL, subtype_variable){
                color = "#86608E", linewidth=0.6) +
     ggplot2::geom_rect(ggplot2::aes(xmin = -sd.montecarlo, xmax = sd.montecarlo, ymin = as.integer(classLabel) - 0.5, ymax = as.integer(classLabel) + 0.5),
               fill = "pink", alpha = 0.3) +
-    ggplot2::xlab("log2(proportion_FC)") +
-    ggplot2::ggtitle(paste0("Fold-Change difference in proportion \n Montecarlo simulation on ", subtype_variable))
+    ggplot2::xlab(paste0("log2(proportion_FC) : (",onRight,"/",onLeft,")")) +
+    ggplot2::ggtitle(paste0("Fold-Change difference in proportion \n Montecarlo simulation on ", subtype_variable)) +
+    ggplot2::annotate("text", x = -1, y = 0.6, label = onLeft, color='grey') +
+    ggplot2::annotate("text", x = 1, y = 0.6, label = onRight, color='grey')
 }
