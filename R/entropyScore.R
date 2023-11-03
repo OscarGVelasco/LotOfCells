@@ -118,7 +118,7 @@ entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
   # for parallelization purposes it is better to split in 2 sub-loops so each thread has (permutation/10) computations
   entropy_list <- functToApply(seq(10),function(iteration){
     sapply(seq(permutations/10),function(permutation){
-      dftmp <- data.frame(covariable=c(sample(covariable, size=cellCrowd[1], replace=FALSE), sample(covariable, size=cellCrowd[2], replace=FALSE)),
+      dftmp <- data.frame(covariable=c(sample(covariable, size=cellCrowd[1], replace=TRUE), sample(covariable, size=cellCrowd[2], replace=TRUE)),
                           groups = c(rep(names(cellCrowd)[1],times=cellCrowd[1]),rep(names(cellCrowd)[2],times=cellCrowd[2])))
       dftmp <- table(dftmp)
       dftmp[dftmp == 0] <- 1
