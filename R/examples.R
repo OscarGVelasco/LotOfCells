@@ -14,6 +14,7 @@
 #                                       parallel = TRUE)
 # bar_chart(scObject = tmp, main_variable = "status", subtype_variable = "cell.type", sample_id = "mouse")
 # bar_chart(scObject = tmp, main_variable = "status", subtype_variable = "cell.type", sample_id = "mouse", subtype_only = "Fibroblasts")
+
 # # # Data simulation with 4 conditions and 4 cell-types:
 # sample1 <- c(rep("CellTypeA",700),rep("CellTypeB",300),rep("CellTypeC",500),rep("CellTypeD",1000))
 # # sample1 <- c(rep("CellTypeA",700),rep("CellTypeB",300),rep("CellTypeC",500),rep("CellTypeD",0))
@@ -35,17 +36,17 @@
 # # # ###                   TEST - PLOTS
 # # # #####################################################################
 # # # # Test of Waffles charts:
-# waffle_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample")
+waffle_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample")
 # # All cells together for every group
 # waffle_chart(meta.data, main_variable = "condition",subtype_variable = "covariable")
 # # One-Class only:
 # waffle_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample",subtype_only = "CellTypeD")
 # # # Test of barplot charts:
-# bar_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample")
+bar_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample")
 # # One-Class only:
 # bar_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample", subtype_only = "CellTypeD")
 # Test of circle polar plot:
-# polar_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample")
+polar_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample")
 
 ###                   TEST - 1
 #####################################################################

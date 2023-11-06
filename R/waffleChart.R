@@ -42,8 +42,8 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
     contig_tab <- apply(table(df), 1, function(row){row/sum(row)})
   }
   group_names <- colnames(contig_tab)
-  colores = c("#D5BADB","#7EB6D9","#92C791","#F2D377","#D9E8F5","#F08080","#4AA147",
-                       "#DBECDA","#F28D35","#3C7DA6","#86608E","#301934")
+  colores = scales::alpha(c("#D5BADB","#7EB6D9","#92C791","#F2D377","#D9E8F5","#F08080","#4AA147",
+                       "#DBECDA","#F28D35","#3C7DA6","#86608E","#301934"), 0.8)
   # Plot the waffles
   g.list <- lapply(seq(ncol(contig_tab)), function(indx){
     percentages <- contig_tab[order, indx]*100
@@ -63,7 +63,7 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
       ggplot2::geom_tile(aes(width = 0.85, height = 0.85)) +
       ggplot2::coord_equal() +
       ggplot2::theme_void() +
-      ggplot2::theme(plot.caption = element_text(color = "grey", face = "italic", vjust=5, size=10)) +
+      ggplot2::theme(plot.caption = element_text(color = "grey", face = "italic", vjust=5, size=14)) +
       ggplot2::scale_fill_manual(values = colores[colorOrder], drop=FALSE) +
       ggplot2::guides(fill = guide_legend(title = "Class",drop=FALSE)) +
       ggplot2::ggtitle(group_names[indx]) +
