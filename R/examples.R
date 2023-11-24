@@ -36,17 +36,19 @@
 # # # ###                   TEST - PLOTS
 # # # #####################################################################
 # # # # Test of Waffles charts:
-waffle_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample")
+# waffle_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample")
 # # All cells together for every group
 # waffle_chart(meta.data, main_variable = "condition",subtype_variable = "covariable")
 # # One-Class only:
 # waffle_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample",subtype_only = "CellTypeD")
 # # # Test of barplot charts:
-bar_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample")
-# # One-Class only:
-# bar_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample", subtype_only = "CellTypeD")
-# Test of circle polar plot:
-polar_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample")
+# bar_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample")
+# # # One-Class only:
+# # bar_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample", subtype_only = "CellTypeD")
+# # Test of circle polar plot:
+# polar_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample")
+# # Test of polar plot by cell-type:
+# polar_chart(meta.data, main_variable = "covariable",subtype_variable = "sample")
 
 ###                   TEST - 1
 #####################################################################

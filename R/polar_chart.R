@@ -103,6 +103,10 @@ polar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL
   #   geom_text(data=base_data, aes(x = title, y = -18, label=main_group), hjust=c(1,1,0,0), colour = "black", alpha=0.8, size=4, fontface="bold", inherit.aes = FALSE)
   # # NOT WORKING
 
+  p1 <- ggplot2::ggplot(contig_tab_resh, ggplot2::aes(x=id, y=value, group_by=covariable, fill = covariable)) +
+    ggplot2::geom_bar(position="stack", stat="identity")
+  originalY <- ggplot_build(p1)$layout$panel_params[[1]]$y$breaks
+  originalY <- originalY[-c(1, length(originalY))]
 
   g <- ggplot2::ggplot(contig_tab_resh, ggplot2::aes(x=id, y=value, group_by=covariable, fill = covariable)) +
     ggplot2::geom_bar(position="stack", stat="identity") +
@@ -122,7 +126,8 @@ polar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL
     ggplot2::ylab("") + ggplot2::xlab("") +
     ggplot2::coord_polar() +
     ggplot2::scale_x_discrete(labels=labels) +
-    ggplot2::scale_y_continuous(limits = c(-min(colSums(contig_tab))/2, NA))
+    ggplot2::scale_y_continuous(limits = c(-min(colSums(contig_tab))/2, NA)) +
+    ggplot2::annotate('text', x = 0, y = originalY, label = as.character(originalY))
 
   return(g)
 }
