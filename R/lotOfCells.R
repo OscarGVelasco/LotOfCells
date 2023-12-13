@@ -78,6 +78,7 @@ lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL,
   main_metadata <- main_metadata[main_metadata[, main_variable] %in% labelOrder ,]
   groups <- as.character(main_metadata[, main_variable])
   covariable <- as.character(main_metadata[, subtype_variable])
+  pseudoCount <- function(counts){counts + sqrt((counts*counts)+1)}
   # ###
   # covariable <- milk.metadata$General_Celltype
   # groups <- as.character(as.numeric(milk.metadata$time_post_partum_days))
@@ -161,10 +162,9 @@ lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL,
       #nPerSample <- table(paste(groups,samples,sep = "_"))
     }
     df <- data.frame(groups, covariable)
-    df <- table(df)
-    # df[df==0] <- 1
-    contig_tab <- t(apply(df,1,function(row){row/sum(row)}))[labelOrder,]
-    # # CONTRUCTION
+    df.table <- table(df)
+    # df[df==0] <- 1 * Use arcsin pseudocount:
+    contig_tab <- t(apply(pseudoCount(df.table),1,function(row){row/sum(row)}))[labelOrder,]    # # CONTRUCTION
     # log2(apply(contig_tab,2,function(x){
     #   if(any(x==0)){
     #     (x[1]+(sqrt((x[1]*x[1])+0.01))) / (x[2]+(sqrt((x[2]*x[2])+0.01)))}

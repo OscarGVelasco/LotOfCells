@@ -34,8 +34,9 @@ cellToMontecarlo <- function(covariable=NULL,groups=NULL, labelOrder, indexes, c
     rownames(tmp) <- indexes[!(indexes %in% rownames(dftmp))]
     dftmp <- rbind(dftmp, tmp)[indexes,]
   }
-  dftmp[dftmp == 0] = 1
-  contig_tab <- t(apply(dftmp,2,function(row){row/(sum(row)+1)}))[labelOrder, indexes]
+  # dftmp[dftmp == 0] = 1 * instead of using pseudocount 1 use arcsin:
+  pseudoCount <- function(counts){counts + sqrt((counts*counts)+1)}
+  contig_tab <- t(apply(pseudoCount(dftmp),2,function(row){row/(sum(row)+1)}))[labelOrder, indexes]
 
   # test 2 : We recreate the original samples by picking random subsamples of the same samples, without mixing
   # The idea is to create a normal distribution from the original data, and gain some information about coeficient intervals of the calculated FC
@@ -58,8 +59,9 @@ cellToMontecarlo <- function(covariable=NULL,groups=NULL, labelOrder, indexes, c
     rownames(tmp) <- indexes[!(indexes %in% rownames(dforigin))]
     dforigin <- rbind(dforigin, tmp)[indexes,]
   }
-  dforigin[dforigin == 0] = 1
-  contig_tab_origin <- t(apply(dforigin,2,function(row){row/(sum(row)+1)}))[labelOrder, indexes]
+  # dforigin[dforigin == 0] = 1 * instead of using pseudocount 1 use arcsin:
+  pseudoCount <- function(counts){counts + sqrt((counts*counts)+1)}
+  contig_tab_origin <- t(apply(pseudoCount(dforigin),2,function(row){row/(sum(row)+1)}))[labelOrder, indexes]
 
   return(list(log2(contig_tab[1,] / contig_tab[2,]), log2(contig_tab_origin[1,] / contig_tab_origin[2,])))
 }
