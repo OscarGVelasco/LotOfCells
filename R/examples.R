@@ -2,20 +2,30 @@
 # install_github("OscarGVelasco/lotOfCells")
 # library(LotOfCells)
 #
-# load("kif5a.ALL.metadata.only.RData")
+# a <- load("cortex.meta.data.Kif5A.RData");a
 #
-# tmp
-# results.2.conditions <- lotOfCells(scObject = tmp,
+# results.2.conditions <- lotOfCells(scObject = cortex.meta.data.Kif5A,
 #                                       main_variable = "status",
-#                                       subtype_variable = "cell.type",
+#                                       subtype_variable = "manual.cell.type",
 #                                       sample_id = "mouse",
-#                                       permutations = 1000,
+#                                       permutations = 10000,
 #                                       labelOrder = c("KIF5A","Control"),
 #                                       parallel = TRUE)
-# bar_chart(scObject = tmp, main_variable = "status", subtype_variable = "cell.type", sample_id = "mouse")
-# bar_chart(scObject = tmp, main_variable = "status", subtype_variable = "cell.type", sample_id = "mouse", subtype_only = "Fibroblasts")
-
-# # # Data simulation with 4 conditions and 4 cell-types:
+# bar_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type", sample_id = "mouse")
+# bar_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type")
+# # bar_chart(scObject = tmp, main_variable = "status", subtype_variable = "cell.type", sample_id = "mouse", subtype_only = "Fibroblasts")
+# waffle_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type", sample_id = "mouse")
+# waffle_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type")
+# polar_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type", sample_id = "mouse")
+#
+# results.2.conditions.entropy <- entropyScore(scObject = cortex.meta.data.Kif5A,
+#           main_variable = "status",
+#           subtype_variable = "manual.cell.type",
+#           permutations = 10000,
+#           labelOrder = c("KIF5A","Control"),
+#           parallel = TRUE)
+#
+# # # # Data simulation with 4 conditions and 4 cell-types:
 # sample1 <- c(rep("CellTypeA",700),rep("CellTypeB",300),rep("CellTypeC",500),rep("CellTypeD",1000))
 # # sample1 <- c(rep("CellTypeA",700),rep("CellTypeB",300),rep("CellTypeC",500),rep("CellTypeD",0))
 # sample2 <- c(rep("CellTypeA",1700),rep("CellTypeB",350),rep("CellTypeC",550),rep("CellTypeD",800))
@@ -67,10 +77,11 @@
 #   xlim(c( min(min(results.2.conditions$groupFC)-2,-2),max(max(results.2.conditions$groupFC)+2,+2)))
 #
 # labelOrder <- c("D","E")
+# labelOrder <- c("B","A")
 # results.2.conditions <- lotOfCells(scObject = meta.data,
 #                                    main_variable = "sample",
 #                                    subtype_variable = "covariable",
-#                                    permutations = 1000,
+#                                    permutations = 10000,
 #                                    labelOrder = labelOrder,
 #                                    parallel = TRUE)
 #
@@ -137,7 +148,10 @@
 #                                   labelOrder = labelOrder,
 #                                   parallel = F)
 # )
-# # Around 1 minute & 40 seconds with Parallel & permutations=10000
+# waffle_chart(scObject = meta.data,
+#                                    main_variable = "times",
+#                                    subtype_variable = "covariable")
+#                                    # # Around 1 minute & 40 seconds with Parallel & permutations=10000
 # # user  system elapsed
 # # 598.120  16.432 107.683
 # PLOT Results for correlation
