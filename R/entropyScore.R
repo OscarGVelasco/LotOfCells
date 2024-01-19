@@ -100,11 +100,11 @@ entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
   relative_entropies <- relative_entropies / log2(length(relative_entropies)) # Normalice each independent entropy by the dimension N
   #entropy_score <- mean(relative_entropies)
   #geometric_mean <- exp(mean(log(relative_entropies)))
-  kl_score <- apply(contig_tab, 1, function(x){x[1]*log2(x[1]/x[2])})
+  kl_score <- apply(contig_tab, 2, function(x){x[1]*log2(x[1]/x[2])})
   # kl_score <- median(kl_score)
   #kl_score <- abs(prod(kl_score)) ^ (1 / length(kl_score))
   kl_score <- 1/mean(1/abs(kl_score))
-  kl_score2 <- apply(contig_tab, 1, function(x){x[2]*log2(x[2]/x[1])})
+  kl_score2 <- apply(contig_tab, 2, function(x){x[2]*log2(x[2]/x[1])})
   # kl_score2 <- median(kl_score2)
   #kl_score2 <- abs(prod(kl_score2)) ^ (1 / length(kl_score2))
   kl_score2 <- 1/mean(1/abs(kl_score2))
@@ -149,7 +149,7 @@ entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
       }
       # dftmp[dftmp == 0] = 1 * instead of using pseudocount 1 use arcsin:
       # Obtain Frequencies of classes
-      contig_tab_random <- t(apply(pseudoCount(dftmp),2,function(row){row/(sum(row)+1)}))[labelOrder, indexes]
+      contig_tab_random <- t(apply(pseudoCount(dftmp),2,function(row){row/(sum(row))}))[labelOrder, indexes]
 
       # random_entropies <- apply(contig_tab_random,2,function(x){
       #   abs(log2((x[1]*log2(x[2])) / (x[1]*log2(x[1]))))})
@@ -160,11 +160,11 @@ entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
       # random_entropies <- exp(mean(log(abs(ratios))))
       #information <- abs(apply(contig_tab_random,2,function(x)sum(vapply(x,function(z)z*log2(z),FUN.VALUE = double(1)))))
       #entropy_score <- abs(log2(information[1]/information[2]))
-      kl_score <- apply(contig_tab_random, 1, function(x){x[1]*log2(x[1]/x[2])})
+      kl_score <- apply(contig_tab_random, 2, function(x){x[1]*log2(x[1]/x[2])})
       #kl_score <- median(kl_score)
       kl_score <- 1/mean(1/abs(kl_score))
       #kl_score <- abs(prod(kl_score)) ^ (1 / length(kl_score))
-      kl_score2 <- apply(contig_tab_random, 1, function(x){x[2]*log2(x[2]/x[1])})
+      kl_score2 <- apply(contig_tab_random, 2, function(x){x[2]*log2(x[2]/x[1])})
       #kl_score2 <- median(kl_score2)
       #kl_score2 <- abs(prod(kl_score2)) ^ (1 / length(kl_score2))
       kl_score2 <- 1/mean(1/abs(kl_score2))
@@ -173,7 +173,7 @@ entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
   })
   # Unpack results
   null_test_entropy <- unlist(entropy_list)
-  print(length(null_test_entropy))
+  #print(length(null_test_entropy))
   sd_entropies <- sd(null_test_entropy)
   mean_entropies <- mean(null_test_entropy)
   g.entropies <- ggplot2::ggplot(reshape2::melt(null_test_entropy), ggplot2::aes(y=value,x=factor(1))) +
