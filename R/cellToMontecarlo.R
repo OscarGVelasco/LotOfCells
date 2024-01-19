@@ -17,9 +17,9 @@ cellToMontecarlo <- function(covariable=NULL,groups=NULL, labelOrder, indexes, c
   # test 1 : the random distribution
   # We mix all the cells together and we subset at random sub-samples in proportion to the original samples
   if(is.list(cellCrowd)){
-    cond1 <- lapply(cellCrowd[[1]][[1]], FUN = function(nCellToSample){sample(covariable,size = nCellToSample)})
+    cond1 <- lapply(cellCrowd[[1]][[1]], FUN = function(nCellToSample){sample(covariable ,size=nCellToSample)})
     cond1 <- unname(unlist(cond1))
-    cond2 <- lapply(cellCrowd[[2]][[1]], FUN = function(nCellToSample){sample(covariable,size = nCellToSample)})
+    cond2 <- lapply(cellCrowd[[2]][[1]], FUN = function(nCellToSample){sample(covariable, size=nCellToSample)})
     cond2 <- unname(unlist(cond2))
     dftmp <- data.frame(covariable=c(cond1, cond2),
                         groups = c(rep(names(cellCrowd)[1],times=length(cond1)), rep(names(cellCrowd)[2],times=length(cond2))))
@@ -36,6 +36,7 @@ cellToMontecarlo <- function(covariable=NULL,groups=NULL, labelOrder, indexes, c
   }
   # dftmp[dftmp == 0] = 1 * instead of using pseudocount 1 use arcsin:
   pseudoCount <- function(counts){counts + sqrt((counts*counts)+1)}
+  # Obtain Frequencies of classes
   contig_tab <- t(apply(pseudoCount(dftmp),2,function(row){row/(sum(row)+1)}))[labelOrder, indexes]
 
   # test 2 : We recreate the original samples by picking random subsamples of the same samples, without mixing

@@ -73,6 +73,7 @@ lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL,
   functToApply <- base::lapply
   if(isTRUE(parallel)){
     functToApply <- BiocParallel::bplapply
+    ncores <- BiocParallel::bpnworkers(BiocParallel::bpparam())
   }
   # Subset only the main groups stated in labelOrder:
   main_metadata <- main_metadata[main_metadata[, main_variable] %in% labelOrder ,]
@@ -106,6 +107,7 @@ lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL,
     # godKrusGamma <- function(nc, nd, N){(nc-nd)/(N)}
     godKrusGamma <- function(nc, nd, N){(nc-nd)/exp(mean(log(N)))}
     # Call gamma rank correlation to perform a permutation test on the original sets
+    # PARALLEL FINE TUNING - CONSTRUCTION
     original_gamma_test <- functToApply(seq_len(round(sqrt(permutations))),function(x){
       original_gamma_test_sub <- lapply(seq_len(permutations/round(sqrt(permutations))),function(y){
         cellToGammaOriginal(covariable, groups, labelOrder, indexes, cellCrowd, rank_index)

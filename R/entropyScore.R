@@ -63,7 +63,7 @@
 #' @importFrom methods is
 #' @importFrom BiocParallel bplapply
 #' @export
-entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, labelOrder=c(""), permutations=1000, parallel=FALSE){
+entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, labelOrder=c(""), sample_id=NULL, permutations=1000, parallel=FALSE){
   # Obtain the single-cell metadata
   main_metadata <- getMetadata(scObject)
   # Test that all groups are in the data:
@@ -84,12 +84,16 @@ entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
   if(isTRUE(parallel)){
     functToApply <- BiocParallel::bplapply
   }
+  # Calculate pseudocounts using the arcsin function
+  pseudoCount <- function(counts){counts + sqrt((counts*counts)+1)}
   message(paste("Computing Entropy proportion over covariables for groups:",labelOrder[1],"vs",labelOrder[2]))
   df <- data.frame(groups, covariable)
   df <- table(df)
-  df[df==0] <- 1
-  contig_tab <- apply(df, 1, function(row){row/sum(row)})[,labelOrder]
+  # df2[df2==0] <- 1
+  # contig_tab <- apply(df, 1, function(row){row/sum(row)})[, labelOrder]
+  contig_tab <- t(apply(pseudoCount(df), 1, function(row){row/(sum(row))}))[labelOrder, ]
 
+  indexes <- colnames(contig_tab)
   relative_entropies <- apply(contig_tab,1,function(x){
     abs(log2((x[1]*log2(x[2])) / (x[1]*log2(x[1]))))
   })
@@ -113,16 +117,40 @@ entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
   #entropy_score <- abs(log2(information[1]/information[2]))
   entropy_score <- kl_score + kl_score2
   # Montecarlo test for random entropy distribution
-  cellCrowd <- round(c(table(groups)*(1/10)))[labelOrder]
+  if(!is.null(sample_id)){
+    samples <- as.character(main_metadata[, sample_id])
+    nPerSample <- table(data.frame(groups, samples))[labelOrder,]
+    cellCrowd <- apply(nPerSample, 1, function(perCond){list(perCond[perCond!=0]*(1/10))})
+    cellCrowd <- cellCrowd[labelOrder]
+  }else{
+    cellCrowd <- round(c(table(groups)*(1/10)))[labelOrder]
+  }
   message(paste("Starting montecarlo simulation with n. permutations:",permutations))
   # for parallelization purposes it is better to split in 2 sub-loops so each thread has (permutation/10) computations
   entropy_list <- functToApply(seq(10),function(iteration){
     sapply(seq(permutations/10),function(permutation){
-      dftmp <- data.frame(covariable=c(sample(covariable, size=cellCrowd[1], replace=TRUE), sample(covariable, size=cellCrowd[2], replace=TRUE)),
-                          groups = c(rep(names(cellCrowd)[1],times=cellCrowd[1]),rep(names(cellCrowd)[2],times=cellCrowd[2])))
+      if(is.list(cellCrowd)){
+        cond1 <- lapply(cellCrowd[[1]][[1]], FUN = function(nCellToSample){sample(covariable ,size=nCellToSample)})
+        cond1 <- unname(unlist(cond1))
+        cond2 <- lapply(cellCrowd[[2]][[1]], FUN = function(nCellToSample){sample(covariable, size=nCellToSample)})
+        cond2 <- unname(unlist(cond2))
+        dftmp <- data.frame(covariable=c(cond1, cond2),
+                            groups = c(rep(names(cellCrowd)[1],times=length(cond1)), rep(names(cellCrowd)[2],times=length(cond2))))
+
+      }else{
+        dftmp <- data.frame(covariable=c(sample(covariable,size = cellCrowd[1]),sample(covariable,size = cellCrowd[2])),
+                            groups = c(rep(names(cellCrowd)[1],times=cellCrowd[1]),rep(names(cellCrowd)[2],times=cellCrowd[2])))
+      }
       dftmp <- table(dftmp)
-      dftmp[dftmp == 0] <- 1
-      contig_tab_random <- apply(dftmp,2,function(row){row/(sum(row)+1)})[,labelOrder]
+      if(!all(indexes %in% rownames(dftmp))){
+        tmp <- do.call(rbind, rep(list(rep(0,ncol(dftmp))), sum(!(indexes %in% rownames(dftmp)))))
+        rownames(tmp) <- indexes[!(indexes %in% rownames(dftmp))]
+        dftmp <- rbind(dftmp, tmp)[indexes,]
+      }
+      # dftmp[dftmp == 0] = 1 * instead of using pseudocount 1 use arcsin:
+      # Obtain Frequencies of classes
+      contig_tab_random <- t(apply(pseudoCount(dftmp),2,function(row){row/(sum(row)+1)}))[labelOrder, indexes]
+
       # random_entropies <- apply(contig_tab_random,2,function(x){
       #   abs(log2((x[1]*log2(x[2])) / (x[1]*log2(x[1]))))})
       # random_entropies <- abs(log2(sum(apply(contig_tab_random,1,function(x){x[1]*log2(x[2])}))/sum(apply(contig_tab,1,function(x){x[1]*log2(x[1])}))))

@@ -13,7 +13,7 @@
 #                                       parallel = TRUE)
 # bar_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type", sample_id = "mouse")
 # bar_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type")
-# # bar_chart(scObject = tmp, main_variable = "status", subtype_variable = "cell.type", sample_id = "mouse", subtype_only = "Fibroblasts")
+# bar_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type", sample_id = "mouse", subtype_only = "mixed")
 # waffle_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type", sample_id = "mouse")
 # waffle_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type")
 # polar_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type", sample_id = "mouse")
@@ -25,7 +25,7 @@
 #           labelOrder = c("KIF5A","Control"),
 #           parallel = TRUE)
 #
-# # # # Data simulation with 4 conditions and 4 cell-types:
+# # # # # Data simulation with 4 conditions and 4 cell-types:
 # sample1 <- c(rep("CellTypeA",700),rep("CellTypeB",300),rep("CellTypeC",500),rep("CellTypeD",1000))
 # # sample1 <- c(rep("CellTypeA",700),rep("CellTypeB",300),rep("CellTypeC",500),rep("CellTypeD",0))
 # sample2 <- c(rep("CellTypeA",1700),rep("CellTypeB",350),rep("CellTypeC",550),rep("CellTypeD",800))
@@ -129,6 +129,25 @@
 #                                              permutations = 10000,
 #                                              labelOrder = labelOrder,
 #                                              parallel = TRUE)
+#
+# # # Using mul-sample level test
+# labelOrder <- c("mut","wt")
+# results.2.conditions.entropy <- entropyScore(scObject = meta.data,
+#                                              main_variable = "condition",
+#                                              subtype_variable = "covariable",
+#                                              sample_id = "sample",
+#                                              permutations = 1000,
+#                                              labelOrder = labelOrder,
+#                                              parallel = F)
+#
+# results.2.conditions.entropy <- entropyScore(scObject = meta.data,
+#                                              main_variable = "condition",
+#                                              subtype_variable = "covariable",
+#                                              sample_id = NULL,
+#                                              permutations = 1000,
+#                                              labelOrder = labelOrder,
+#                                              parallel = F)
+
 # # For this case: 2 conditions and multiple second co-variable:
 # # Data to be ploted:
 # #   1 - individual entropies && general entropy score ??
