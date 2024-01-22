@@ -177,7 +177,7 @@ entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
   sd_entropies <- sd(null_test_entropy)
   mean_entropies <- mean(null_test_entropy)
   g.entropies <- ggplot2::ggplot(reshape2::melt(null_test_entropy), ggplot2::aes(y=value,x=factor(1))) +
-    ggplot2::geom_violin(color= "#D5BADB", width = 0.2, position = ggplot2::position_nudge(x = -.47)) +
+    ggplot2::geom_violin(color= "#D5BADB", width = 0.15, position = ggplot2::position_nudge(x = -.47)) +
     ggplot2::geom_point(position = ggplot2::position_jitter(width = 0.35), color= "#D5BADB") +
     ggplot2::geom_point(ggplot2::aes(y=entropy_score, x=factor(1)), size=4, color="#F08080") +
     ggplot2::theme_classic() +

@@ -21,7 +21,7 @@
 # results.2.conditions.entropy <- entropyScore(scObject = cortex.meta.data.Kif5A,
 #           main_variable = "status",
 #           subtype_variable = "manual.cell.type",
-#           permutations = 10000,
+#           permutations = 1000,
 #           labelOrder = c("KIF5A","Control"),
 #           parallel = TRUE)
 #
