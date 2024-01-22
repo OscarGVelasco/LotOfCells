@@ -24,6 +24,14 @@
 #           permutations = 1000,
 #           labelOrder = c("KIF5A","Control"),
 #           parallel = TRUE)
+# # Sample-level
+# results.2.conditions.entropy <- entropyScore(scObject = cortex.meta.data.Kif5A,
+#                                              main_variable = "status",
+#                                              subtype_variable = "manual.cell.type",
+#                                              sample_id = "mouse",
+#                                              permutations = 10000,
+#                                              labelOrder = c("KIF5A","Control"),
+#                                              parallel = TRUE)
 #
 # # # # # Data simulation with 4 conditions and 4 cell-types:
 # sample1 <- c(rep("CellTypeA",700),rep("CellTypeB",300),rep("CellTypeC",500),rep("CellTypeD",1000))
