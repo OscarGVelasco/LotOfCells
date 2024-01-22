@@ -11,9 +11,9 @@
 #                                       permutations = 10000,
 #                                       labelOrder = c("KIF5A","Control"),
 #                                       parallel = TRUE)
-# bar_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type", sample_id = "mouse")
-# bar_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type")
-# bar_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type", sample_id = "mouse", subtype_only = "mixed")
+bar_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type", sample_id = "mouse")
+bar_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type")
+bar_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type", sample_id = "mouse", subtype_only = "mixed")
 # waffle_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type", sample_id = "mouse")
 # waffle_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type")
 # polar_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type", sample_id = "mouse")

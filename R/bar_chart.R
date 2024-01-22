@@ -63,6 +63,12 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
       xmax = xmax.annotation,
       geom = "rect",
       fill = rev(group_colores)
+    ) +
+    ggplot2::annotate(
+      y = -0.04,
+      x = rowMeans(annot.data[,c("x","y")]),
+      geom = "text", label=annot.data$group,
+      color="white", fontface = "italic", size=3
     )
   return(g)
 }
