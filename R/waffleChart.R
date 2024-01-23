@@ -23,7 +23,6 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
   }
   if(!is.null(sample_id)){
     samples <- as.character(main_metadata[, sample_id])
-    print(table(groups,samples))
     df <- data.frame(groups=paste(groups,samples,sep = "_"), covariable)
     if(!is.null(subtype_only)){
       ncells <- table(df)[,subtype_only]
@@ -68,7 +67,7 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
       ggplot2::theme_void() +
       ggplot2::theme(plot.caption = element_text(color = "grey", face = "italic", vjust=5, size=14),
                      legend.margin=margin(c(1,1,1,1)),
-                     plot.margin=margin(c(1,1,1,1))) +
+                     plot.margin = unit(c(-0.1,-0.1,-0.1,-0.1), "cm")) +
       ggplot2::scale_fill_manual(values = colores[colorOrder], drop=FALSE) +
       ggplot2::guides(fill = guide_legend(title = "Class",drop=FALSE)) +
       ggplot2::ggtitle(group_names[indx]) +
@@ -83,7 +82,7 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
   }
   # extract legend from plot1 using above function
   legend <- get_only_legend(g.list[[1]])
-  g.list <- lapply(g.list,function(plot)plot+ggplot2::theme(legend.position = "none"))
+  g.list <- lapply(g.list, function(plot)plot+ggplot2::theme(legend.position = "none"))
   if(is.null(sample_id)){
     # If no plot per sample we assume a much smaller number of groups:
     multiplot <- do.call("arrangeGrob", c(g.list,nrow=round(sqrt(length(unique(groups))))))

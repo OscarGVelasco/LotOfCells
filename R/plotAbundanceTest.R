@@ -23,10 +23,17 @@ plotAbundanceTest <- function(tableResults=NULL, subtype_variable){
   guide <- abs(round(max(df[,"groupFC"]))) + 1.5
   df$CI95low[is.na(df$CI95low)] <- 0.1
   df$CI95low[is.na(df$CI95high)] <- 0.1
+  tmp.pval <- df$p.adj
+  tmp.pval[tmp.pval==0] <- 0.00001
+  df$significance <- sign(df$groupFC)*-log10(tmp.pval)
+  print(df$significance)
+  print(df$significance)
   ggplot2::ggplot(df, ggplot2::aes(x=groupFC, y=classLabel)) +
-    #ggplot2::geom_boxplot(col="#D5BADB") +
-    ggplot2::geom_point(ggplot2::aes(fill = p.adj), pch=21, stroke=0, size=8, alpha=0.8) +
-    ggplot2::scale_fill_gradientn(colours=c("#76608E", "#D1AADB", "#DDCFFF", "#DDCFFF"), limits = c(0,1)) +
+    ggplot2::geom_point(ggplot2::aes(fill=significance), pch=21, stroke=0.2, size=8, alpha=0.8) +
+    ggplot2::scale_fill_gradientn(colours=c("#142F5D","#142F5D", "#8BBCD4", "#C1DEEF","#EEF6FF", "#FDFFFF", "#F6F3FF", "#DDCFFF", "#D1AADB", "#76608E","#76608E"),
+                                  limits = c(-3, 3),
+                                  labels=c("p.val 0.001", 0.01,0.1,1,0.1,0.01,"p.val 0.001")) +
+    ggplot2::scale_color_manual(values = "#eeefef") +
     ggplot2::geom_errorbarh(ggplot2::aes(xmin=CI95low, xmax=CI95high),
                   position=ggplot2::position_dodge(.9),height = 0.1, linewidth = 0.3, colour="#70508E") +
     ggplot2::xlim(c(-1*guide, guide)) +
