@@ -159,7 +159,7 @@ lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL,
       message(paste("Additional sub-level for testing:",sample_id))
       samples <- as.character(main_metadata[, sample_id])
       nPerSample <- table(data.frame(groups,samples))[labelOrder,]
-      cellCrowd <- apply(nPerSample, 1, function(perCond){list(perCond[perCond!=0]*(1/3))})
+      cellCrowd <- apply(nPerSample, 1, function(perCond){list(perCond[perCond!=0]*(1/12))})
       cellCrowd <- cellCrowd[labelOrder]
       #df <- data.frame(groups=paste(groups,samples,sep = "_"),covariable)
       #nPerSample <- table(paste(groups,samples,sep = "_"))
