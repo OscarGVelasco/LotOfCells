@@ -156,9 +156,10 @@ lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL,
     message("Only 2 groups detected.")
     message(paste("Computing Fold Change proportion over covariables for groups:",labelOrder[1],"vs",labelOrder[2]))
     if(!is.null(sample_id)){
+      message(paste("Additional sub-level for testing:",sample_id))
       samples <- as.character(main_metadata[, sample_id])
       nPerSample <- table(data.frame(groups,samples))[labelOrder,]
-      cellCrowd <- apply(nPerSample, 1, function(perCond){list(perCond[perCond!=0]*(1/10))})
+      cellCrowd <- apply(nPerSample, 1, function(perCond){list(perCond[perCond!=0]*(1/3))})
       cellCrowd <- cellCrowd[labelOrder]
       #df <- data.frame(groups=paste(groups,samples,sep = "_"),covariable)
       #nPerSample <- table(paste(groups,samples,sep = "_"))
