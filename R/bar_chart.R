@@ -25,11 +25,14 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     samples <- as.character(main_metadata[, sample_id])
     n.of.stack.bars <- table(unique(data.frame(groups, samples))$groups)
     names(n.of.stack.bars) <- names(table(unique(data.frame(groups, samples))$groups))
-    df <- data.frame(groups, covariable, samples)
+    groupSorting <- data.frame(groups, samples)
+    groupSorting <- unique(groupSorting)
+    levelsOrdered <- apply(groupSorting[order(groupSorting$groups),], 1, function(sortedElements)paste(sortedElements[1], sortedElements[2], sep="_"))
     df <- data.frame(groups=paste(groups, samples, sep = "_"), covariable)
     contig_tab <- apply(table(df), 1, function(row){row/sum(row)})
   }else{
     df <- data.frame(groups, covariable)
+    levelsOrdered <- levels(groups)
     n.of.stack.bars <- table(unique(data.frame(groups))$groups)
     names(n.of.stack.bars) <- names(table(unique(data.frame(groups))$groups))
     contig_tab <- apply(table(df),1,function(row){row/sum(row)})
@@ -40,6 +43,7 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
   # Plot Bars
   contig_tab_resh <- reshape2::melt(contig_tab)
   contig_tab_resh[,"covariable"] <- factor(contig_tab_resh[,"covariable"], levels = order)
+  contig_tab_resh[,"groups"] <- factor(contig_tab_resh[,"groups"], levels = levelsOrdered)
   if(!is.null(subtype_only)){
     contig_tab_resh <- contig_tab_resh[contig_tab_resh[,"covariable"] %in% subtype_only, ]
     #colorOrder <- c(colorOrder[names(colorOrder)!=subtype_only],colorOrder[names(colorOrder)==subtype_only])
@@ -48,7 +52,11 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
   xmin.annotation <- c(0.5, cumsum(n.of.stack.bars)[1:length(n.of.stack.bars)-1]+0.5)
   xmax.annotation <- c(cumsum(n.of.stack.bars)[1:length(n.of.stack.bars)])+0.5
   annot.data <- data.frame(x=xmin.annotation, y=xmax.annotation, group=factor(names(n.of.stack.bars)))
-  group_colores <- suppressWarnings(ggplot2::alpha(colour = RColorBrewer::brewer.pal(length(n.of.stack.bars), "Set2"), alpha = 0.8))[1:length(n.of.stack.bars)]
+  if(length(n.of.stack.bars) > 8){
+    group_colores <- grDevices::colorRampPalette(colors = ggplot2::alpha(colour = RColorBrewer::brewer.pal(8, "Set2"), alpha = 0.8))(length(n.of.stack.bars))
+  } else{
+    group_colores <- suppressWarnings(ggplot2::alpha(colour = RColorBrewer::brewer.pal(length(n.of.stack.bars), "Set2"), alpha = 0.8))[1:length(n.of.stack.bars)]
+    }
   g <- ggplot2::ggplot(contig_tab_resh, ggplot2::aes(x=groups, y=value, group_by=covariable, fill = covariable)) +
     ggplot2::geom_bar(position="stack", stat="identity") +
     ggplot2::theme_minimal() +

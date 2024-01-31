@@ -33,6 +33,14 @@
 #                                              labelOrder = c("KIF5A","Control"),
 #                                              parallel = TRUE)
 #
+# ### YET Another example with pancreatic single-cell data
+# a <- load(file = "sc_pancreas_human.RData");a
+# # Lets plot cluster composition:
+# bar_chart(scObject = sc_pancreas_human, main_variable = "label", subtype_variable = "cell.type", sample_id = "donor")
+#
+# paper_plot <- bar_chart(scObject = sc_pancreas_human, main_variable = "label", subtype_variable = "cell.type")
+# paper_plot + ggplot2::ggtitle("Proportions of cell type by cluster")
+#
 # # # # # Data simulation with 4 conditions and 4 cell-types:
 # sample1 <- c(rep("CellTypeA",700),rep("CellTypeB",300),rep("CellTypeC",500),rep("CellTypeD",1000))
 # # sample1 <- c(rep("CellTypeA",700),rep("CellTypeB",300),rep("CellTypeC",500),rep("CellTypeD",0))
