@@ -13,7 +13,8 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
   # Obtain the single-cell metadata
   main_metadata <- getMetadata(scObject)
   # #
-  groups <- as.character(main_metadata[, main_variable])
+  groups <- main_metadata[, main_variable]
+  groups <- factor(groups, levels=sort(unique(groups)))
   covariable <- as.character(main_metadata[, subtype_variable])
   #order <- rev(names(sort(table(covariable),decreasing = FALSE)))
   #colorOrder <- rev(seq(1, length(order)))
@@ -24,8 +25,8 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     samples <- as.character(main_metadata[, sample_id])
     n.of.stack.bars <- table(unique(data.frame(groups, samples))$groups)
     names(n.of.stack.bars) <- names(table(unique(data.frame(groups, samples))$groups))
-    df <- data.frame(groups,covariable,samples)
-    df <- data.frame(groups=paste(groups,samples,sep = "_"), covariable)
+    df <- data.frame(groups, covariable, samples)
+    df <- data.frame(groups=paste(groups, samples, sep = "_"), covariable)
     contig_tab <- apply(table(df), 1, function(row){row/sum(row)})
   }else{
     df <- data.frame(groups, covariable)

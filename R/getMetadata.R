@@ -13,7 +13,7 @@
 #' @keywords internal
 getMetadata <- function(scObject=NULL,groups=NULL){
   if(is.null(scObject)){
-    stop("At least a Single Cell Experiments object is needed.")
+    stop("At least a Single Cell object or metadata DataFrame is needed.")
   }
   isSeurat <- FALSE
   isSce <- FALSE
@@ -40,7 +40,7 @@ getMetadata <- function(scObject=NULL,groups=NULL){
     }
   }
   ## Select metadata table
-  if(isSce){ main_metadata <- SingleCellExperiment::colLabels(scObject)}
+  if(isSce){ main_metadata <- SingleCellExperiment::colData(scObject)}
   if(isSeurat){ main_metadata <- scObject[[]] }
   return(main_metadata)
 }
