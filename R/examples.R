@@ -176,12 +176,12 @@
 # # Test of correlation for SEVERAL conditions using Kendall rank correlation
 # labelOrder <- c("time 0h","time 1h","time 2h","time 3h")#,"time 4h")
 # system.time(
-#   results.4.conditions <- lotOfCells(scObject = meta.data,
-#                                   main_variable = "times",
-#                                   subtype_variable = "covariable",
-#                                   permutations = 100,
-#                                   labelOrder = labelOrder,
-#                                   parallel = F)
+# results.4.conditions <- lotOfCells(scObject = meta.data,
+#                                 main_variable = "times",
+#                                 subtype_variable = "covariable",
+#                                 permutations = 100,
+#                                 labelOrder = labelOrder,
+#                                 parallel = F)
 # )
 # waffle_chart(scObject = meta.data,
 #                                    main_variable = "times",
@@ -196,4 +196,5 @@
 # #   2 - Percentage per cell-type(covariable) across all conditions and ordered by labelOrder: dotplot with line across the dots ? build a grid of plots with a plot per co-variable??
 # # Example of the percentage across conditions using points:
 # dynamics_chart(results.4.conditions)
+# dynamics_chart(results.4.conditions,scaleData = TRUE)
 

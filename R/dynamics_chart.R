@@ -2,9 +2,14 @@
 #' @import ggplot2
 #' @import reshape2
 #' @export
-dynamics_chart <- function(gammaResults=NULL, subtype_only=NULL){
+dynamics_chart <- function(gammaResults=NULL, subtype_only=NULL, scaleData=FALSE){
   library(ggplot2)
   library(gridExtra)
+  if(scaleData){
+    tmpGammaResults <- t(apply(gammaResults[,!(colnames(gammaResults) %in% c("groupGammaCor", "p.adj", "CI95low", "CI95high"))], 1,
+                             function(percents)(percents-mean(percents))/sd(percents)))
+    gammaResults <- cbind.data.frame(tmpGammaResults, gammaResults[,(colnames(gammaResults) %in% c("groupGammaCor", "p.adj", "CI95low", "CI95high"))])
+  }
   coreTable <- cbind.data.frame(gammaResults[,!(colnames(gammaResults) %in% c("groupGammaCor", "p.adj", "CI95low", "CI95high"))], covar = rownames(gammaResults))
   coreTable <- reshape2::melt(coreTable)
   coreTable <- cbind.data.frame(coreTable, gammaResults[coreTable[,"covar"],c("CI95low", "CI95high")])
