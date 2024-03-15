@@ -30,8 +30,9 @@ polar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL
     contig_tab <- t(table(df))
   }
   group_names <- colnames(contig_tab)
-  colores = scales::alpha(c("#D5BADB","#7EB6D9","#92C791","#F2D377","#D9E8F5","#F08080","#4AA147",
+  colores = scales::alpha(c("#D5BADB","#7EB6D9","#92C791","#F2D377","#B9E8F5","#F08080","#4AA147",
                                      "#DBECDA","#F28D35","#3C7DA6","#86608E","#301934"), 0.8)
+  colores = colorspace::desaturate(col = colores, amount = 0.16)
   # Plot the circos
   contig_tab_resh <- reshape2::melt(contig_tab)
   contig_tab_resh[,"covariable"] <- factor(contig_tab_resh[,"covariable"], levels = order)

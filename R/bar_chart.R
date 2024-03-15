@@ -38,8 +38,9 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     contig_tab <- apply(table(df),1,function(row){row/sum(row)})
   }
   group_names <- colnames(contig_tab)
-  colores <- scales::alpha(c("#D5BADB","#7EB6D9","#92C791","#F2D377","#D9E8F5","#F08080","#4AA147",
+  colores = scales::alpha(c("#D5BADB","#7EB6D9","#92C791","#F2D377","#B9E8F5","#F08080","#4AA147",
                                      "#DBECDA","#F28D35","#3C7DA6","#86608E","#301934"), 0.8)
+  colores = colorspace::desaturate(col = colores, amount = 0.16)
   # Plot Bars
   contig_tab_resh <- reshape2::melt(contig_tab)
   contig_tab_resh[,"covariable"] <- factor(contig_tab_resh[,"covariable"], levels = order)
@@ -54,8 +55,10 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
   annot.data <- data.frame(x=xmin.annotation, y=xmax.annotation, group=factor(names(n.of.stack.bars)))
   if(length(n.of.stack.bars) > 8){
     group_colores <- grDevices::colorRampPalette(colors = ggplot2::alpha(colour = RColorBrewer::brewer.pal(8, "Set2"), alpha = 0.8))(length(n.of.stack.bars))
+    group_colores = colorspace::desaturate(col = group_colores, amount = 0.16)
   } else{
     group_colores <- suppressWarnings(ggplot2::alpha(colour = RColorBrewer::brewer.pal(length(n.of.stack.bars), "Set2"), alpha = 0.8))[1:length(n.of.stack.bars)]
+    group_colores = colorspace::desaturate(col = group_colores, amount = 0.16)
     }
   g <- ggplot2::ggplot(contig_tab_resh, ggplot2::aes(x=groups, y=value, group_by=covariable, fill = covariable)) +
     ggplot2::geom_bar(position="stack", stat="identity") +

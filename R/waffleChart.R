@@ -42,8 +42,9 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
     contig_tab <- apply(table(df), 1, function(row){row/sum(row)})
   }
   group_names <- colnames(contig_tab)
-  colores = scales::alpha(c("#D5BADB","#7EB6D9","#92C791","#F2D377","#D9E8F5","#F08080","#4AA147",
+  colores = scales::alpha(c("#D5BADB","#7EB6D9","#92C791","#F2D377","#B9E8F5","#F08080","#4AA147",
                        "#DBECDA","#F28D35","#3C7DA6","#86608E","#301934"), 0.8)
+  colores = colorspace::desaturate(col = colores, amount = 0.16)
   # Plot the waffles
   g.list <- lapply(seq(ncol(contig_tab)), function(indx){
     percentages <- contig_tab[order, indx]*100
@@ -65,9 +66,9 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
       #ggplot2::scale_y_continuous(expand=c(0,0)) +
       ggplot2::coord_equal() +
       ggplot2::theme_void() +
-      ggplot2::theme(plot.caption = element_text(color = "grey", face = "italic", vjust=5, size=14),
-                     legend.margin=margin(c(1,1,1,1)),
-                     plot.margin = unit(c(-0.1,-0.1,-0.1,-0.1), "cm")) +
+      ggplot2::theme(plot.caption = element_text(color = "grey", face = "italic", vjust=5, size=12),
+                     legend.margin=margin(c(1, 1, 1, 1)),
+                     plot.margin = unit(c(0.1, 0.1, 0.1, 0.1), "cm")) +
       ggplot2::scale_fill_manual(values = colores[colorOrder], drop=FALSE) +
       ggplot2::guides(fill = guide_legend(title = "Class",drop=FALSE)) +
       ggplot2::ggtitle(group_names[indx]) +
@@ -88,9 +89,10 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
     multiplot <- do.call("arrangeGrob", c(g.list,nrow=round(sqrt(length(unique(groups))))))
     }
   else{
-    multiplot <- do.call("arrangeGrob", c(g.list,nrow=length(unique(groups))))
+    # Minimum 2 rows
+    multiplot <- do.call("arrangeGrob", c(g.list,nrow=max(round(sqrt(length(unique(groups)))),2)))
   }
-  return(grid.arrange(multiplot, legend, ncol = 2, heights = c(10, 1), widths = c(10,1)))
+  return(grid.arrange(multiplot, legend, ncol = 2, heights = c(10, 1.5), widths = c(10,1.5)))
 }
 
 
