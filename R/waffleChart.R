@@ -18,7 +18,9 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
   colorOrder <- rev(seq(1, length(order)))
   names(colorOrder) <- order
   if(!is.null(subtype_only)){
-    if(covariable)
+    if(!subtype_only %in% covariable){
+      stop("The class specified in subtype_only does not exist in subtype_variable.")
+    }
     subtype_only <- subtype_only[1]
     covariable[!covariable==subtype_only] <- "OtherGeneric"
     order <- c(subtype_only, "OtherGeneric")
