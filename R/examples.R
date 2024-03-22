@@ -3,21 +3,25 @@
 # library(LotOfCells)
 #
 # a <- load("cortex.meta.data.Kif5A.RData");a
+# Set number of CPUs to use:
+# BiocParallel::register(BPPARAM =  BiocParallel::MulticoreParam(workers = 6))
 #
 # results.2.conditions <- lotOfCells(scObject = cortex.meta.data.Kif5A,
 #                                       main_variable = "status",
 #                                       subtype_variable = "manual.cell.type",
 #                                       sample_id = "mouse",
-#                                       permutations = 1000,
+#                                       permutations = 10000,
 #                                       labelOrder = c("KIF5A","Control"),
 #                                       parallel = TRUE)
 # bar_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type", sample_id = "mouse")
 # bar_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type")
 # bar_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type", sample_id = "mouse", subtype_only = "mixed")
 # waffle_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type", sample_id = "mouse")
-# waffle_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type", sample_id = "mouse", subtype_only = "mixed")
+# waffle_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type", sample_id = "mouse", subtype_only = "Epithelial")
 # waffle_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type")
+# waffle_chart(scObject = cortex.meta.data.Kif5A, main_variable = "seq_date", subtype_variable = "manual.cell.type", subtype_only="Neurons")
 # polar_chart(scObject = cortex.meta.data.Kif5A, main_variable = "status", subtype_variable = "manual.cell.type", sample_id = "mouse")
+#
 #
 # results.2.conditions.entropy <- entropyScore(scObject = cortex.meta.data.Kif5A,
 #           main_variable = "status",
@@ -25,7 +29,7 @@
 #           permutations = 1000,
 #           labelOrder = c("KIF5A","Control"),
 #           parallel = TRUE)
-# # Sample-level
+# # # Sample-level
 # results.2.conditions.entropy <- entropyScore(scObject = cortex.meta.data.Kif5A,
 #                                              main_variable = "status",
 #                                              subtype_variable = "manual.cell.type",

@@ -159,7 +159,8 @@ lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL,
       message(paste("Additional sub-level for testing:",sample_id))
       samples <- as.character(main_metadata[, sample_id])
       nPerSample <- table(data.frame(groups,samples))[labelOrder,]
-      cellCrowd <- apply(nPerSample, 1, function(perCond){list(perCond[perCond!=0]*(1/12))})
+      #cellCrowd <- apply(nPerSample, 1, function(perCond){list(perCond[perCond!=0]*(1/12))})
+      cellCrowd <- apply(nPerSample, 1, function(perCond){list(sqrt(perCond[perCond!=0]))})
       cellCrowd <- cellCrowd[labelOrder]
       #df <- data.frame(groups=paste(groups,samples,sep = "_"),covariable)
       #nPerSample <- table(paste(groups,samples,sep = "_"))
@@ -179,7 +180,8 @@ lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL,
     original_test <- log2(contig_tab[1,] / contig_tab[2,])
     indexes <- names(original_test)
     if(is.null(sample_id)){
-      cellCrowd <- round(c(table(groups)*1/10))
+      # cellCrowd <- round(c(table(groups)*1/10))
+      cellCrowd <- round(sqrt(c(table(groups))))
       cellCrowd <- cellCrowd[labelOrder]
     }
     # We perform the Montecarlo test

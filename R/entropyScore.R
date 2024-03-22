@@ -110,7 +110,7 @@ entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
     nPerSample <- table(data.frame(groups, samples))[labelOrder,]
     nPerSample <- sqrt(nPerSample)
     #cellCrowd <- apply(nPerSample, 1, function(perCond){list(perCond[perCond!=0]*(1/10))})
-    cellCrowd <- apply(nPerSample, 1, function(perCond){list(perCond[perCond!=0]*2)})
+    cellCrowd <- apply(nPerSample, 1, function(perCond){list(perCond[perCond!=0])})
     cellCrowd <- cellCrowd[labelOrder]
   }else{
     #cellCrowd <- round(c(table(groups)*(1/10)))[labelOrder]
@@ -167,10 +167,14 @@ entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
   #print(length(null_test_entropy))
   sd_entropies <- sd(null_test_entropy)
   mean_entropies <- mean(null_test_entropy)
+  median_entropies <- median(null_test_entropy)
   g.entropies <- ggplot2::ggplot(reshape2::melt(null_test_entropy), ggplot2::aes(y=value, x=factor(1))) +
-    ggbeeswarm::geom_quasirandom(dodge.width = 0.3, varwidth = TRUE, fill= "#D5BADB",
-                                 color = "#D5BADB",
-                                 alpha = 0.6, size = 1) +
+    ggbeeswarm::geom_quasirandom(dodge.width = 0.3, varwidth = TRUE, stroke=NA, shape=16,
+                                 colour = "#D5BADB",
+                                 #fill= "#D5BADB"
+                                 alpha = 0.5, size = 1.5) +
+    ggplot2::geom_segment(ggplot2::aes(x = 0.85, y = median_entropies, xend = 1.15, yend = median_entropies),
+                          color="#86608E",linewidth=0.5, alpha=0.3, inherit.aes=FALSE) +
     # ggplot2::geom_point(binaxis='y', stackdir='center',#position = ggplot2::position_jitter(width = 0.35),
     #                     color= "#D5BADB",
     #                     dotsize = 0.5) +

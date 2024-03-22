@@ -40,7 +40,7 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
     contig_tab <- apply(table(df),1,function(row){row/sum(row)})
   }else{
     df <- data.frame(groups, covariable)
-    nPerGroup <- table(samples)
+    nPerGroup <- table(groups)
     nPerGroup <- setNames(rep(1, length(nPerGroup)), names(nPerGroup))
     if(!is.null(subtype_only)){
       ncells <- table(df)[,subtype_only]
@@ -64,8 +64,8 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
   }else{
     colores = scales::alpha(c("#D5BADB","#7EB6D9","#92C791","#F2D377","#B9E8F5","#F08080","#4AA147",
                                        "#DBECDA","#F28D35","#3C7DA6","#86608E","#301934"), 0.8)
+    colores = colorspace::desaturate(col = colores, amount = 0.16)
   }
-  colores = colorspace::desaturate(col = colores, amount = 0.16)
   # Plot the waffles
   plotingGroupN <- 1
   g.list <- lapply(seq(ncol(contig_tab)), function(indx){
