@@ -182,7 +182,7 @@ entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
     ggplot2::theme_classic() +
     ggplot2::theme(axis.ticks.x = ggplot2::element_blank(), axis.text.x = ggplot2::element_blank()) +
     ggplot2::xlab("") +
-    ggplot2::ylab("entropies")
+    ggplot2::ylab("symmetric divergence")
   # test 1 #
   # Calculate how extreme our observed values are in comparison with the random distribution
   # We want to see if the FoldChanges on the random distribution are lower or higher than the observed FoldChange
@@ -192,13 +192,14 @@ entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
     ggplot2::geom_bar(stat="identity", position=ggplot2::position_dodge()) +
     ggplot2::scale_fill_brewer(palette="Blues") +
     ggplot2::theme_minimal() +
-    ggplot2::ggtitle(paste("Global entropy score:",round(entropy_score,digits = 3),"p.val.adj:",round(p.adj,digits = 3))) +
+    ggplot2::ggtitle(paste("Symmetric Divergence Score:",round(entropy_score,digits = 3),"p.val.adj:",round(p.adj,digits = 3))) +
     ggplot2::theme(
       title = ggplot2::element_text(face="bold", size=ggplot2::rel(1.2)),
       strip.text=ggplot2::element_text(face="bold", size=ggplot2::rel(0.8)),
       axis.title.x=ggplot2::element_text(),
       axis.text.x=ggplot2::element_text(angle=45, vjust=1, hjust=1,size = 12)
-    )
+    ) +
+    ggplot2::ylab("proportion")
   #print(g)
   gridExtra::grid.arrange(g,g.entropies,nrow=1,ncol=2,widths=c(1,0.3))
   return(c(relative_entropies,"entropy_score"=entropy_score,"p.val.adj"=p.adj, "mean.random.entropy"= mean_entropies, "sd.random.entropy"=sd_entropies))
