@@ -94,7 +94,8 @@ lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL,
     # Set variables for the random permutation test:
     message("More than 2 groups detected.")
     message(paste("Computing Goodman and Kruskal's gamma rank correlation coefficient in the following order:",paste(labelOrder,collapse = ' vs ')))
-    cellCrowd <- round(c(table(groups)*(1/10)))
+    #cellCrowd <- round(c(table(groups)*(1/10)))
+    cellCrowd <- round(sqrt(c(table(groups))))
     cellCrowd <- cellCrowd[labelOrder]
     kendallDenominator <- (length(labelOrder) * (length(labelOrder)-1)) / 2 #n. of pairs to be compared: (N * (N-1)) / 2
     # Proportions

@@ -14,9 +14,7 @@ dynamics_chart <- function(gammaResults=NULL, subtype_only=NULL, scaleData=FALSE
   coreTable <- reshape2::melt(coreTable)
   coreTable <- cbind.data.frame(coreTable, gammaResults[coreTable[,"covar"],c("CI95low", "CI95high")])
   lastLabel <- tail(colnames(gammaResults),4)[c(-2,-3,-4)]
-  colores = scales::alpha(c("#D5BADB","#7EB6D9","#92C791","#F2D377","#B9E8F5","#F08080","#4AA147",
-                                     "#DBECDA","#F28D35","#3C7DA6","#86608E","#301934"), 0.8)
-  colores = colorspace::desaturate(col = colores, amount = 0.16)
+  colores <- getPalette()
   coreTable[,"label"] <- ""
   coreTable[coreTable[,"variable"] %in% lastLabel, "label"] <- paste("cor.",round(gammaResults[,"groupGammaCor"], digits = 2))
   xlabels = paste("proportion",unlist(lapply(strsplit(colnames(gammaResults)[2:(length(gammaResults)-3)], "_"),function(x)x[3])))
