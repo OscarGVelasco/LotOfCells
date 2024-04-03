@@ -62,9 +62,7 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
       coloresSubtype <- colorspace::desaturate(col = coloresSubtype, amount = 0.16)
     }
   }else{
-    colores = scales::alpha(c("#D5BADB","#7EB6D9","#92C791","#F2D377","#B9E8F5","#F08080","#4AA147",
-                                       "#DBECDA","#F28D35","#3C7DA6","#86608E","#301934"), 0.8)
-    colores = colorspace::desaturate(col = colores, amount = 0.16)
+    colores <- getPalette()
   }
   # Plot the waffles
   plotingGroupN <- 1
@@ -77,10 +75,11 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
     }
     df.p <- expand.grid(x = 0:9,
                         y = 0:9) %>%
-      rowwise() |>
-      mutate(index = 1+sum(x * 10 + y >= cumsum(percentages)),
+      dplyr::rowwise() |>
+      dplyr::mutate(index=1 + sum(x * 10 + y >= cumsum(percentages)),
              col = colour[[index]]) %>%
       as.data.frame()
+
     df.p[,"col"] <- factor(df.p[,"col"], levels = order)
     # if(!is.null(subtype_only)){
     #   df.p <- df.p %>% filter(col==subtype_only)
