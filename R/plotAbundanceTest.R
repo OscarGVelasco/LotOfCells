@@ -20,7 +20,8 @@ plotAbundanceTest <- function(tableResults=NULL, subtype_variable){
   df <- cbind.data.frame(tableResults, classLabel=factor(rownames(tableResults)))
   onRight <- strsplit(colnames(df)[2], "percent_in_")[[1]][2]
   onLeft <- strsplit(colnames(df)[3], "percent_in_")[[1]][2]
-  guide <- abs(round(max(df[,"groupFC"]))) + 1.5
+  #guide <- abs(round(max(df[,"groupFC"]))) + 1.5
+  guide <- round(max(abs(c(df[,"CI95low"],df[,"CI95high"])))) + 0.5
   df$CI95low[is.na(df$CI95low)] <- 0.1
   df$CI95low[is.na(df$CI95high)] <- 0.1
   tmp.pval <- df$p.adj
