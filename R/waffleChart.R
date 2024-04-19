@@ -22,8 +22,8 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
       stop("The class specified in subtype_only does not exist in subtype_variable.")
     }
     subtype_only <- subtype_only[1]
-    covariable[!covariable==subtype_only] <- "OtherGeneric"
-    order <- c(subtype_only, "OtherGeneric")
+    covariable[!covariable==subtype_only] <- "All Other"
+    order <- c(subtype_only, "All Other")
     colorOrder <- c(2, 1)
     names(colorOrder) <- order
   }
@@ -114,7 +114,13 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
     return(legend)
   }
   # extract legend from plot1 using above function
-  legend <- get_only_legend(g.list[[1]])
+  if(!is.null(subtype_only)){
+    tmpLegend <- ggplot2::ggplot(data = data.frame(Class=factor(names(colorOrder)), y=1:2), ggplot2::aes(x=Class,y=y,fill=Class)) +
+      ggplot2::geom_tile() + ggplot2::scale_fill_manual(values = scales::alpha(c("#EEEEEE", "#5F5F5F"),alpha = 0.8), drop=FALSE)
+    legend <- get_only_legend(tmpLegend)
+  }else{
+    legend <- get_only_legend(g.list[[1]])
+  }
   g.list <- lapply(g.list, function(plot)plot+ggplot2::theme(legend.position = "none"))
   if(is.null(sample_id)){
     # If no plot per sample we assume a much smaller number of groups:

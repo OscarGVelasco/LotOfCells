@@ -12,9 +12,10 @@
 #' @keywords internal
 getPalette <- function(usePalette="A"){
   if(usePalette=="A"){
-    colores = scales::alpha(c("#8DA0CB","#926F99","#92C791","#F2D377","#F08080","#B9E8F5","#519B84","#301934",
-                                       "#B79C76","#DBECDA","#F28D35","#3C7DA6","#BfA7C5","#4AA147"), 0.8)
-    colores = colorspace::desaturate(col = colores, amount = 0.16)
+    colores = scales::alpha(c("#8DA0CB","#BfA7C5","#FEE390","#F9BE8D","#A1D49F","#F08080","#B9E8F5","#519B84","#301934",
+                                       "#B79C76","#C1D63C","#F28D35","#CA4133","#666666","#3C7DA6","#926F99","#4AA147"), 0.8)
+    colores = colorspace::desaturate(col = colores, amount = 0.18)
+    #scales::show_col(colores)
     return(colores)
   }
 }
