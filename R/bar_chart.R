@@ -86,17 +86,17 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
       # ggplot2::geom_rect(data = annot.data,
       #                    mapping = ggplot2::aes(xmin = x, xmax = y, ymin = -0.02, ymax = -0.06, fill=group),inherit.aes = FALSE) +
       ggplot2::annotate(
-        ymin = -0.02, ymax = -0.06,
+        ymin = -0.02, ymax = -0.08,
         xmin = xmin.annotation,
         xmax = xmax.annotation,
         geom = "rect",
         fill = rev(group_colores)
       ) +
       ggplot2::annotate(
-        y = -0.04,
+        y = -0.05,
         x = rowMeans(annot.data[,c("x","y")]),
         geom = "text", label=annot.data$group,
-        color="white", fontface = "italic", size=3
+        color="white", fontface = "italic", size=4
       )
 
   }else{
@@ -120,7 +120,7 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
           y = -0.04,
           x = rowMeans(annot.data[,c("x","y")]),
           geom = "text", label=annot.data$group,
-          color="white", fontface = "italic", size=3
+          color="white", fontface = "bold.italic", size=4
         )
   }
   return(g)
