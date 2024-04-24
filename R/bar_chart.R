@@ -32,7 +32,7 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     df <- data.frame(groups=paste(groups, samples, sep = "_"), covariable)
     contig_tab <- apply(table(df), 1, function(row){row/sum(row)})
     group_names <- colnames(contig_tab)
-    colores <- getPalette()
+    colores <- getPalette(nColors = length(colorOrder))
   }else{
     df <- data.frame(groups, covariable)
     levelsOrdered <- levels(groups)
@@ -40,14 +40,14 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     names(n.of.stack.bars) <- names(table(unique(data.frame(groups))$groups))
     contig_tab <- apply(table(df),1,function(row){row/sum(row)})
     group_names <- colnames(contig_tab)
-    colores <- getPalette()
+    colores <- getPalette(nColors = length(colorOrder))
   }
   # Plot Bars
   contig_tab_resh <- reshape2::melt(contig_tab)
   contig_tab_resh[,"covariable"] <- factor(contig_tab_resh[,"covariable"], levels = order)
   contig_tab_resh[,"groups"] <- factor(contig_tab_resh[,"groups"], levels = levelsOrdered)
   if(!is.null(subtype_only)){
-    group_names <- c("Control_26",  "Control_27" , "Control_36",  "Control_699", "KIF5A_25"  ,  "KIF5A_29"  ,  "KIF5A_37" ,   "KIF5A_44")
+    #group_names <- c("Control_26",  "Control_27" , "Control_36",  "Control_699", "KIF5A_25"  ,  "KIF5A_29"  ,  "KIF5A_37" ,   "KIF5A_44")
     groupForColors <- unlist(lapply(strsplit(x = group_names, split = "_"), function(group)group[1]))
     contig_tab_resh <- contig_tab_resh[contig_tab_resh[,"covariable"] %in% subtype_only, ]
     #coloresSubtype = scales::alpha(c("#DBECDA","#92C791","#BEDAEC","#7EB6D9","#DDC7E2","#86608E"), 0.8)

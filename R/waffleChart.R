@@ -62,7 +62,7 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
       coloresSubtype <- colorspace::desaturate(col = coloresSubtype, amount = 0.16)
     }
   }else{
-    colores <- getPalette()
+    colores <- getPalette(nColors = length(colorOrder))
   }
   # Plot the waffles
   plotingGroupN <- 1
