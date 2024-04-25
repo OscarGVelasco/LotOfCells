@@ -64,6 +64,7 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     coloresSubtype <- colorspace::lighten(group_colores, amount = 0.4)
     coloresSubtype <- colorspace::desaturate(col = coloresSubtype, amount = 0.16)
     coloresSubtype <- coloresSubtype[1:length(groupForColors)]
+    coloresSubtype <- rev(coloresSubtype)
     colores <- rep(coloresSubtype, groupForColors)
     #colorOrder <- c(colorOrder[names(colorOrder)!=subtype_only],colorOrder[names(colorOrder)==subtype_only])
     #order <- c(order[!(order %in% subtype_only)], subtype_only)
@@ -75,7 +76,8 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
       ggplot2::theme(axis.text.x=ggplot2::element_text(angle=45, vjust=1, hjust=1,size = 12)) +
       ggplot2::scale_fill_manual("covariable", values = colores, drop=FALSE) +
       ggplot2::ggtitle(paste("Proportions of", subtype_variable, "by", main_variable), paste("Class:",subtype_only)) +
-      ggplot2::scale_y_continuous(name="percentage", breaks =  seq(0, 1, by=0.1), minor_breaks = seq(0.05, 0.95, by=0.1), labels = seq(0, 100, by=10)) +
+      ggplot2::scale_y_continuous(name="percentage", breaks=seq(0, 1, by=0.1), minor_breaks = seq(0.05, 0.95, by=0.1),
+                                  labels = seq(0, 100, by=10), limits = c(-0.1, 1)) +
       # ggplot2::geom_rect(data = annot.data,
       #                    mapping = ggplot2::aes(xmin = x, xmax = y, ymin = -0.02, ymax = -0.06, fill=group),inherit.aes = FALSE) +
       ggplot2::annotate(
