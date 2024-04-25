@@ -48,20 +48,18 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
   contig_tab_resh[,"groups"] <- factor(contig_tab_resh[,"groups"], levels = levelsOrdered)
   if(!is.null(subtype_only)){
     #group_names <- c("Control_26",  "Control_27" , "Control_36",  "Control_699", "KIF5A_25"  ,  "KIF5A_29"  ,  "KIF5A_37" ,   "KIF5A_44")
-    groupForColors <- unlist(lapply(strsplit(x = group_names, split = "_"), function(group)group[1]))
+    groupForColors <- table(unlist(lapply(strsplit(x = group_names, split = "_"), function(group)group[1])))
     contig_tab_resh <- contig_tab_resh[contig_tab_resh[,"covariable"] %in% subtype_only, ]
     #coloresSubtype = scales::alpha(c("#DBECDA","#92C791","#BEDAEC","#7EB6D9","#DDC7E2","#86608E"), 0.8)
     coloresSubtype = scales::alpha(c("#92C791","#7EB6D9","#86608E"), 0.8)
     if(length(unique(groupForColors))>3){
-      group_colores_l <- colorspace::lighten(grDevices::colorRampPalette(colors = ggplot2::alpha(colour = RColorBrewer::brewer.pal(8, "Set2"),
-                                                                                                 alpha = 0.8))(length(nPerGroup)-3), amount = 0.6)
-      group_colores_d <- colorspace::lighten(grDevices::colorRampPalette(colors = ggplot2::alpha(colour = RColorBrewer::brewer.pal(8, "Set2"),
-                                                                                                 alpha = 0.8))(length(nPerGroup)-3), amount = 0.2)
-      coloresSubtype <- c(coloresSubtype, c(rbind(group_colores_l, group_colores_d)))
+      group_colores <- colorspace::lighten(grDevices::colorRampPalette(colors = ggplot2::alpha(colour = RColorBrewer::brewer.pal(8, "Set2"),
+                                                                                                 alpha = 0.8))(length(groupForColors)-3), amount = 0.2)
+      coloresSubtype <- c(coloresSubtype, group_colores)
       coloresSubtype <- colorspace::desaturate(col = coloresSubtype, amount = 0.16)
     }
-    coloresSubtype <- coloresSubtype[1:length(unique(groupForColors))]
-    colores <- unlist(lapply(seq_along(coloresSubtype), function(duplicateColor)rep(x = coloresSubtype[duplicateColor], table(groupForColors)[duplicateColor])))
+    coloresSubtype <- coloresSubtype[1:length(groupForColors)]
+    colores <- rep(coloresSubtype, groupForColors)
     #colorOrder <- c(colorOrder[names(colorOrder)!=subtype_only],colorOrder[names(colorOrder)==subtype_only])
     #order <- c(order[!(order %in% subtype_only)], subtype_only)
   }
