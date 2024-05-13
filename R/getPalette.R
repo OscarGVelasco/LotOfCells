@@ -12,14 +12,13 @@
 #' @keywords internal
 getPalette <- function(usePalette="A", nColors=17){
   if(usePalette=="A"){
-    colores = scales::alpha(c("#8DA0CB","#CBB8D0","#A1D49F","#F0DA88","#F08080","#F9BE8D","#B79C76","#B9E8F5","#519B84","#301934",
-                                       "#C1D63C","#F28D35","#CA4133","#666666","#3C7DA6","#926F99","#4AA147"), 0.8)
-    colores = colorspace::desaturate(col = colores, amount = 0.15)
+    colores = scales::alpha(c("#8DA0CB","#CBB8D0","#A1D49F","#F0DA88","#B79C76","#F9BE8D","#C1D63C","#926F99","#B9E8F5","#F08080","#301934",
+                                       "#519B84","#F28D35","#CA4133","#666666","#3C7DA6","#4AA147"), 0.8)
+    colores = colorspace::desaturate(col = colores, amount = 0.12)
     if(nColors > length(colores)){
       colores <- grDevices::colorRampPalette(colors = colores)(nColors)
     }
     #scales::show_col(colores)
-    # discarded: "#FEE390","#BfA7C5"
     return(colores)
   }
 }

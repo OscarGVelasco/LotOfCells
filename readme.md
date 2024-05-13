@@ -47,8 +47,8 @@ sample4 <- c(rep("CellTypeA",500),rep("CellTypeB",1000),rep("CellTypeC",10),rep(
 sample5 <- c(rep("CellTypeA",550),rep("CellTypeB",990),rep("CellTypeC",10),rep("CellTypeD",1100))
 sample <- c(rep("A",length(sample1)),rep("B",length(sample2)),rep("C",length(sample3)),rep("D",length(sample4)),rep("E",length(sample5)))
 times <- c(rep("time 0h",length(sample1)),rep("time 1h",length(sample2)),rep("time 2h",length(sample3)),rep("time 3h",length(sample4)),rep("time 4h",length(sample5)))
-covariable <- c(sample1, sample2, sample3, sample4, sample5)
-meta.data <- data.frame(sample, covariable, times)
+cell_type <- c(sample1, sample2, sample3, sample4, sample5)
+meta.data <- data.frame(sample, cell_type, times)
 meta.data$condition <- "wt"
 meta.data[meta.data$sample %in% c("C","D"),]$condition <- "mut"
 rownames(meta.data) <- as.character(1:nrow(meta.data))
@@ -57,7 +57,7 @@ head(meta.data)
 
 First, lets visualize the data using LotOfCells. In these functions, we can also specify:
 
--   `subtype_only`: Visualize only a specific class from `subtype_variable`. Useful if for example you only want to show the proportions of a specific cell type or subcondition.
+-   `subtype_only`: Visualize only a specific class from `subtype_variable`. Useful if for example you only want to show the proportions of a specific cell type or subclass.
 
 ##### Barplots
 
@@ -66,30 +66,37 @@ Barplots are displayed is such order that the class with the largest average pro
 ```{r construct }
 # # Test of barplot charts:
 # All cells together for every group:
-bar_chart(meta.data, main_variable = "condition", subtype_variable = "covariable")
+bar_chart(meta.data, main_variable = "condition", subtype_variable = "cell_type")
 # Barplot for each individual sample:
-bar_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample")
+bar_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type", sample_id = "sample")
 # Display One-Class only:
-bar_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample", subtype_only = "CellTypeD")
+bar_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type", sample_id = "sample", subtype_only = "CellTypeD")
 ```
+
+By switching the main_variable to cell_type we can investigate the proportion for each cell type in e.g. time points, sequencing dates or different tissues:
+
+```{r construct }
+bar_chart(meta.data, main_variable = "cell_type", subtype_variable = "times")
+```
+
 
 ##### Waffles
 
 ```{r construct }
 # # Test of Waffles charts:
 # All cells together for every group
-waffle_chart(meta.data, main_variable = "condition",subtype_variable = "covariable")
+waffle_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type")
 # Waffle for each individual sample:
-waffle_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample")
+waffle_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type", sample_id = "sample")
 # One-Class only:
-waffle_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample",subtype_only = "CellTypeD")
+waffle_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type", sample_id = "sample",subtype_only = "CellTypeD")
 ```
 
 ##### Polar plots
 
 ```{r construct }
 # Test of circle polar plot:
-polar_chart(meta.data, main_variable = "condition",subtype_variable = "covariable", sample_id = "sample")
+polar_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type", sample_id = "sample")
 # Test of polar plot by cell-type:
-polar_chart(meta.data, main_variable = "covariable",subtype_variable = "sample")
+polar_chart(meta.data, main_variable = "cell_type",subtype_variable = "sample")
 ```
