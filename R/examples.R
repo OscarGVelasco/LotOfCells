@@ -203,3 +203,35 @@
 # dynamics_chart(results.4.conditions)
 # dynamics_chart(results.4.conditions,scaleData = TRUE)
 
+
+
+##################### BEST
+# nTypes <- 10
+# nSamples <- 5
+#
+# dataset <- lapply(1:nSamples, function(samp){
+#   data.frame(cell_type=unlist(sapply(1:nTypes, function(i){
+#     label=paste("CellType", LETTERS[i], sep = "_")
+#     rep(label, sample(x = 5000:7000, size = 1)/i)
+#     })),
+#              sample=paste("Sample", samp,sep = "_"))
+#   })
+# dataset <- do.call("rbind", dataset)
+# dataset$condition = "wt"
+# #
+# dataset2 <- lapply(1:nSamples, function(samp){
+#   data.frame(cell_type=unlist(sapply(1:nTypes, function(i){
+#     label=paste("CellType", LETTERS[i], sep = "_")
+#     rep(label, sample(x = 5000:7000, size = 1)/i)
+#   })),
+#   sample=paste("Sample", samp,sep = "_"))
+# })
+# dataset2 <- do.call("rbind", dataset2)
+# dataset2$condition = "mut"
+#
+# bar_chart(rbind(dataset,dataset2), main_variable = "condition",subtype_variable = "cell_type", sample_id = "sample")
+#
+# bar_chart(rbind(dataset,dataset2), main_variable = "condition",subtype_variable = "cell_type")
+#
+# waffle_chart(rbind(dataset,dataset2), main_variable = "condition",subtype_variable = "cell_type")
+
