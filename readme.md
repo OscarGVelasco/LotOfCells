@@ -1,6 +1,6 @@
 # Lot Of Cells
 
-Proportion test statistics and visualization on single cell metadata. A simple package for single cell data exploration.
+Proportion test statistics and visualization on single cell metadata. A simple package for single cell metadata exploration.
 
 ### Installation
 
@@ -13,9 +13,7 @@ install_github("OscarGVelasco/lotOfCells")
 
 # Introduction
 
-Single cell sequencing unveils a treasure trove into the biological and molecular characteristics of samples. Yet, within this flood of data, the challenge to draw meaningful conclusions sometimes can be hard.
-
-Here we introduce `LotOfCells`: a simple R package designed to explore the intricate landscape of phenotypic data within single-cell studies. An example of such analysis would be to test the proportion of different cell-types across conditions.
+Single cell sequencing unveils a treasure trove into the biological and molecular characteristics of samples. Here we introduce `LotOfCells`: a simple R package designed to explore the intricate landscape of phenotype data within single-cell studies. An archetypal example of such analysis would be to test the differences in proportion between cell-types across conditions, but it can be used in many scenarios e.g: test if a specific cell-type or class proportion is dependent of sequencing date as a quality check.
 
 ### Overview of test and visualizations available in LotOfCells
 
@@ -62,7 +60,7 @@ First, lets visualize the data using LotOfCells. In these functions, we can also
 
 -   `subtype_only`: Visualize only a specific class from `subtype_variable`. Useful if for example you only want to show the proportions of a specific cell type or subclass.
 
-##### Barplots
+### Barplots
 
 Barplots are displayed is such order that the class with the largest average proportion is always at the bottom, facilitating the comparison of smaller groups at the top. 
 
@@ -91,7 +89,7 @@ ggpubr::ggarrange(g.A, g.B, g.C, g.D, labels = c("A", "B", "C","D"),
 <figcaption><i> Example barplots. </i></figcaption>
 </figure>
 
-##### Waffles
+### Waffles
 
 To visualize small proportions using waffle plots might be more advisable:
 
@@ -110,10 +108,12 @@ ggpubr::ggarrange(ggpubr::ggarrange(g.B, g.C, nrow=2, labels = c("A","B")), g.A,
 
 <figure>
 <img src="./images/figure2_LoC.jpeg" alt="LotOfCells waffle plots" width="600" height="400" />
-<figcaption><i> Example barplots. </i></figcaption>
+<figcaption><i> Example waffle plots. </i></figcaption>
 </figure>
 
-##### Polar plots
+### Polar plots
+
+Lastly, this visualization might be interesting to compare raw number of cells per class (e.g.: if a sample has a much larger number of cells, which might affect downstream analysis).
 
 ```{r}
 # Test of circle polar plot:
@@ -121,3 +121,80 @@ polar_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type
 # Test of polar plot by cell-type:
 polar_chart(meta.data, main_variable = "cell_type",subtype_variable = "sample")
 ```
+
+### Parallelization
+
+For the proportion tests and the Montecarlo simulations we can use parallelization using `BiocParallel`:
+
+```{r}
+# Set number of CPUs to use:
+BiocParallel::register(BPPARAM =  BiocParallel::MulticoreParam(workers = 6))
+```
+
+### Differential proportion test - two conditions
+
+The main feature of LotOfCells is the test of differences in proportions, and a simulation of a random distribution to understand how extreme our observations might be. To compare the proportions of a specific class between 2 conditions we have to define the two classes and the order in which they will be compared from the column specified in `main_variable`. Optionally we can set the sample_id column (or other sub-class level) to include the per-sample heterogeneity in the computational simulation.
+
+A plot of the differences in proportions is printed and a dataframe with the statistical results is returned.
+
+```{r}
+# # Test of 2 conditions using montecarlo and differences in percentage
+labelOrder <- c("mut","wt")
+results.2.conditions <- lotOfCells(scObject = meta.data,
+                                      main_variable = "condition",
+                                      subtype_variable = "cell_type",
+                                      sample_id = "sample",
+                                      permutations = 1000,
+                                      labelOrder = labelOrder,
+                                      parallel = TRUE)
+print(results.2.conditions)
+```
+
+<figure>
+<img src="./images/figure3_LoC.jpeg" alt="LotOfCells waffle plots" width="500" height="400" />
+<figcaption><i> Test of differences in proportion. </i></figcaption>
+</figure>
+
+### Symmetric Divergence Score - global disregulation in class proportions
+
+To understand if the majority of class proportions change significantly at the same time for two conditions, we compute a divergence score based on the Kullback-
+Leibler (KL) divergence. We simulate a random distribution to try to understand how extreme is the observed symmetric score.
+
+```{r}
+# # Test of entropy for 2 conditions using montecarlo simulation
+labelOrder <- c("mut","wt")
+results.2.conditions.entropy <- entropyScore(scObject = meta.data,
+          main_variable = "condition",
+          subtype_variable = "cell_type",
+          permutations = 10000,
+          labelOrder = labelOrder,
+          parallel = F)
+```
+
+<figure>
+<img src="./images/figure4_LoC.jpeg" alt="LotOfCells symmetric score plot" width="600" height="300" />
+<figcaption><i> Test of symmetric entropy score in global proportions. </i></figcaption>
+</figure>
+
+### Differential proportion test - more than two conditions
+
+The test of differences in proportions available in LotOfCells can be done with more than 2 conditions, by computing a Kendall rank correlation coefficient. To compare the proportions of a specific class between several conditions we will need to define the classes and the order in which they will be compared from the column specified in `main_variable`, the correlation (positive and negative) will be tested following the order defined. Optionally, like introduced above, we can set the sample_id column (or other sub-class level) to include the per-sample heterogeneity in the computational simulation.
+
+```{r}
+# # Test of correlation for SEVERAL conditions using Kendall rank correlation
+labelOrder <- c("time 0h","time 2h","time 4h")
+results.3.conditions <- lotOfCells(scObject = meta.data,
+                                main_variable = "times",
+                                subtype_variable = "cell_type",
+                                sample_id = "sample",
+                                permutations = 1000,
+                                labelOrder = labelOrder,
+                                parallel = T)
+head(results.3.conditions)
+dynamics_chart(gammaResults = results.3.conditions)
+```
+
+<figure>
+<img src="./images/figure5_LoC.jpeg" alt="LotOfCells proportion test with more than 2 conditions" width="700" height="450" />
+<figcaption><i> LotOfCells proportion test with more than 2 conditions. </i></figcaption>
+</figure>

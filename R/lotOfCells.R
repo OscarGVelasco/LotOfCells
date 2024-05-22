@@ -94,7 +94,6 @@ lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL,
     # Set variables for the random permutation test:
     message("More than 2 groups detected.")
     message(paste("Computing Goodman and Kruskal's gamma rank correlation coefficient in the following order:",paste(labelOrder,collapse = ' vs ')))
-    #cellCrowd <- round(c(table(groups)*(1/10)))
     cellCrowd <- round(sqrt(c(table(groups))))
     cellCrowd <- cellCrowd[labelOrder]
     kendallDenominator <- (length(labelOrder) * (length(labelOrder)-1)) / 2 #n. of pairs to be compared: (N * (N-1)) / 2
@@ -104,8 +103,6 @@ lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL,
     indexes <- colnames(contig_tab)
     rank_index <- c(1:length(labelOrder))
     # Goodman and Kruskal's gamma function:
-    #godKrusGamma <- function(nc,nd){(nc-nd)/(nc+nd)}
-    # godKrusGamma <- function(nc, nd, N){(nc-nd)/(N)}
     godKrusGamma <- function(nc, nd, N){(nc-nd)/exp(mean(log(N)))}
     # Call gamma rank correlation to perform a permutation test on the original sets
     # PARALLEL FINE TUNING - CONSTRUCTION
@@ -139,8 +136,6 @@ lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL,
       return(mapply(FUN = godKrusGamma, random_concordant, random_disconcordant, kendallDenominator*nRandomObservations))
     })
     random_gamma_cor <- do.call(rbind, random_gamma_cor)
-    #print(random_gamma_cor)
-    #random_gamma_cor <- t(random_gamma_cor)
     # calculate the p.value
     higuer_in_null <- round((rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor <= x}), na.rm = TRUE)) / (permutations), digits=5)
     lower_in_null <- round((rowSums(apply(random_gamma_cor[,indexes],1, function(x){original_gamma_cor >= x}), na.rm = TRUE)) / (permutations), digits=5)
@@ -160,24 +155,12 @@ lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL,
       message(paste("Additional sub-level for testing:",sample_id))
       samples <- as.character(main_metadata[, sample_id])
       nPerSample <- table(data.frame(groups,samples))[labelOrder,]
-      #cellCrowd <- apply(nPerSample, 1, function(perCond){list(perCond[perCond!=0]*(1/12))})
       cellCrowd <- apply(nPerSample, 1, function(perCond){list(sqrt(perCond[perCond!=0]))})
       cellCrowd <- cellCrowd[labelOrder]
-      #df <- data.frame(groups=paste(groups,samples,sep = "_"),covariable)
-      #nPerSample <- table(paste(groups,samples,sep = "_"))
     }
     df <- data.frame(groups, covariable)
     df.table <- table(df)
-    # df[df==0] <- 1 * Use arcsin pseudocount:
     contig_tab <- t(apply(pseudoCount(df.table),1,function(row){row/sum(row)}))[labelOrder,]    # # CONTRUCTION
-    # log2(apply(contig_tab,2,function(x){
-    #   if(any(x==0)){
-    #     (x[1]+(sqrt((x[1]*x[1])+0.01))) / (x[2]+(sqrt((x[2]*x[2])+0.01)))}
-    #     else{
-    #       x[1] / x[2]
-    #     }
-    # }))
-    # #
     original_test <- log2(contig_tab[1,] / contig_tab[2,])
     indexes <- names(original_test)
     if(is.null(sample_id)){
@@ -192,14 +175,9 @@ lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL,
         cellToMontecarlo(covariable, groups, labelOrder, indexes, cellCrowd)
         })
     })
-    # null_test <- lapply(seq_len(permutations),function(x){
-    #   cellToMontecarlo(covariable, groups, labelOrder, indexes, cellCrowd)
-    # })
     # Unpack results
     null_test_fcs <- do.call(rbind, lapply(null_test,function(l)do.call(rbind,lapply(l,function(results)results[[1]]))))
     null_test_real <- do.call(rbind, lapply(null_test,function(l)do.call(rbind,lapply(l,function(results)results[[2]]))))
-    # null_test_fcs <- do.call(rbind,lapply(null_test,function(l)l[[1]]))
-    # null_test_real <- do.call(rbind,lapply(null_test,function(l)l[[2]]))
     # test 1 #
     # Calculate how extreme our observed values are in comparison with the random distribution
     # We want to see if the FoldChanges on the random distribution are lower or higher than the observed FoldChange
