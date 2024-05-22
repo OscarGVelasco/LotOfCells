@@ -57,17 +57,13 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     group_colores = colorspace::desaturate(col = group_colores, amount = 0.16)
   }
   if(!is.null(subtype_only)){
-    #group_names <- c("Control_26",  "Control_27" , "Control_36",  "Control_699", "KIF5A_25"  ,  "KIF5A_29"  ,  "KIF5A_37" ,   "KIF5A_44")
     groupForColors <- table(unlist(lapply(strsplit(x = group_names, split = "_"), function(group)group[1])))
     contig_tab_resh <- contig_tab_resh[contig_tab_resh[,"covariable"] %in% subtype_only, ]
-    #coloresSubtype = scales::alpha(c("#DBECDA","#92C791","#BEDAEC","#7EB6D9","#DDC7E2","#86608E"), 0.8)
     coloresSubtype <- colorspace::lighten(group_colores, amount = 0.4)
     coloresSubtype <- colorspace::desaturate(col = coloresSubtype, amount = 0.16)
     coloresSubtype <- coloresSubtype[1:length(groupForColors)]
     coloresSubtype <- rev(coloresSubtype)
     colores <- rep(coloresSubtype, groupForColors)
-    #colorOrder <- c(colorOrder[names(colorOrder)!=subtype_only],colorOrder[names(colorOrder)==subtype_only])
-    #order <- c(order[!(order %in% subtype_only)], subtype_only)
   }
   if(!is.null(subtype_only)){
     g <- ggplot2::ggplot(contig_tab_resh, ggplot2::aes(x=groups, y=value, group_by=covariable, fill = groups)) +
@@ -78,8 +74,6 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
       ggplot2::ggtitle(paste("Proportions of", subtype_variable, "by", main_variable), paste("Class:",subtype_only)) +
       ggplot2::scale_y_continuous(name="percentage", breaks=seq(0, 1, by=0.1), minor_breaks = seq(0.05, 0.95, by=0.1),
                                   labels = seq(0, 100, by=10), limits = c(-0.1, 1)) +
-      # ggplot2::geom_rect(data = annot.data,
-      #                    mapping = ggplot2::aes(xmin = x, xmax = y, ymin = -0.02, ymax = -0.06, fill=group),inherit.aes = FALSE) +
       ggplot2::annotate(
         ymin = -0.02, ymax = -0.08,
         xmin = xmin.annotation,
@@ -117,6 +111,11 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
           geom = "text", label=annot.data$group,
           color="white", fontface = "bold.italic", size=4
         )
+    if(!is.null(sample_id)){
+      g <- g + ggplot2::ggtitle(paste("Proportions of", subtype_variable, "by", main_variable), paste("Individual Sub-level by:", sample_id))
+    } else{
+      g <- g + ggplot2::ggtitle(paste("Proportions of", subtype_variable, "by", main_variable))
+    }
   }
   return(g)
 }

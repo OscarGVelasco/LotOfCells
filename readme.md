@@ -36,23 +36,26 @@ All functions require the following inputs:
 
 ### Examples
 
-We will construct a simulated dataset of single cell metadata, with two conditions (mutant and wild type) including cell types (A,B,C,D) and different time points simulating treatment (time 0h/1h/2h/3h/4h):
+We will construct a simulated dataset of single cell metadata made up of 6 samples, with two conditions (mutant and wild type) including 4 cell types (A,B,C,D) and different time points simulating treatment (time 0h/2h/4h):
 
-```{r construct }
-# # Data simulation with 2 conditions and 4 cell-types:
+```{r construct}
+
+# # Data simulation with 2 conditions, 3 time points, and 4 cell-types:
 sample1 <- c(rep("CellTypeA",700),rep("CellTypeB",300),rep("CellTypeC",500),rep("CellTypeD",1000))
 sample2 <- c(rep("CellTypeA",1700),rep("CellTypeB",350),rep("CellTypeC",550),rep("CellTypeD",800))
 sample3 <- c(rep("CellTypeA",1200),rep("CellTypeB",200),rep("CellTypeC",420),rep("CellTypeD",800))
 sample4 <- c(rep("CellTypeA",500),rep("CellTypeB",1000),rep("CellTypeC",10),rep("CellTypeD",1200))
 sample5 <- c(rep("CellTypeA",550),rep("CellTypeB",990),rep("CellTypeC",10),rep("CellTypeD",1100))
-sample <- c(rep("A",length(sample1)),rep("B",length(sample2)),rep("C",length(sample3)),rep("D",length(sample4)),rep("E",length(sample5)))
-times <- c(rep("time 0h",length(sample1)),rep("time 1h",length(sample2)),rep("time 2h",length(sample3)),rep("time 3h",length(sample4)),rep("time 4h",length(sample5)))
-cell_type <- c(sample1, sample2, sample3, sample4, sample5)
+sample6 <- c(rep("CellTypeA",1350),rep("CellTypeB",590),rep("CellTypeC",300),rep("CellTypeD",600))
+sample <- c(rep("A",length(sample1)),rep("B",length(sample2)),rep("C",length(sample3)),rep("D",length(sample4)),rep("E",length(sample5)),rep("F",length(sample6)))
+times <- c(rep("time 0h",length(sample1)),rep("time 0h",length(sample2)),rep("time 2h",length(sample3)),rep("time 2h",length(sample4)),rep("time 4h",length(sample5)),rep("time 4h",length(sample6)))
+cell_type <- c(sample1, sample2, sample3, sample4, sample5, sample6)
 meta.data <- data.frame(sample, cell_type, times)
 meta.data$condition <- "wt"
-meta.data[meta.data$sample %in% c("C","D"),]$condition <- "mut"
+meta.data[meta.data$sample %in% c("B","D","F"),]$condition <- "mut"
 rownames(meta.data) <- as.character(1:nrow(meta.data))
 head(meta.data)
+
 ```
 
 First, lets visualize the data using LotOfCells. In these functions, we can also specify:
@@ -61,40 +64,58 @@ First, lets visualize the data using LotOfCells. In these functions, we can also
 
 ##### Barplots
 
-Barplots are displayed is such order that the class with the largest average proportion is always at the bottom, facilitating the comparison of smaller groups at the top.
+Barplots are displayed is such order that the class with the largest average proportion is always at the bottom, facilitating the comparison of smaller groups at the top. 
 
-```{r construct }
+`LotOfCells` can be used with any other combination of variables (different from cell type). Here (Figure D), by switching the `subtype_variable` to the time-points we can investigate the contribution of time-points to the main condition, serving as a quality check to understand the weight of some covarites to the target condition (e.g. time points, sequencing dates or different tissues):
+
+```{r, eval=False }
+library(ClusterFoldSimilarity)
+
 # # Test of barplot charts:
 # All cells together for every group:
-bar_chart(meta.data, main_variable = "condition", subtype_variable = "cell_type")
+g.A <- bar_chart(meta.data, main_variable = "condition", subtype_variable = "cell_type")
 # Barplot for each individual sample:
-bar_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type", sample_id = "sample")
+g.B <- bar_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type", sample_id = "sample")
 # Display One-Class only:
-bar_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type", sample_id = "sample", subtype_only = "CellTypeD")
+g.C <- bar_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type", sample_id = "sample", subtype_only = "CellTypeD")
+# Distribution of time-points by condition:
+g.D <- bar_chart(meta.data, main_variable = "condition",subtype_variable = "times")
+
+ggpubr::ggarrange(g.A, g.B, g.C, g.D, labels = c("A", "B", "C","D"),  
+          ncol=2, nrow=2, common.legend = F)
+
 ```
 
-By switching the main_variable to cell_type we can investigate the proportion for each cell type in e.g. time points, sequencing dates or different tissues:
-
-```{r construct }
-bar_chart(meta.data, main_variable = "cell_type", subtype_variable = "times")
-```
-
+<figure>
+<img src="./images/figure1_LoC.jpeg" alt="LotOfCells barplots" width="600" height="400" />
+<figcaption><i> Example barplots. </i></figcaption>
+</figure>
 
 ##### Waffles
 
-```{r construct }
+To visualize small proportions using waffle plots might be more advisable:
+
+```{r}
 # # Test of Waffles charts:
 # All cells together for every group
-waffle_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type")
+g.A <- waffle_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type")
 # Waffle for each individual sample:
-waffle_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type", sample_id = "sample")
+g.B <- waffle_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type", sample_id = "sample")
 # One-Class only:
-waffle_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type", sample_id = "sample",subtype_only = "CellTypeD")
+g.C <- waffle_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type", sample_id = "sample",subtype_only = "CellTypeD")
+
+ggpubr::ggarrange(ggpubr::ggarrange(g.B, g.C, nrow=2, labels = c("A","B")), g.A, labels = c("", "C"),  
+                  ncol=2, nrow=1, widths = c(2,1))
 ```
+
+<figure>
+<img src="./images/figure2_LoC.jpeg" alt="LotOfCells waffle plots" width="600" height="400" />
+<figcaption><i> Example barplots. </i></figcaption>
+</figure>
 
 ##### Polar plots
 
-```{r construct }
+```{r}
 # Test of circle polar plot:
 polar_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type", sample_id = "sample")
 # Test of polar plot by cell-type:
