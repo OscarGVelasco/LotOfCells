@@ -85,7 +85,7 @@ ggpubr::ggarrange(g.A, g.B, g.C, g.D, labels = c("A", "B", "C","D"),
 ```
 
 <figure>
-<img src="./images/figure1_LoC.jpeg" alt="LotOfCells barplots" width="600" height="400" />
+<img src="./images/Figure1_LoC.jpeg" alt="LotOfCells barplots" width="600" height="400" />
 <figcaption><i> Example barplots. </i></figcaption>
 </figure>
 
@@ -107,7 +107,7 @@ ggpubr::ggarrange(ggpubr::ggarrange(g.B, g.C, nrow=2, labels = c("A","B")), g.A,
 ```
 
 <figure>
-<img src="./images/figure2_LoC.jpeg" alt="LotOfCells waffle plots" width="600" height="400" />
+<img src="./images/Figure2_LoC.jpeg" alt="LotOfCells waffle plots" width="600" height="400" />
 <figcaption><i> Example waffle plots. </i></figcaption>
 </figure>
 
@@ -124,7 +124,7 @@ polar_chart(meta.data, main_variable = "cell_type",subtype_variable = "sample")
 
 ### Parallelization
 
-For the proportion tests and the Montecarlo simulations we can use parallelization using `BiocParallel`:
+For the proportion tests and the Montecarlo simulations that we are going to introduce, we can use parallelization using `BiocParallel`:
 
 ```{r}
 # Set number of CPUs to use:
@@ -151,7 +151,7 @@ print(results.2.conditions)
 ```
 
 <figure>
-<img src="./images/figure3_LoC.jpeg" alt="LotOfCells waffle plots" width="500" height="400" />
+<img src="./images/Figure3_LoC.jpeg" alt="LotOfCells waffle plots" width="500" height="400" />
 <figcaption><i> Test of differences in proportion. </i></figcaption>
 </figure>
 
@@ -172,7 +172,7 @@ results.2.conditions.entropy <- entropyScore(scObject = meta.data,
 ```
 
 <figure>
-<img src="./images/figure4_LoC.jpeg" alt="LotOfCells symmetric score plot" width="600" height="300" />
+<img src="./images/Figure4_LoC.jpeg" alt="LotOfCells symmetric score plot" width="600" height="300" />
 <figcaption><i> Test of symmetric entropy score in global proportions. </i></figcaption>
 </figure>
 
@@ -195,6 +195,6 @@ dynamics_chart(gammaResults = results.3.conditions)
 ```
 
 <figure>
-<img src="./images/figure5_LoC.jpeg" alt="LotOfCells proportion test with more than 2 conditions" width="700" height="450" />
+<img src="./images/Figure5_LoC.jpeg" alt="LotOfCells proportion test with more than 2 conditions" width="700" height="450" />
 <figcaption><i> LotOfCells proportion test with more than 2 conditions. </i></figcaption>
 </figure>
