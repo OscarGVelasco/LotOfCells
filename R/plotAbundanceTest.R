@@ -27,7 +27,7 @@ plotAbundanceTest <- function(tableResults=NULL, subtype_variable){
   tmp.pval[tmp.pval==0] <- 0.00001
   df$significance <- sign(df$groupFC)*-log10(tmp.pval)
   ggplot2::ggplot(df, ggplot2::aes(x=groupFC, y=classLabel)) +
-    ggplot2::geom_point(ggplot2::aes(fill=significance), pch=21, stroke=0.2, size=8, alpha=0.8) +
+    ggplot2::geom_point(ggplot2::aes(fill=significance), pch=21, stroke=0.2, size=6, alpha=0.8) +
     ggplot2::scale_fill_gradientn(colours=c("#122A53","#43587D", "#8BBCD4", "#C1DEEF","#EEF6FF", "#FDFFFF", "#F6F3FF", "#DDCFFF", "#D1AADB", "#76608E","#463955"),
                                   limits = c(-3, 3),
                                   labels=c("p.val 0.001", 0.01,0.1,1,0.1,0.01,"p.val 0.001"), oob=scales::squish) +

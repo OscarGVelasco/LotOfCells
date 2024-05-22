@@ -164,7 +164,6 @@ lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL,
     original_test <- log2(contig_tab[1,] / contig_tab[2,])
     indexes <- names(original_test)
     if(is.null(sample_id)){
-      # cellCrowd <- round(c(table(groups)*1/10))
       cellCrowd <- round(sqrt(c(table(groups))))
       cellCrowd <- cellCrowd[labelOrder]
     }
@@ -191,6 +190,11 @@ lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL,
     intervals <- apply(null_test_real[,indexes], 2, function(c)quantile(c,probs = c(0.025,0.975)))
     table.results <- data.frame(groupFC=original_test, round(contig_tab[labelOrder[1],],3), round(contig_tab[labelOrder[2],],3), p.adj, sd.montecarlo, CI95low=intervals[1,], CI95high=intervals[2,])
     colnames(table.results) <- c("groupFC", paste0("percent_in_",labelOrder[1]), paste0("percent_in_",labelOrder[2]), "p.adj", "sd.montecarlo", "CI95low", "CI95high")
+    # We make sure that CIs are lower or higuer than the observed value, if not make them equal:
+    indx <- which(!(table.results[,"CI95low"] < table.results[,"groupFC"]))
+    table.results[indx,"CI95low"] <- table.results[indx,"groupFC"]
+    indx <- which(!(table.results[,"CI95high"] > table.results[,"groupFC"]))
+    table.results[indx,"CI95low"] <- table.results[indx,"groupFC"]
     methods::show(plotAbundanceTest(tableResults=table.results, subtype_variable=subtype_variable))
     return(table.results)
   }
