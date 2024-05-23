@@ -19,7 +19,7 @@ Single cell sequencing unveils a treasure trove into the biological and molecula
 
 <figure>
 <img src="./images/main_diagram_lotOfCells.jpg" alt="LotOfCells diagram" />
-<figcaption><i>Plots and tests available in LotOfCells. <b>A</b>. Barplots of proportions of cell types for all individual samples from different tissues, the tissue class is depicted in the colored boxes on the x-axis. <b>B</b>. Barplots showing the cell type composition of normal and tumor lung samples (from the same dataset) by cancer stage. Here the samples from the same stages are grouped together in each barplot. <b>C</b> Montecarlo test for the difference in cell type population abundances between tumor and normal lung samples in stage IA. </i></figcaption>
+<figcaption><i><b>Diagram of plots and tests available in LotOfCells. A.</b> Barplots of proportions of cell types for all individual samples from different tissues, the tissue class is depicted in the colored boxes on the x-axis. <b>B.</b> Barplots showing the cell type composition of normal and tumor lung samples, each bar corresponds to a cancer stage. Samples from the same stage-condition are grouped together in the same bar. <b>C.</b> Montecarlo test for the difference in cell type population abundances between tumor and normal lung samples in stage IA. B lymphocyte population is significantly larger in tumor. <b>D.</b> Waffle plots showing B lymphocytes only for all independent patients. The number of total B lymphocytes is depicted in grey. Each square=1\%. <b>E.</b> Waffle plot showing IA stage for tumor and normal lung. All samples are pulled together by condition. <b>F.</b> Symmetric divergence score test between stages IA and IIIA from lung tumor. On the right a scatter violin plot showing the distribution of generated scores vs the observed value. <b>G.</b> Cell type proportion changes across cancer stages in lung tumor. Values of the Kendall Tau correlation coefficient per cell type are shown. <b>H.</b> Barplot of Myeloid cells proportions across cancer stages in lung tumor. <b>I.</b> Polar plot showing the raw number of cells per tissue. </i></figcaption>
 </figure>
 
 # Manual
@@ -134,6 +134,8 @@ BiocParallel::register(BPPARAM =  BiocParallel::MulticoreParam(workers = 6))
 ### Differential proportion test - two conditions
 
 The main feature of LotOfCells is the test of differences in proportions, and a simulation of a random distribution to understand how extreme our observations might be. To compare the proportions of a specific class between 2 conditions we have to define the two classes and the order in which they will be compared from the column specified in `main_variable`. Optionally we can set the sample_id column (or other sub-class level) to include the per-sample heterogeneity in the computational simulation.
+
+***NOTE: for significance testing we recommend and $\alpha$ value of 0.001**
 
 A plot of the differences in proportions is printed and a dataframe with the statistical results is returned.
 
