@@ -193,7 +193,7 @@ results.2.conditions.entropy <- entropyScore(scObject = meta.data,
 ```
 
 <figure>
-<img src="./images/Figure4_LoC.jpeg" alt="LotOfCells symmetric score plot" width="600" height="420" />
+<img src="./images/Figure4_LoC.jpeg" alt="LotOfCells symmetric score plot" width="640" height="400" />
 <figcaption><i> Test of symmetric entropy score in global proportions. </i></figcaption>
 </figure>
 
