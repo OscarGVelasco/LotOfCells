@@ -130,7 +130,8 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
     # Minimum 2 rows
     multiplot <- do.call("arrangeGrob", c(g.list,nrow=max(round(sqrt(length(unique(groups)))),2)))
   }
-  return(grid.arrange(multiplot, legend, ncol = 2, heights = c(10, 1.5), widths = c(10,1.5)))
+  #  return(grid.arrange(multiplot, legend, ncol = 2, heights = c(10, 1.5), widths = c(10,1.5)))
+  return(grid.arrange(multiplot, legend, ncol = 2, heights = c(0.9, 0.1), widths = c(0.9, 0.1)))
 }
 
 
