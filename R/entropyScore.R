@@ -192,6 +192,7 @@ entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
     ggplot2::geom_bar(stat="identity", position=ggplot2::position_dodge()) +
     ggplot2::scale_fill_brewer(palette="Blues") +
     ggplot2::theme_minimal() +
+    ggplot2::guides(fill = guide_legend(title=paste("Class:", subtype_variable), drop=FALSE)) +
     ggplot2::ggtitle(paste("Symmetric Divergence Score:",round(entropy_score,digits = 3),"p.val.adj:",round(p.adj,digits = 3))) +
     ggplot2::theme(
       title = ggplot2::element_text(face="bold", size=ggplot2::rel(1.2)),

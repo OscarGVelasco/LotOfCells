@@ -22,7 +22,7 @@ getPalette <- function(usePalette="A", nColors=20){
       colores <- grDevices::colorRampPalette(colors = colores)(nColors)
     }
     #scales::show_col(colores)
-    return(colores)
+    return(colores[1:nColors])
   }
 }
 

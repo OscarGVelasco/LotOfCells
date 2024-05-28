@@ -95,7 +95,7 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
                      legend.margin=margin(c(1, 1, 1, 1)),
                      plot.margin = unit(c(0.1, 0.1, 0.1, 0.1), "cm")) +
       ggplot2::scale_fill_manual(values = colores[colorOrder], drop=FALSE) +
-      ggplot2::guides(fill = guide_legend(title = "Class",drop=FALSE)) +
+      ggplot2::guides(fill = guide_legend(title=paste("Class:", subtype_variable), drop=FALSE)) +
       ggplot2::ggtitle(group_names[indx]) +
       ggplot2::labs(caption = paste("n. cells:", ncells[group_names[indx]]))
     if(!is.null(subtype_only)){
@@ -108,7 +108,7 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
   })
   # function to extract legend from plot
   get_only_legend <- function(plot) {
-    plot_table <- ggplot_gtable(ggplot_build(plot))
+    plot_table <- ggplot2::ggplot_gtable(ggplot_build(plot))
     legend_plot <- which(sapply(plot_table$grobs, function(x) x$name) == "guide-box")
     legend <- plot_table$grobs[[legend_plot]]
     return(legend)

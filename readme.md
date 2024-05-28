@@ -67,7 +67,6 @@ Barplots are displayed is such order that the class with the largest average pro
 `LotOfCells` can be used with any other combination of variables (different from cell type). Here (Figure D), by switching the `subtype_variable` to the time-points we can investigate the contribution of time-points to the main condition, serving as a quality check to understand the weight of some covarites to the target condition (e.g. time points, sequencing dates or different tissues):
 
 ```{r, eval=False }
-library(ClusterFoldSimilarity)
 
 # # Test of barplot charts:
 # All cells together for every group:
@@ -87,6 +86,26 @@ ggpubr::ggarrange(g.A, g.B, g.C, g.D, labels = c("A", "B", "C","D"),
 <figure>
 <img src="./images/Figure1_LoC.jpeg" alt="LotOfCells barplots" width="600" height="400" />
 <figcaption><i> Example barplots. </i></figcaption>
+</figure>
+
+### Contribution of a class to the global population in barplots
+
+If we want to visualize the contribution to the global proportion of a specific class (e.g.: how much each sample contribute to each cell type proportion), we can use the `contribution = TRUE` flag when setting the `sample_id` variable:
+
+```{r}
+
+# Examine the contribution of each sample to the proportions of cell types per condition:
+g.A <- bar_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type", sample_id = "sample", contribution = TRUE)
+# Examine the contribution of each sample to the proportions of cell types per time point:
+g.B <- bar_chart(meta.data, main_variable = "times",subtype_variable = "cell_type", sample_id = "sample", contribution = TRUE)
+
+ggpubr::ggarrange(g.A, g.B, labels = c("A", "B"),
+                  ncol=2, nrow=1, common.legend = F)
+```
+
+<figure>
+<img src="./images/Figure1.2_LoC.jpeg" alt="LotOfCells barplots" width="600" height="400" />
+<figcaption><i> Example barplots with contribution per class. </i></figcaption>
 </figure>
 
 ### Waffles
