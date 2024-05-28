@@ -84,7 +84,7 @@ ggpubr::ggarrange(g.A, g.B, g.C, g.D, labels = c("A", "B", "C","D"),
 ```
 
 <figure>
-<img src="./images/Figure1_LoC.jpeg" alt="LotOfCells barplots" width="600" height="400" />
+<img src="./images/Figure1_LoC.jpeg" alt="LotOfCells barplots" width="700" height="520" />
 <figcaption><i> Example barplots. </i></figcaption>
 </figure>
 
@@ -104,7 +104,7 @@ ggpubr::ggarrange(g.A, g.B, labels = c("A", "B"),
 ```
 
 <figure>
-<img src="./images/Figure1.2_LoC.jpeg" alt="LotOfCells barplots" width="600" height="400" />
+<img src="./images/Figure1.2_LoC.jpeg" alt="LotOfCells barplots" width="700" height="400" />
 <figcaption><i> Example barplots with contribution per class. </i></figcaption>
 </figure>
 
@@ -126,7 +126,7 @@ ggpubr::ggarrange(ggpubr::ggarrange(g.B, g.C, nrow=2, labels = c("A","B")), g.A,
 ```
 
 <figure>
-<img src="./images/Figure2_LoC.jpeg" alt="LotOfCells waffle plots" width="600" height="400" />
+<img src="./images/Figure2_LoC.jpeg" alt="LotOfCells waffle plots" width="700" height="520" />
 <figcaption><i> Example waffle plots. </i></figcaption>
 </figure>
 
@@ -172,7 +172,7 @@ print(results.2.conditions)
 ```
 
 <figure>
-<img src="./images/Figure3_LoC.jpeg" alt="LotOfCells waffle plots" width="500" height="400" />
+<img src="./images/Figure3_LoC.jpeg" alt="LotOfCells waffle plots" width="700" height="520" />
 <figcaption><i> Test of differences in proportion. </i></figcaption>
 </figure>
 
@@ -193,7 +193,7 @@ results.2.conditions.entropy <- entropyScore(scObject = meta.data,
 ```
 
 <figure>
-<img src="./images/Figure4_LoC.jpeg" alt="LotOfCells symmetric score plot" width="600" height="300" />
+<img src="./images/Figure4_LoC.jpeg" alt="LotOfCells symmetric score plot" width="700" height="450" />
 <figcaption><i> Test of symmetric entropy score in global proportions. </i></figcaption>
 </figure>
 
