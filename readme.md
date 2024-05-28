@@ -15,7 +15,7 @@ install_github("OscarGVelasco/lotOfCells")
 
 Single cell sequencing unveils a treasure trove into the biological and molecular characteristics of samples. Here we introduce `LotOfCells`: a simple R package designed to explore the intricate landscape of phenotype data within single-cell studies. An archetypal example of such analysis would be to test the differences in proportion between cell-types across conditions, but it can be used in many scenarios e.g: test if a specific cell-type or class proportion is dependent of sequencing date as a quality check.
 
-### Overview of test and visualizations available in LotOfCells
+### Overview of tests and visualizations available in LotOfCells
 
 <figure>
 <img src="./images/main_diagram_lotOfCells.jpg" alt="LotOfCells diagram" />
@@ -28,7 +28,7 @@ Single cell sequencing unveils a treasure trove into the biological and molecula
 All functions require the following inputs:
 
 -   `scObject`: Either and object of class `Seurat` or of class `SingleCellExperiment`, or a dataframe containing the metadata.
--   `main_variable`: Column name containing the main class variable condition we want to test and visualize (e.g. mutant, control). 
+-   `main_variable`: Column name containing the main class variable condition we want to test and visualize (e.g.: condition, treatment, tissue...). 
 -   `subtype_variable`: Column name containing the subtype class variable we want to test and visualize (e.g. cell type, sequencing date, cluster...). 
 -   `sample_id`: (optional) Column name containing the sample/patient id variable. If provided, for tests sampling will be done simulating the proportion variability per sample, for plots each individual will be shown.
 
@@ -154,9 +154,9 @@ BiocParallel::register(BPPARAM =  BiocParallel::MulticoreParam(workers = 6))
 
 The main feature of LotOfCells is the test of differences in proportions, and a simulation of a random distribution to understand how extreme our observations might be. To compare the proportions of a specific class between 2 conditions we have to define the two classes and the order in which they will be compared from the column specified in `main_variable`. Optionally we can set the sample_id column (or other sub-class level) to include the per-sample heterogeneity in the computational simulation.
 
-***NOTE: for significance testing we recommend and $\alpha$ value of 0.001**
+***NOTE: for significance testing we recommend an $\alpha$ value of 0.001**
 
-A plot of the differences in proportions is printed and a dataframe with the statistical results is returned.
+A plot of the differences in proportions is printed (pink shades correspond to the sd of the Montecarlo simulations), and a dataframe with the statistical results is returned.
 
 ```{r}
 # # Test of 2 conditions using montecarlo and differences in percentage
@@ -189,11 +189,11 @@ results.2.conditions.entropy <- entropyScore(scObject = meta.data,
           subtype_variable = "cell_type",
           permutations = 10000,
           labelOrder = labelOrder,
-          parallel = F)
+          parallel = TRUE)
 ```
 
 <figure>
-<img src="./images/Figure4_LoC.jpeg" alt="LotOfCells symmetric score plot" width="640" height="400" />
+<img src="./images/Figure4_LoC.jpeg" alt="LotOfCells symmetric score plot" width="600" height="332" />
 <figcaption><i> Test of symmetric entropy score in global proportions. </i></figcaption>
 </figure>
 
@@ -210,7 +210,7 @@ results.3.conditions <- lotOfCells(scObject = meta.data,
                                 sample_id = "sample",
                                 permutations = 1000,
                                 labelOrder = labelOrder,
-                                parallel = T)
+                                parallel = TRUE)
 head(results.3.conditions)
 dynamics_chart(gammaResults = results.3.conditions)
 ```
