@@ -11,6 +11,14 @@ library(devtools)
 install_github("OscarGVelasco/lotOfCells")
 ```
 
+### How to cite
+
+A pre-print is available with the details of the statistical test performed by the package and some examples of real use on a public lung adenocarcinoma dataset:
+
+```
+Óscar González-Velasco; LotOfCells: data visualization and statistics of single cell metadata. bioRxiv 2024.05.23.595582; doi: https://doi.org/10.1101/2024.05.23.595582
+```
+
 # Introduction
 
 Single cell sequencing unveils a treasure trove into the biological and molecular characteristics of samples. Here we introduce `LotOfCells`: a simple R package designed to explore the intricate landscape of phenotype data within single-cell studies. An archetypal example of such analysis would be to test the differences in proportion between cell-types across conditions, but it can be used in many scenarios e.g: test if a specific cell-type or class proportion is dependent of sequencing date as a quality check.

@@ -21,7 +21,9 @@ lotOfCells(
 
 \item{subtype_variable}{Character. Name of the column on the metadata dataframe containing the covariable to be analyzed (e.g.: cell_type, time_point, ...)}
 
-\item{labelOrder}{Character Vector. Covariables found on the subtype_variable column in order to be contrasted (e.g.: c("type_A","type_B" will contrast type_A vs type_B))}
+\item{labelOrder}{Character Vector. Covariables found on the subtype_variable column in the order to be contrasted (e.g.: c("type_A","type_B" will contrast type_A vs type_B))}
+
+\item{sample_id}{Character. Column name containing the sample/patient id variable. If provided for tests, sampling will be done simulating the proportion variability per sample, for plots each individual will be shown.}
 
 \item{permutations}{Numeric. Number of random permutations for the montecarlo test (2 label for main_variable case) or the gamma null distribution (main_variable > 2 labels) (default 1000).}
 
@@ -47,7 +49,8 @@ The function returns a DataFrame containing the results and statistics tested fo
 `lotOfCells()` returns a dataframe containing the results and statistics for the given variables and covariables.
 }
 \details{
-This function will calculate ... Goodman and Kruskal's gamma rank correlation
+This function will calculate a fold change of the proportions if two classes are specified, if more than two ordered classes are specified a Kendall rank correlation coefficient will be computed (e.g.: c("type-A", type_B", type_C") will compute a rank correlation to test whether proportions increase or decrease concordantly from A to B and from B to C).
+In both cases a Montecarlo simulation to compute coefficients from a random sampling of the whole population will be done, and a p.value of how extreme is the observed score compared with the simulation values will be computed. A plot will be produced with the results, in the case of two class comparison, a pink shade is drawn to show the Montecarlo simulation standard deviation.
 }
 \examples{
 # Montecarlo simulation of groups

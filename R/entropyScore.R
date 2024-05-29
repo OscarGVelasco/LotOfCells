@@ -2,12 +2,13 @@
 #'
 #' `entropyScore()` returns a dataframe containing the results and statistics for the given variables and covariables.
 #'
-#' This function will calculate ...
+#' This function will calculate a symmetric divergence score based on the Kullback- Leibler (KL) divergence. It will simulate a random distribution to try to understand how extreme is the observed symmetric score.
 #'
 #' @param scObject Object or DataFrame. An object of class Single Cell Experiments or Seurat, or a dataframe containing the metadata information.
 #' @param main_variable Character. Name of the column on the metadata dataframe containing the main variable to be contrasted (e.g.: disease_status)
 #' @param subtype_variable Character. Name of the column on the metadata dataframe containing the covariable to be analyzed (e.g.: cell_type, time_point, ...)
 #' @param labelOrder Character Vector. Covariables found on the subtype_variable column in order to be contrasted (e.g.: c("type_A","type_B" will contrast type_A vs type_B))
+#' @param sample_id Character. Column name containing the sample/patient id variable. If provided for tests, sampling will be done simulating the proportion variability per sample, for plots each individual will be shown.
 #' @param permutations Numeric. Number of random permutations for the montecarlo test (2 label for main_variable case) or the gamma null distribution (main_variable > 2 labels) (default 1000).
 #' @param parallel Boolean. Whether to use parallel computing with BiocParallel or not (default FALSE).
 #'

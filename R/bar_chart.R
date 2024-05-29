@@ -1,3 +1,23 @@
+#' Create a barplot from single-cell metadata.
+#'
+#' `bar_chart()` returns a ggplot barplot to visualize percentages of a set of classes defined by the user.
+#'
+#' This function produces a barplot ggplot object with the data defined by the user.
+#'
+#' @param scObject Object or DataFrame. An object of class Single Cell Experiments or Seurat, or a dataframe containing the metadata information.
+#' @param main_variable Character. Name of the column on the metadata dataframe containing the main variable to be used for splitting the dataset into the different bar groups (e.g.: disease_status)
+#' @param subtype_variable Character. Name of the column on the metadata dataframe containing the covariable of interest that we want to visualize as percentages (e.g.: cell_type, time_point, ...)
+#' @param sample_id Character. Column name containing the sample/patient id variable. If provided for tests, sampling will be done simulating the proportion variability per sample, for plots each individual will be shown.
+#' @param subtype_only Character. Visualize only a specific class from subtype_variable. Useful if for example you only want to show the proportions of a specific cell type or subclass.
+#'
+#' @return The function returns a ggplot object with the barplot representing the population frequencies on the requested variables.
+#'
+#' @examples
+#' # We construct a metadata dataframe
+#' meta.data <- data.frame(condition, cell_type, sample)
+#' bar_chart(meta.data, main_variable = "condition", subtype_variable = "cell_type")
+#' bar_chart(meta.data, main_variable = "condition", subtype_variable = "cell_type", sample_id = "sample")
+#' bar_chart(meta.data, main_variable = "condition", subtype_variable = "cell_type", subtype_only = "CellType_E")
 #' @author Oscar Gonzalez-Velasco
 #' @importFrom stats sd p.adjust quantile
 #' @importFrom SingleCellExperiment colLabels
@@ -64,7 +84,7 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
       new_order <- unlist(lapply(names(colorOrder), function(type)contig_tab_resh$supra[contig_tab_resh$covariable %in% type]))
       contig_tab_resh$supra <- factor(contig_tab_resh$supra, levels = new_order)
       g <- ggplot2::ggplot(contig_tab_resh, ggplot2::aes(x=groups, y=value, group_by=supra, fill = supra)) +
-        ggplot2::geom_bar(position="stack", stat="identity", size=NA, linewidth=NA) +
+        ggplot2::geom_bar(position="stack", stat="identity", linewidth=NA) +
         ggplot2::theme_minimal() +
         ggplot2::theme(axis.text.x=ggplot2::element_text(angle=45, vjust=1, hjust=1,size = 12)) +
         ggplot2::scale_fill_manual("supra", values = colores, drop=FALSE) +
