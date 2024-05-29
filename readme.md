@@ -13,7 +13,7 @@ install_github("OscarGVelasco/lotOfCells")
 
 ### How to cite
 
-A pre-print is available with the details of the statistical test performed by the package and some examples of real use on a public lung adenocarcinoma dataset:
+A pre-print is available (https://doi.org/10.1101/2024.05.23.595582) with the details of the statistical test performed by the package and some examples of real use on a public lung adenocarcinoma dataset:
 
 ```
 Óscar González-Velasco; LotOfCells: data visualization and statistics of single cell metadata. bioRxiv 2024.05.23.595582; doi: https://doi.org/10.1101/2024.05.23.595582

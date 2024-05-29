@@ -23,6 +23,8 @@ bar_chart(
 \item{sample_id}{Character. Column name containing the sample/patient id variable. If provided for tests, sampling will be done simulating the proportion variability per sample, for plots each individual will be shown.}
 
 \item{subtype_only}{Character. Visualize only a specific class from subtype_variable. Useful if for example you only want to show the proportions of a specific cell type or subclass.}
+
+\item{contribution}{Boolean. If a sample_id variable has been defined, whether to plot per sample contribution to the bar class with different shades of color (TRUE) or to split by sample_id in separated bars (default: FALSE)}
 }
 \value{
 The function returns a ggplot object with the barplot representing the population frequencies on the requested variables.

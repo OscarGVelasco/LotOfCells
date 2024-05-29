@@ -9,6 +9,7 @@
 #' @param subtype_variable Character. Name of the column on the metadata dataframe containing the covariable of interest that we want to visualize as percentages (e.g.: cell_type, time_point, ...)
 #' @param sample_id Character. Column name containing the sample/patient id variable. If provided for tests, sampling will be done simulating the proportion variability per sample, for plots each individual will be shown.
 #' @param subtype_only Character. Visualize only a specific class from subtype_variable. Useful if for example you only want to show the proportions of a specific cell type or subclass.
+#' @param contribution Boolean. If a sample_id variable has been defined, whether to plot per sample contribution to the bar class with different shades of color (TRUE) or to split by sample_id in separated bars (default: FALSE)
 #'
 #' @return The function returns a ggplot object with the barplot representing the population frequencies on the requested variables.
 #'
