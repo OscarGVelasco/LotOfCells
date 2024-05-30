@@ -13,11 +13,15 @@ install_github("OscarGVelasco/lotOfCells")
 
 ### How to cite
 
-A pre-print is available (https://doi.org/10.1101/2024.05.23.595582) with the details of the statistical test performed by the package and some examples of real use on a public lung adenocarcinoma dataset:
+A pre-print is available (https://doi.org/10.1101/2024.05.23.595582) with the details of the statistical test available on the package and some examples of real use on a public lung adenocarcinoma dataset:
 
 ```
 Óscar González-Velasco; LotOfCells: data visualization and statistics of single cell metadata. bioRxiv 2024.05.23.595582; doi: https://doi.org/10.1101/2024.05.23.595582
 ```
+
+### Updates:
+
+* (30 May 2024) Version: 0.2.0 - Added option to use personalised colors in waffle/bar/polar plots (see example below).
 
 # Introduction
 
@@ -75,19 +79,20 @@ Barplots are displayed is such order that the class with the largest average pro
 `LotOfCells` can be used with any other combination of variables (different from cell type). Here (Figure D), by switching the `subtype_variable` to the time-points we can investigate the contribution of time-points to the main condition, serving as a quality check to understand the weight of some covarites to the target condition (e.g. time points, sequencing dates or different tissues):
 
 ```{r, eval=False }
-
 # # Test of barplot charts:
 # All cells together for every group:
 g.A <- bar_chart(meta.data, main_variable = "condition", subtype_variable = "cell_type")
 # Barplot for each individual sample:
-g.B <- bar_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type", sample_id = "sample")
+g.B <- bar_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type",
+                 sample_id = "sample")
 # Display One-Class only:
-g.C <- bar_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type", sample_id = "sample", subtype_only = "CellTypeD")
+g.C <- bar_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type",
+                 sample_id = "sample", subtype_only = "CellTypeD")
 # Distribution of time-points by condition:
 g.D <- bar_chart(meta.data, main_variable = "condition",subtype_variable = "times")
 
-ggpubr::ggarrange(g.A, g.B, g.C, g.D, labels = c("A", "B", "C","D"),  
-          ncol=2, nrow=2, common.legend = F)
+ggpubr::ggarrange(g.A, g.B, g.C, g.D, labels = c("A", "B", "C","D"),
+                  ncol=2, nrow=2, common.legend = F)
 
 ```
 
@@ -101,11 +106,12 @@ ggpubr::ggarrange(g.A, g.B, g.C, g.D, labels = c("A", "B", "C","D"),
 If we want to visualize the contribution to the global proportion of a specific class (e.g.: how much each sample contribute to each cell type proportion), we can use the `contribution = TRUE` flag when setting the `sample_id` variable:
 
 ```{r}
-
 # Examine the contribution of each sample to the proportions of cell types per condition:
-g.A <- bar_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type", sample_id = "sample", contribution = TRUE)
+g.A <- bar_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type",
+                 sample_id = "sample", contribution = TRUE)
 # Examine the contribution of each sample to the proportions of cell types per time point:
-g.B <- bar_chart(meta.data, main_variable = "times",subtype_variable = "cell_type", sample_id = "sample", contribution = TRUE)
+g.B <- bar_chart(meta.data, main_variable = "times",subtype_variable = "cell_type",
+                 sample_id = "sample", contribution = TRUE)
 
 ggpubr::ggarrange(g.A, g.B, labels = c("A", "B"),
                   ncol=2, nrow=1, common.legend = F)
@@ -123,19 +129,44 @@ To visualize small proportions using waffle plots might be more advisable:
 ```{r}
 # # Test of Waffles charts:
 # All cells together for every group
-g.A <- waffle_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type")
+g.A <- waffle_chart(meta.data, main_variable = "condition", subtype_variable = "cell_type")
 # Waffle for each individual sample:
-g.B <- waffle_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type", sample_id = "sample")
+g.B <- waffle_chart(meta.data, main_variable = "condition", subtype_variable = "cell_type", 
+                    sample_id = "sample")
 # One-Class only:
-g.C <- waffle_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type", sample_id = "sample",subtype_only = "CellTypeD")
+g.C <- waffle_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type", 
+                    sample_id = "sample",subtype_only = "CellTypeD")
+# One-Class only all samples together:
+g.D <- waffle_chart(meta.data, main_variable = "condition", subtype_variable = "cell_type", 
+                    subtype_only = "CellTypeD")
 
-ggpubr::ggarrange(ggpubr::ggarrange(g.B, g.C, nrow=2, labels = c("A","B")), g.A, labels = c("", "C"),  
-                  ncol=2, nrow=1, widths = c(2,1))
+ggpubr::ggarrange(g.B, g.A, g.C, g.D, labels = c("A", "B", "C", "D"),
+                  ncol=2, nrow=2, widths = c(0.6,0.2), align = "hv")
 ```
 
 <figure>
 <img src="./images/Figure2_LoC.jpeg" alt="LotOfCells waffle plots" />
 <figcaption><i> Example waffle plots. </i></figcaption>
+</figure>
+
+### Define the colors to use:
+
+Colors can be easily changed for bar/waffle/polar plots using the option `colors`, we just need to give the vector of colors to use. If not sufficient colors are specified, then a palette using colorRampPalette based on the colors specified will be created. If no colors are specified then the LotOfCells default color palette is used.
+
+```{r}
+# # Using different colors:
+# We can use RColorBrewer to easily obtain a different palette of colors:
+g.A <- bar_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type", 
+                 sample_id = "sample", colors = RColorBrewer::brewer.pal(8, "Set3"))
+g.B <- waffle_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type", 
+                    sample_id = "sample", colors = RColorBrewer::brewer.pal(8, "Pastel2"))
+
+ggpubr::ggarrange(g.A, g.B, labels = c("A", "B"), ncol=2, nrow=1, widths = c(0.4,0.6))
+```
+
+<figure>
+<img src="./images/Figure2.2_LoC.jpeg" alt="LotOfCells changing the colors" width="700" height="400" />
+<figcaption><i> Example using personalised color palette. </i></figcaption>
 </figure>
 
 ### Polar plots

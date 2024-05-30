@@ -1,7 +1,7 @@
 Package: LotOfCells
 Type: Package
 Title: Compute proportion tests statistics on single-cell data metadata.
-Version: 0.1.0
+Version: 0.2.0
 Author: Who wrote it
 Maintainer: The package maintainer <yourself@somewhere.net>
 Description: More about what it does (maybe more than one line)

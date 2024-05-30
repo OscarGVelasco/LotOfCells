@@ -4,7 +4,7 @@
 \alias{getPalette}
 \title{Obtain the colors of personalised palette}
 \usage{
-getPalette(usePalette = "A", nColors = 20)
+getPalette(usePalette = NULL, nColors = 20)
 }
 \arguments{
 \item{usePalette}{Character. Name of the palette}

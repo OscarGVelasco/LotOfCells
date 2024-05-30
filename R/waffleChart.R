@@ -9,6 +9,7 @@
 #' @param subtype_variable Character. Name of the column on the metadata dataframe containing the covariable of interest that we want to visualize as percentages (e.g.: cell_type, time_point, ...)
 #' @param sample_id Character. Column name containing the sample/patient id variable. If provided for tests, sampling will be done simulating the proportion variability per sample, for plots each individual will be shown.
 #' @param subtype_only Character. Visualize only a specific class from subtype_variable. Useful if for example you only want to show the proportions of a specific cell type or subclass.
+#' @param colors Character vector. Vector of colors defined by the user to be used as palette. If more colors than specified are required, colorRampPalette will be used to create additional colors. If not specified the LotOfCells default color palette is used.
 #'
 #' @return The function returns a grid arrange of ggplots with the waffle plots representing the population frequencies on the requested variables.
 #'
@@ -26,7 +27,7 @@
 #' @import dplyr
 #' @import gridExtra
 #' @export
-waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, sample_id=NULL, subtype_only=NULL){
+waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, sample_id=NULL, subtype_only=NULL, colors=NULL){
   library(dplyr)
   library(ggplot2)
   library(gridExtra)
@@ -82,7 +83,7 @@ waffle_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NUL
       coloresSubtype <- colorspace::desaturate(col = coloresSubtype, amount = 0.16)
     }
   }else{
-    colores <- getPalette(nColors = length(colorOrder))
+    colores <- getPalette(usePalette=colors, nColors = length(colorOrder))
   }
   # Plot the waffles
   plotingGroupN <- 1

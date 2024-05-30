@@ -10,6 +10,7 @@
 #' @param sample_id Character. Column name containing the sample/patient id variable. If provided for tests, sampling will be done simulating the proportion variability per sample, for plots each individual will be shown.
 #' @param subtype_only Character. Visualize only a specific class from subtype_variable. Useful if for example you only want to show the proportions of a specific cell type or subclass.
 #' @param contribution Boolean. If a sample_id variable has been defined, whether to plot per sample contribution to the bar class with different shades of color (TRUE) or to split by sample_id in separated bars (default: FALSE)
+#' @param colors Character vector. Vector of colors defined by the user to be used as palette. If more colors than specified are required, colorRampPalette will be used to create additional colors. If not specified the LotOfCells default color palette is used.
 #'
 #' @return The function returns a ggplot object with the barplot representing the population frequencies on the requested variables.
 #'
@@ -28,7 +29,7 @@
 #' @import dplyr
 #' @import gridExtra
 #' @export
-bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, sample_id=NULL, subtype_only=NULL, contribution=FALSE){
+bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, sample_id=NULL, subtype_only=NULL, contribution=FALSE, colors=NULL){
   library(dplyr)
   library(ggplot2)
   library(gridExtra)
@@ -52,7 +53,7 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     levelsOrdered <- apply(groupSorting[order(groupSorting$groups),], 1, function(sortedElements)paste(sortedElements[1], sortedElements[2], sep="_"))
     ### IN PROGRESS
     if(contribution){
-      colores <- getPalette(nColors = length(colorOrder))
+      colores <- getPalette(usePalette=colors, nColors=length(colorOrder))
       colores <- rev(colores)
       names(colores) <- names(colorOrder)
       empty_plot <- ggplot(data.frame(x = 1, y = factor(names(colores), levels = names(colores))), aes(x, y, fill = y)) +
@@ -100,7 +101,7 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
       df <- data.frame(groups=paste(groups, samples, sep = "_"), covariable)
       contig_tab <- apply(table(df), 1, function(row){row/sum(row)})
       group_names <- colnames(contig_tab)
-      colores <- getPalette(nColors = length(colorOrder))
+      colores <- getPalette(usePalette=colors, nColors = length(colorOrder))
     }
   }else{
     # No independent sample/factor specified:
@@ -110,7 +111,7 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     names(n.of.stack.bars) <- names(table(unique(data.frame(groups))$groups))
     contig_tab <- apply(table(df),1,function(row){row/sum(row)})
     group_names <- colnames(contig_tab)
-    colores <- getPalette(nColors = length(colorOrder))
+    colores <- getPalette(usePalette=colors, nColors = length(colorOrder))
   }
   # Plot Bars
   contig_tab_resh <- reshape2::melt(contig_tab)
