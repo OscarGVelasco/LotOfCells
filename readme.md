@@ -156,16 +156,16 @@ Colors can be easily changed for bar/waffle/polar plots using the option `colors
 ```{r}
 # # Using different colors:
 # We can use RColorBrewer to easily obtain a different palette of colors:
-g.A <- bar_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type", 
+g.A <- bar_chart(meta.data, main_variable = "condition", subtype_variable = "cell_type", 
                  sample_id = "sample", colors = RColorBrewer::brewer.pal(8, "Set3"))
-g.B <- waffle_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type", 
+g.B <- waffle_chart(meta.data, main_variable = "condition", subtype_variable = "cell_type", 
                     sample_id = "sample", colors = RColorBrewer::brewer.pal(8, "Pastel2"))
 
 ggpubr::ggarrange(g.A, g.B, labels = c("A", "B"), ncol=2, nrow=1, widths = c(0.4,0.6))
 ```
 
 <figure>
-<img src="./images/Figure2.2_LoC.jpeg" alt="LotOfCells changing the colors" width="700" height="400" />
+<img src="./images/Figure2.2_LoC.jpeg" alt="LotOfCells changing the colors" width="800" height="320" />
 <figcaption><i> Example using personalised color palette. </i></figcaption>
 </figure>
 
