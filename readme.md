@@ -13,7 +13,7 @@ install_github("OscarGVelasco/lotOfCells")
 
 ### How to cite
 
-A pre-print is available (https://doi.org/10.1101/2024.05.23.595582) with the details of the statistical test available on the package and some examples of real use on a public lung adenocarcinoma dataset:
+A pre-print is available at [https://doi.org/10.1101/2024.05.23.595582], which includes details on the statistical tests available in the package and examples of real use on a public lung adenocarcinoma dataset:
 
 ```
 Óscar González-Velasco; LotOfCells: data visualization and statistics of single cell metadata. bioRxiv 2024.05.23.595582; doi: https://doi.org/10.1101/2024.05.23.595582
@@ -21,7 +21,7 @@ A pre-print is available (https://doi.org/10.1101/2024.05.23.595582) with the de
 
 ### Updates:
 
-* (30 May 2024) Version: 0.2.0 - Added option to use personalised colors in waffle/bar/polar plots (see example below).
+* (30 May 2024) Version: 0.2.0 - Added an option to use customized colors in waffle, bar, and polar plots (see example below).
 
 # Introduction
 
@@ -36,17 +36,16 @@ Single cell sequencing unveils a treasure trove into the biological and molecula
 
 # Manual
 
-`LotOfCells` is compatible with `Seurat` and `SingleCellExperiment` objects. It is also possible to directly provide a dataframe with the metadata.
+`LotOfCells` is compatible with `Seurat` and `SingleCellExperiment` objects. You can also directly provide a dataframe with the metadata.
 All functions require the following inputs:
-
--   `scObject`: Either and object of class `Seurat` or of class `SingleCellExperiment`, or a dataframe containing the metadata.
--   `main_variable`: Column name containing the main class variable condition we want to test and visualize (e.g.: condition, treatment, tissue...). 
--   `subtype_variable`: Column name containing the subtype class variable we want to test and visualize (e.g. cell type, sequencing date, cluster...). 
--   `sample_id`: (optional) Column name containing the sample/patient id variable. If provided, for tests sampling will be done simulating the proportion variability per sample, for plots each individual will be shown.
+-   `scObject`: An object of class `Seurat` or `SingleCellExperiment`, or a dataframe containing the metadata.
+-   `main_variable`: Column name containing the main class variable (e.g., condition, treatment, tissue).
+-   `subtype_variable`: Column name containing the subtype class variable (e.g., cell type, sequencing date, cluster).
+-   `sample_id` (optional): Column name containing the sample/patient ID variable. If provided, tests will simulate proportion variability per sample, and plots will show each individual.
 
 ### Examples
 
-We will construct a simulated dataset of single cell metadata made up of 6 samples, with two conditions (mutant and wild type) including 4 cell types (A,B,C,D) and different time points simulating treatment (time 0h/2h/4h):
+We will construct a simulated dataset of single-cell metadata consisting of six samples with two conditions (mutant and wild type), including four cell types (A, B, C, D) and different time points simulating treatment (time 0h, 2h, 4h):
 
 ```{r construct}
 
@@ -68,13 +67,13 @@ head(meta.data)
 
 ```
 
-First, lets visualize the data using LotOfCells. In these functions, we can also specify:
+First, let's visualize the data using `LotOfCells`. In these functions, you can also specify:
 
 -   `subtype_only`: Visualize only a specific class from `subtype_variable`. Useful if for example you only want to show the proportions of a specific cell type or subclass.
 
 ### Barplots
 
-Barplots are displayed is such order that the class with the largest average proportion is always at the bottom, facilitating the comparison of smaller groups at the top. 
+Barplots are displayed in such an order that the class with the largest average proportion is always at the bottom, making it easier to compare smaller groups at the top.
 
 `LotOfCells` can be used with any other combination of variables (different from cell type). Here (Figure D), by switching the `subtype_variable` to the time-points we can investigate the contribution of time-points to the main condition, serving as a quality check to understand the weight of some covarites to the target condition (e.g. time points, sequencing dates or different tissues):
 
@@ -149,9 +148,9 @@ ggpubr::ggarrange(g.B, g.A, g.C, g.D, labels = c("A", "B", "C", "D"),
 <figcaption><i> Example waffle plots. </i></figcaption>
 </figure>
 
-### Define the colors to use:
+### Personalizing the colors:
 
-Colors can be easily changed for bar/waffle/polar plots using the option `colors`, we just need to give the vector of colors to use. If not sufficient colors are specified, then a palette using colorRampPalette based on the colors specified will be created. If no colors are specified then the LotOfCells default color palette is used.
+Colors can be easily changed for bar, waffle, or polar plots using the `colors` option. To do this, simply provide a vector of colors to use. If the specified colors are insufficient, a palette will be created using colorRampPalette based on the colors specified. If no colors are specified, the default color palette of LotOfCells will be used.
 
 ```{r}
 # # Using different colors:
@@ -191,11 +190,11 @@ BiocParallel::register(BPPARAM =  BiocParallel::MulticoreParam(workers = 6))
 
 ### Differential proportion test - two conditions
 
-The main feature of LotOfCells is the test of differences in proportions, and a simulation of a random distribution to understand how extreme our observations might be. To compare the proportions of a specific class between 2 conditions we have to define the two classes and the order in which they will be compared from the column specified in `main_variable`. Optionally we can set the sample_id column (or other sub-class level) to include the per-sample heterogeneity in the computational simulation.
+The main feature of LotOfCells is the testing of differences in proportions, combined with a simulation of a random distribution to evaluate how extreme the observations might be. To compare the proportions of a specific class between two conditions, define the two classes and their order from the `main_variable` column. Optionally, the `sample_id` column (or another sub-class level) can be set to account for per-sample heterogeneity in the computational simulation.
 
 ***NOTE: for significance testing we recommend an $\alpha$ value of 0.001**
 
-A plot of the differences in proportions is printed (pink shades correspond to the sd of the Montecarlo simulations), and a dataframe with the statistical results is returned.
+A plot of the differences in proportions is generated, with pink shades representing the standard deviation of the Monte Carlo simulations, and a dataframe containing the statistical results is returned.
 
 ```{r}
 # # Test of 2 conditions using montecarlo and differences in percentage
@@ -217,8 +216,9 @@ print(results.2.conditions)
 
 ### Symmetric Divergence Score - global disregulation in class proportions
 
-To understand if the majority of class proportions change significantly at the same time for two conditions, we compute a divergence score based on the Kullback-
-Leibler (KL) divergence. We simulate a random distribution to try to understand how extreme is the observed symmetric score.
+To determine if the majority of class proportions change significantly simultaneously between two conditions, we compute a divergence score based on the Kullback-Leibler (KL) divergence. This score helps to understand the global dysregulation in class proportions. The process involves simulating a random distribution to assess how extreme the observed symmetric score is.
+
+Higher divergence scores suggest more significant simultaneous changes in class proportions between the two conditions.
 
 ```{r}
 # # Test of entropy for 2 conditions using montecarlo simulation
