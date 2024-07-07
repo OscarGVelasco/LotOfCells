@@ -17,11 +17,9 @@
 #' @author Oscar Gonzalez-Velasco
 #' @export
 plotAbundanceTest <- function(tableResults=NULL, subtype_variable){
-  sorted_indices <- order(tableResults$groupFC)
-  tableResults_sorted <- tableResults[sorted_indices, ] 
-  df <- cbind.data.frame(tableResults_sorted, classLabel=factor(rownames(tableResults)))
-  onRight <- strsplit(colnames(df)[2], "percent_in_")[[1]][2]
-  onLeft <- strsplit(colnames(df)[3], "percent_in_")[[1]][2]
+  df <- arrange(tableResults, groupFC) |> as.data.frame() |> rownames_to_column("classLabel")
+  onRight <- strsplit(colnames(df)[3], "percent_in_")[[1]][2]
+  onLeft <- strsplit(colnames(df)[4], "percent_in_")[[1]][2]
   guide <- round(max(abs(c(df[,"CI95low"],df[,"CI95high"])))) + 0.5
   df$CI95low[is.na(df$CI95low)] <- 0.1
   df$CI95low[is.na(df$CI95high)] <- 0.1
