@@ -17,7 +17,9 @@
 #' @author Oscar Gonzalez-Velasco
 #' @export
 plotAbundanceTest <- function(tableResults=NULL, subtype_variable){
-  df <- cbind.data.frame(tableResults, classLabel=factor(rownames(tableResults)))
+  sorted_indices <- order(tableResults$groupFC)
+  tableResults_sorted <- tableResults[sorted_indices, ] 
+  df <- cbind.data.frame(tableResults_sorted, classLabel=factor(rownames(tableResults)))
   onRight <- strsplit(colnames(df)[2], "percent_in_")[[1]][2]
   onLeft <- strsplit(colnames(df)[3], "percent_in_")[[1]][2]
   guide <- round(max(abs(c(df[,"CI95low"],df[,"CI95high"])))) + 0.5
@@ -26,6 +28,8 @@ plotAbundanceTest <- function(tableResults=NULL, subtype_variable){
   tmp.pval <- df$p.adj
   tmp.pval[tmp.pval==0] <- 0.00001
   df$significance <- sign(df$groupFC)*-log10(tmp.pval)
+  df$classLabel <- factor(df$classLabel, levels = df$classLabel)
+
   ggplot2::ggplot(df, ggplot2::aes(x=groupFC, y=classLabel)) +
     ggplot2::geom_point(ggplot2::aes(fill=significance), pch=21, stroke=0.2, size=6, alpha=0.8) +
     ggplot2::scale_fill_gradientn(colours=c("#122A53","#43587D", "#8BBCD4", "#C1DEEF","#EEF6FF", "#FDFFFF", "#F6F3FF", "#DDCFFF", "#D1AADB", "#76608E","#463955"),
@@ -41,7 +45,6 @@ plotAbundanceTest <- function(tableResults=NULL, subtype_variable){
     ggplot2::geom_rect(ggplot2::aes(xmin = -sd.montecarlo, xmax = sd.montecarlo, ymin = as.integer(classLabel) - 0.5, ymax = as.integer(classLabel) + 0.5),
               fill = "pink", alpha = 0.3) +
     ggplot2::xlab(paste0("log2(proportion_FC) : (",onRight,"/",onLeft,")")) +
-    ggplot2::ggtitle(paste0("Fold-Change difference in proportion \n Montecarlo simulation on ", subtype_variable)) +
-    ggplot2::annotate("text", x = -1, y = 0.6, label = onLeft, color='grey') +
-    ggplot2::annotate("text", x = 1, y = 0.6, label = onRight, color='grey')
+    ggplot2::scale_y_discrete("") +
+    ggplot2::theme_bw()
 }
