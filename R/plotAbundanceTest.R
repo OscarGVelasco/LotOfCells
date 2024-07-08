@@ -17,9 +17,10 @@
 #' @author Oscar Gonzalez-Velasco
 #' @export
 plotAbundanceTest <- function(tableResults=NULL, subtype_variable){
-  df <- arrange(tableResults, groupFC) |> as.data.frame() |> rownames_to_column("classLabel")
-  onRight <- strsplit(colnames(df)[3], "percent_in_")[[1]][2]
-  onLeft <- strsplit(colnames(df)[4], "percent_in_")[[1]][2]
+  df <- as.data.frame(arrange(tableResults, groupFC))
+  df[, "classLabel"] <- rownames(df)
+  onRight <- strsplit(colnames(df)[2], "percent_in_")[[1]][2]
+  onLeft <- strsplit(colnames(df)[3], "percent_in_")[[1]][2]
   guide <- round(max(abs(c(df[,"CI95low"],df[,"CI95high"])))) + 0.5
   df$CI95low[is.na(df$CI95low)] <- 0.1
   df$CI95low[is.na(df$CI95high)] <- 0.1
@@ -43,6 +44,7 @@ plotAbundanceTest <- function(tableResults=NULL, subtype_variable){
     ggplot2::geom_rect(ggplot2::aes(xmin = -sd.montecarlo, xmax = sd.montecarlo, ymin = as.integer(classLabel) - 0.5, ymax = as.integer(classLabel) + 0.5),
               fill = "pink", alpha = 0.3) +
     ggplot2::xlab(paste0("log2(proportion_FC) : (",onRight,"/",onLeft,")")) +
-    ggplot2::scale_y_discrete("") +
-    ggplot2::theme_bw()
+    ggplot2::ggtitle(paste0("Fold-Change difference in proportion \n Montecarlo simulation on ", subtype_variable)) +
+    ggplot2::annotate("text", x = -1, y = 0.6, label = onLeft, color='grey') +
+    ggplot2::annotate("text", x = 1, y = 0.6, label = onRight, color='grey')
 }
