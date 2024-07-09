@@ -17,7 +17,8 @@
 #' @author Oscar Gonzalez-Velasco
 #' @export
 plotAbundanceTest <- function(tableResults=NULL, subtype_variable){
-  df <- cbind.data.frame(tableResults, classLabel=factor(rownames(tableResults)))
+  df <- as.data.frame(arrange(tableResults, groupFC))
+  df[, "classLabel"] <- rownames(df)
   onRight <- strsplit(colnames(df)[2], "percent_in_")[[1]][2]
   onLeft <- strsplit(colnames(df)[3], "percent_in_")[[1]][2]
   guide <- round(max(abs(c(df[,"CI95low"],df[,"CI95high"])))) + 0.5
@@ -26,6 +27,8 @@ plotAbundanceTest <- function(tableResults=NULL, subtype_variable){
   tmp.pval <- df$p.adj
   tmp.pval[tmp.pval==0] <- 0.00001
   df$significance <- sign(df$groupFC)*-log10(tmp.pval)
+  df$classLabel <- factor(df$classLabel, levels = df$classLabel)
+
   ggplot2::ggplot(df, ggplot2::aes(x=groupFC, y=classLabel)) +
     ggplot2::geom_point(ggplot2::aes(fill=significance), pch=21, stroke=0.2, size=6, alpha=0.8) +
     ggplot2::scale_fill_gradientn(colours=c("#122A53","#43587D", "#8BBCD4", "#C1DEEF","#EEF6FF", "#FDFFFF", "#F6F3FF", "#DDCFFF", "#D1AADB", "#76608E","#463955"),

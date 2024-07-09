@@ -81,7 +81,7 @@ lotOfCells <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL,
   main_metadata <- main_metadata[main_metadata[, main_variable] %in% labelOrder ,]
   groups <- as.character(main_metadata[, main_variable])
   covariable <- as.character(main_metadata[, subtype_variable])
-  pseudoCount <- function(counts){counts + sqrt((counts*counts)+1)}
+  pseudoCount <- function(counts){counts + sqrt(counts^2+1)}
   # ###
   # covariable <- milk.metadata$General_Celltype
   # groups <- as.character(as.numeric(milk.metadata$time_post_partum_days))
