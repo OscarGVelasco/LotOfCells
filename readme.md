@@ -21,7 +21,11 @@ A pre-print is available at [https://doi.org/10.1101/2024.05.23.595582], which i
 
 ### Updates:
 
-* (30 May 2024) Version: 0.2.0 - Added an option to use customized colors in waffle, bar, and polar plots (see example below).
+* (30 May 2024) Version: 0.2.0
+  - Added an option to use customized colors in waffle, bar, and polar plots (see [examples](#personalizing-the-colors)).
+* (12 July 2024) Version: 0.3.0
+  - Added density ridge plots using [ggridges](https://github.com/wilkelab/ggridges) to visualize numeric values per group and class, including gene/feature expression (see [examples](#density-ridge-plots)).
+  - Plot of differences in proportions now shows results in order of FC (special thanks @halaszlaszlo)
 
 # Introduction
 
@@ -31,7 +35,7 @@ Single cell sequencing unveils a treasure trove into the biological and molecula
 
 <figure>
 <img src="./images/main_diagram_lotOfCells.jpg" alt="LotOfCells diagram" />
-<figcaption><i><b>Diagram of plots and tests available in LotOfCells. A.</b> Barplots of proportions of cell types for all individual samples from different tissues, the tissue class is depicted in the colored boxes on the x-axis. <b>B.</b> Barplots showing the cell type composition of normal and tumor lung samples, each bar corresponds to a cancer stage. Samples from the same stage-condition are grouped together in the same bar. <b>C.</b> Montecarlo test for the difference in cell type population abundances between tumor and normal lung samples in stage IA. B lymphocyte population is significantly larger in tumor. <b>D.</b> Waffle plots showing B lymphocytes only for all independent patients. The number of total B lymphocytes is depicted in grey. Each square=1\%. <b>E.</b> Waffle plot showing IA stage for tumor and normal lung. All samples are pulled together by condition. <b>F.</b> Symmetric divergence score test between stages IA and IIIA from lung tumor. On the right a scatter violin plot showing the distribution of generated scores vs the observed value. <b>G.</b> Cell type proportion changes across cancer stages in lung tumor. Values of the Kendall Tau correlation coefficient per cell type are shown. <b>H.</b> Barplot of Myeloid cells proportions across cancer stages in lung tumor. <b>I.</b> Polar plot showing the raw number of cells per tissue. </i></figcaption>
+<figcaption><i><b>Diagram of plots and tests available in LotOfCells. A.</b> Barplots of proportions of cell types for all individual samples from different tissues, the tissue class is depicted in the colored boxes on the x-axis. <b>B.</b> Barplots showing the cell type composition of normal and tumor lung samples, each bar corresponds to a cancer stage. Samples from the same stage-condition are grouped together in the same bar. <b>C.</b> Montecarlo test for the difference in cell type population abundances between tumor and normal lung samples in stage IA. B lymphocyte population is significantly larger in tumor. <b>D.</b> Waffle plots showing B lymphocytes only for all independent patients. The number of total B lymphocytes is depicted in grey. Each square=1\%. <b>E.</b> Waffle plot showing IA stage for tumor and normal lung. All samples are pulled together by condition. <b>F.</b> Symmetric divergence score test between stages IA and IIIA from lung tumor. On the right a scatter violin plot showing the distribution of generated scores vs the observed value. <b>G.</b> Density plots showing expression of INSR gene in tumor and normal lung and brain metastasis endothelial subpopulations. Tumor ECs shows a distinct tail of high expression. <b>H.</b> Barplot of Myeloid cells proportions across cancer stages in lung tumor. <b>I.</b> Cell type proportion changes across cancer stages in lung tumor. Values of the Kendall Tau correlation coefficient per cell type are shown. <b>J.</b> Density plots of the age distribution across cell types. <b>K.</b> Polar plot showing the raw number of cells per tissue. </i></figcaption>
 </figure>
 
 # Manual
@@ -147,6 +151,49 @@ ggpubr::ggarrange(g.B, g.A, g.C, g.D, labels = c("A", "B", "C", "D"),
 <img src="./images/Figure2_LoC.jpeg" alt="LotOfCells waffle plots" />
 <figcaption><i> Example waffle plots. </i></figcaption>
 </figure>
+
+### Density ridge plots
+
+To visualize numeric values (including gene/feature expression) over groups and sub-categories, we can make use of density ridge plots to observe its data distribution. We have to select the variable to use in `numerical_variable`.
+
+```{r}
+# # Test of density charts:
+# simulate the number of RNA features detected in each cell:
+meta.data <- rbind.data.frame(meta.data %>% dplyr::filter(condition == "mut") %>% 
+                                mutate(n_features_RNA = abs(rnorm(nrow(.), mean=c(3000, 3500), sd=800))),
+                              meta.data %>% dplyr::filter(condition == "wt") %>% 
+                                mutate(n_features_RNA = abs(rnorm(nrow(.), mean=c(2500,1500), sd=400))))
+
+# All cells together for every group
+g.A <- density_chart(scObject = meta.data, main_variable = "condition", subtype_variable = "covariable", 
+                    numerical_variable = "n_features_RNA")
+# Density chart for each individual sample:
+g.B <- density_chart(scObject = meta.data, main_variable = "condition", subtype_variable = "covariable",  
+                    numerical_variable = "n_features_RNA", sample_id = "sample")
+
+ggpubr::ggarrange(g.A, g.B, labels = c("A", "B"),
+                  ncol=2, nrow=1, common.legend = F)
+```
+
+<figure>
+<img src="./images/Figure_3.1.1.jpeg" alt="LotOfCells density plots" />
+<figcaption><i> Example density plots. </i></figcaption>
+</figure>
+
+If `scObject` is of class `Seurat` or `SingleCellExperiment`, we can specify a gene/feature name directly in `subtype_variable` to display the counts per class and sub-level. Here we show an example using human pancreas single-cell data (Baron M et al. (2017) using the scRNAseq R package), the gene SST is a marker of pancreatic $\delta cells:
+
+```{r eval=FALSE}
+# # Test of density charts:
+density_chart(scObject = sc_pancreas_human, main_variable = "donor", subtype_variable = "cell.type", 
+              numerical_variable = "SST")
+
+```
+
+<figure>
+<img src="./images/Figure_3.1.2.jpeg" alt="LotOfCells density plots of gene expression" />
+<figcaption><i> Example density plots showing expression of SST in delta cells. </i></figcaption>
+</figure>
+
 
 ### Personalizing the colors:
 

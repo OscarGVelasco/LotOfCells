@@ -51,7 +51,7 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     groupSorting <- data.frame(groups, samples)
     groupSorting <- unique(groupSorting)
     levelsOrdered <- apply(groupSorting[order(groupSorting$groups),], 1, function(sortedElements)paste(sortedElements[1], sortedElements[2], sep="_"))
-    ### IN PROGRESS
+    ### IN PROGRESS - CONTRIBUTION
     if(contribution){
       colores <- getPalette(usePalette=colors, nColors=length(colorOrder))
       colores <- rev(colores)
@@ -95,7 +95,7 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
         ggplot2::theme(legend.position = "none")
       g <- gridExtra::arrangeGrob(g, legend, nrow=1, widths=c(0.7,0.2))
       return(ggpubr::as_ggplot(g))
-      ### IN PROGRESS
+      ### IN PROGRESS - CONTRIBUTION
     }else{
       # No contribution ploting
       df <- data.frame(groups=paste(groups, samples, sep = "_"), covariable)

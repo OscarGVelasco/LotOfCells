@@ -10,6 +10,8 @@
 #' @return A data.frame with the metadata from the single-cell study
 #'
 #' @author Oscar Gonzalez-Velasco
+#' @import Seurat
+#' @import SingleCellExperiment
 #' @keywords internal
 getMetadata <- function(scObject=NULL,groups=NULL){
   if(is.null(scObject)){

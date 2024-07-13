@@ -63,6 +63,7 @@
 #' @importFrom SingleCellExperiment colLabels
 #' @importFrom methods is
 #' @importFrom BiocParallel bplapply
+#' @importFrom ggbeeswarm geom_quasirandom
 #' @export
 entropyScore <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, labelOrder=c(""), sample_id=NULL, permutations=1000, parallel=FALSE){
   # Obtain the single-cell metadata
