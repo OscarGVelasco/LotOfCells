@@ -6,7 +6,7 @@ Proportion test statistics and visualization on single cell metadata. A simple p
 
 The package can be installed from R software using devtools:
 
-```{r eval=FALSE}
+```r
 library(devtools)
 install_github("OscarGVelasco/lotOfCells")
 ```
