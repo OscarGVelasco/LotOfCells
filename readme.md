@@ -6,7 +6,7 @@ Proportion test statistics and visualization on single cell metadata. A simple p
 
 The package can be installed from R software using devtools:
 
-```{r eval=FALSE}
+```r
 library(devtools)
 install_github("OscarGVelasco/lotOfCells")
 ```
@@ -51,7 +51,7 @@ All functions require the following inputs:
 
 We will construct a simulated dataset of single-cell metadata consisting of six samples with two conditions (mutant and wild type), including four cell types (A, B, C, D) and different time points simulating treatment (time 0h, 2h, 4h):
 
-```{r construct}
+```r
 
 # # Data simulation with 2 conditions, 3 time points, and 4 cell-types:
 sample1 <- c(rep("CellTypeA",700),rep("CellTypeB",300),rep("CellTypeC",500),rep("CellTypeD",1000))
@@ -81,7 +81,7 @@ Barplots are displayed in such an order that the class with the largest average 
 
 `LotOfCells` can be used with any other combination of variables (different from cell type). Here (Figure D), by switching the `subtype_variable` to the time-points we can investigate the contribution of time-points to the main condition, serving as a quality check to understand the weight of some covarites to the target condition (e.g. time points, sequencing dates or different tissues):
 
-```{r, eval=False }
+```r
 # # Test of barplot charts:
 # All cells together for every group:
 g.A <- bar_chart(meta.data, main_variable = "condition", subtype_variable = "cell_type")
@@ -108,7 +108,7 @@ ggpubr::ggarrange(g.A, g.B, g.C, g.D, labels = c("A", "B", "C","D"),
 
 If we want to visualize the contribution to the global proportion of a specific class (e.g.: how much each sample contribute to each cell type proportion), we can use the `contribution = TRUE` flag when setting the `sample_id` variable:
 
-```{r}
+```r
 # Examine the contribution of each sample to the proportions of cell types per condition:
 g.A <- bar_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type",
                  sample_id = "sample", contribution = TRUE)
@@ -129,7 +129,7 @@ ggpubr::ggarrange(g.A, g.B, labels = c("A", "B"),
 
 To visualize small proportions using waffle plots might be more advisable:
 
-```{r}
+```r
 # # Test of Waffles charts:
 # All cells together for every group
 g.A <- waffle_chart(meta.data, main_variable = "condition", subtype_variable = "cell_type")
@@ -156,7 +156,7 @@ ggpubr::ggarrange(g.B, g.A, g.C, g.D, labels = c("A", "B", "C", "D"),
 
 To visualize numeric values (including gene/feature expression) over groups and sub-categories, we can make use of density ridge plots to observe its data distribution. We have to select the variable to use in `numerical_variable`.
 
-```{r}
+```r
 # # Test of density charts:
 # simulate the number of RNA features detected in each cell:
 meta.data <- rbind.data.frame(meta.data %>% dplyr::filter(condition == "mut") %>% 
@@ -182,7 +182,7 @@ ggpubr::ggarrange(g.A, g.B, labels = c("A", "B"),
 
 If `scObject` is of class `Seurat` or `SingleCellExperiment`, we can specify a gene/feature name directly in `subtype_variable` to display the counts per class and sub-level. Here we show an example using human pancreas single-cell data (Baron M et al. (2017) using the scRNAseq R package), the gene SST is a marker of pancreatic $\delta cells:
 
-```{r eval=FALSE}
+```r
 # # Test of density charts:
 density_chart(scObject = sc_pancreas_human, main_variable = "donor", subtype_variable = "cell.type", 
               numerical_variable = "SST")
@@ -199,7 +199,7 @@ density_chart(scObject = sc_pancreas_human, main_variable = "donor", subtype_var
 
 Colors can be easily changed for bar, waffle, or polar plots using the `colors` option. To do this, simply provide a vector of colors to use. If the specified colors are insufficient, a palette will be created using colorRampPalette based on the colors specified. If no colors are specified, the default color palette of LotOfCells will be used.
 
-```{r}
+```r
 # # Using different colors:
 # We can use RColorBrewer to easily obtain a different palette of colors:
 g.A <- bar_chart(meta.data, main_variable = "condition", subtype_variable = "cell_type", 
@@ -219,7 +219,7 @@ ggpubr::ggarrange(g.A, g.B, labels = c("A", "B"), ncol=2, nrow=1, widths = c(0.4
 
 Lastly, this visualization might be interesting to compare raw number of cells per class (e.g.: if a sample has a much larger number of cells, which might affect downstream analysis).
 
-```{r}
+```r
 # Test of circle polar plot:
 polar_chart(meta.data, main_variable = "condition",subtype_variable = "cell_type", sample_id = "sample")
 # Test of polar plot by cell-type:
@@ -230,7 +230,7 @@ polar_chart(meta.data, main_variable = "cell_type",subtype_variable = "sample")
 
 For the proportion tests and the Montecarlo simulations that we are going to introduce, we can use parallelization using `BiocParallel`:
 
-```{r}
+```r
 # Set number of CPUs to use:
 BiocParallel::register(BPPARAM =  BiocParallel::MulticoreParam(workers = 6))
 ```
@@ -243,7 +243,7 @@ The main feature of LotOfCells is the testing of differences in proportions, com
 
 A plot of the differences in proportions is generated, with pink shades representing the standard deviation of the Monte Carlo simulations, and a dataframe containing the statistical results is returned.
 
-```{r}
+```r
 # # Test of 2 conditions using montecarlo and differences in percentage
 labelOrder <- c("mut","wt")
 results.2.conditions <- lotOfCells(scObject = meta.data,
@@ -267,7 +267,7 @@ To determine if the majority of class proportions change significantly simultane
 
 Higher divergence scores suggest more significant simultaneous changes in class proportions between the two conditions.
 
-```{r}
+```r
 # # Test of entropy for 2 conditions using montecarlo simulation
 labelOrder <- c("mut","wt")
 results.2.conditions.entropy <- entropyScore(scObject = meta.data,
@@ -287,7 +287,7 @@ results.2.conditions.entropy <- entropyScore(scObject = meta.data,
 
 The test of differences in proportions available in LotOfCells can be done with more than 2 conditions, by computing a Kendall rank correlation coefficient. To compare the proportions of a specific class between several conditions we will need to define the classes and the order in which they will be compared from the column specified in `main_variable`, the correlation (positive and negative) will be tested following the order defined. Optionally, like introduced above, we can set the sample_id column (or other sub-class level) to include the per-sample heterogeneity in the computational simulation.
 
-```{r}
+```r
 # # Test of correlation for SEVERAL conditions using Kendall rank correlation
 labelOrder <- c("time 0h","time 2h","time 4h")
 results.3.conditions <- lotOfCells(scObject = meta.data,
