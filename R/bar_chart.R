@@ -190,6 +190,7 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     plot_subtitle <- paste("Class:", subtype_only)
     scale_y_continuous_limits <- c(-0.1, 1)
     legend.position <- "none"
+    colors_use <- colores
   } else {
     annotate_ymin <- -0.02
     annotate_ymax <- -0.06
@@ -197,6 +198,7 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     plot_subtitle <- ifelse(!is.null(sample_id), paste("Individual Sub-level by:", sample_id), "")
     scale_y_continuous_limits <- NULL
     legend.position <- NULL
+    colors_use <- colores[colorOrder]
   }
   
   g <- ggplot2::ggplot(data = contig_tab_resh,
@@ -217,7 +219,7 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
        ggplot2::labs(title = paste("Proportions of", subtype_variable, "by", main_variable),
                      subtitle = plot_subtitle) +
        ggplot2::scale_fill_manual(name = "covariable", 
-                                  values = if(!is.null(subtype_only)){colores} else {colores[colorOrder]}, 
+                                  values = colors_use, 
                                   drop = FALSE) +
        ggplot2::annotate(ymin = annotate_ymin, 
                          ymax = annotate_ymax,
