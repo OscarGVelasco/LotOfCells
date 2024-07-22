@@ -15,7 +15,8 @@ Imports:
     BiocParallel,
     ggridges,
     ggplot2,
-    ggbeeswarm
+    ggbeeswarm,
+    ggpubr
 Suggests: 
     knitr,
     rmarkdown
