@@ -29,7 +29,13 @@
 #' @import dplyr
 #' @import gridExtra
 #' @export
-bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, sample_id=NULL, subtype_only=NULL, contribution=FALSE, colors=NULL){
+bar_chart <- function(scObject = NULL, 
+                      main_variable = NULL, 
+                      subtype_variable = NULL, 
+                      sample_id = NULL, 
+                      subtype_only = NULL, 
+                      contribution = FALSE, 
+                      colors = NULL){
   library(dplyr)
   library(ggplot2)
   library(gridExtra)
@@ -201,6 +207,38 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
     colors_use <- colores[colorOrder]
   }
   
+  # Add Faceting. For future easy implementations and as a means to reorder bars within groups.
+  contig_tab_resh$facets <- vapply(contig_tab_resh$groups, function(x){group_use <- strsplit(as.character(x), "_")[[1]][1]}, 
+                                   FUN.VALUE = character(1))
+  
+  # Add Order to bars based on group with highest proportion.
+  ## This assumes that the data table already encodes the levels in order and that the last level is the one with highest fraction.
+  
+  if (!is.null(sample_id)){
+    # Order the bars in descending order based on the currently established groups (and order depicted by annot.data).
+    levels_use <- contig_tab_resh %>% 
+                  dplyr::filter(covariable == rev(levels(contig_tab_resh$covariable))[1]) %>% 
+                  dplyr::mutate("facets" = factor(facets, levels = levels(annot.data$group))) %>% 
+                  dplyr::group_by(.data$facets) %>% 
+                  dplyr::arrange(dplyr::desc(value), .by_group = TRUE) %>% 
+                  dplyr::mutate(groups = as.character(groups)) %>% 
+                  dplyr::pull(groups)
+
+  } else {
+    levels_use <- contig_tab_resh %>% 
+                  dplyr::filter(covariable == rev(levels(contig_tab_resh$covariable))[1]) %>% 
+                  dplyr::mutate("facets" = factor(facets, levels = levels(annot.data$group))) %>% 
+                  dplyr::arrange(dplyr::desc(value), .by_group = TRUE) %>% 
+                  dplyr::mutate(groups = as.character(groups)) %>% 
+                  dplyr::pull(groups)
+    
+    # Recompute the annotation data with the new levels.
+    annot.data$group <- levels_use
+    annot.data$group <- factor(as.character(annot.data$group), levels = levels_use)
+  }
+  
+  contig_tab_resh$groups <- factor(as.character(contig_tab_resh$groups), levels = levels_use)
+  
   g <- ggplot2::ggplot(data = contig_tab_resh,
                        mapping = ggplot2::aes(x = groups,
                                               y = value,
@@ -213,7 +251,9 @@ bar_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NULL, 
                                                           vjust = 1, 
                                                           hjust = 1, 
                                                           size = 12),
-                      legend.position = legend.position) +
+                      legend.position = legend.position,
+                      strip.background = ggplot2::element_rect(color = "black", fill = "grey95"),
+                      strip.text = ggplot2::element_text(color = "black", face = "bold")) +
        ggplot2::guides(fill = ggplot2::guide_legend(title = paste("Class:", subtype_variable), 
                                                     drop = FALSE)) + 
        ggplot2::labs(title = paste("Proportions of", subtype_variable, "by", main_variable),
