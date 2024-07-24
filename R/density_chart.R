@@ -45,7 +45,9 @@ density_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NU
   groups <- factor(groups, levels=sort(unique(groups)))
   covariable <- as.character(main_metadata[, subtype_variable])
   order <- names(sort(table(covariable),decreasing = FALSE))
-  colorOrder <- rev(seq(1, length(order)))
+  main_metadata[, subtype_variable] <- factor(main_metadata[, subtype_variable], levels = order)
+  # colorOrder <- rev(seq(1, length(order))) # Original order
+  colorOrder <- seq(1, length(order))
   names(colorOrder) <- order
   numerical_variable <- numerical_variable[1]
   if(!numerical_variable %in% colnames(main_metadata)){
@@ -95,7 +97,7 @@ density_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NU
                                              quantile_lines = TRUE, quantiles = 2) +
       ggplot2::scale_x_continuous(expand = c(0.01, 0)) +
       ggridges::theme_ridges(font_size = 13, grid = TRUE) +
-      ggplot2::scale_fill_manual(values = colores, name = subtype_variable) +
+      ggplot2::scale_fill_manual(values = colores, name = subtype_variable, breaks=rev(c(order))) +
       ggplot2::scale_alpha_identity() +
       ggplot2::labs(title = paste('Density distribution of', numerical_variable,"across", subtype_variable)) +
       ggplot2::theme(axis.title.y = ggplot2::element_blank()) +
@@ -140,7 +142,7 @@ density_chart <- function(scObject=NULL, main_variable=NULL, subtype_variable=NU
       ggplot2::scale_x_continuous(expand = c(0.01, 0)) +
       # ggplot2::scale_y_discrete(expand = c(0.01, 0)) +
       ggridges::theme_ridges(font_size = 13, grid = TRUE) +
-      ggplot2::scale_fill_manual(values = colores, name = subtype_variable) +
+      ggplot2::scale_fill_manual(values = colores, name = subtype_variable, breaks=rev(c(order))) +
       ggplot2::scale_alpha_identity() +
       ggplot2::labs(title = paste('Density distribution of', numerical_variable,"across", subtype_variable),
                     subtitle = paste("split across", sample_id)) +
