@@ -21,11 +21,11 @@ A pre-print is available at [https://doi.org/10.1101/2024.05.23.595582], which i
 
 ### Updates:
 
-* (30 May 2024) Version: 0.2.0
+* (May 2024) Version: 0.2.0
   - Added an option to use customized colors in waffle, bar, and polar plots (see [examples](#personalizing-the-colors)).
-* (12 July 2024) Version: 0.3.0
+* (July 2024) Version: 0.3.0
   - Added density ridge plots using [ggridges](https://github.com/wilkelab/ggridges) to visualize numeric values per group and class, including gene/feature expression (see [examples](#density-ridge-plots)).
-  - Plot of differences in proportions now shows results in order of FC (special thanks @halaszlaszlo)
+  - Plot of differences in proportions and barplots now shows results in order of FC (thanks @halaszlaszlo & @enblacar for the contributions)
 
 # Introduction
 
@@ -35,7 +35,7 @@ Single cell sequencing unveils a treasure trove into the biological and molecula
 
 <figure>
 <img src="./images/main_diagram_lotOfCells.jpg" alt="LotOfCells diagram" />
-<figcaption><i><b>Diagram of plots and tests available in LotOfCells. A.</b> Barplots of proportions of cell types for all individual samples from different tissues, the tissue class is depicted in the colored boxes on the x-axis. <b>B.</b> Barplots showing the cell type composition of normal and tumor lung samples, each bar corresponds to a cancer stage. Samples from the same stage-condition are grouped together in the same bar. <b>C.</b> Montecarlo test for the difference in cell type population abundances between tumor and normal lung samples in stage IA. B lymphocyte population is significantly larger in tumor. <b>D.</b> Waffle plots showing B lymphocytes only for all independent patients. The number of total B lymphocytes is depicted in grey. Each square=1\%. <b>E.</b> Waffle plot showing IA stage for tumor and normal lung. All samples are pulled together by condition. <b>F.</b> Symmetric divergence score test between stages IA and IIIA from lung tumor. On the right a scatter violin plot showing the distribution of generated scores vs the observed value. <b>G.</b> Density plots showing expression of INSR gene in tumor and normal lung and brain metastasis endothelial subpopulations. Tumor ECs shows a distinct tail of high expression. <b>H.</b> Barplot of Myeloid cells proportions across cancer stages in lung tumor. <b>I.</b> Cell type proportion changes across cancer stages in lung tumor. Values of the Kendall Tau correlation coefficient per cell type are shown. <b>J.</b> Density plots of the age distribution across cell types. <b>K.</b> Polar plot showing the raw number of cells per tissue. </i></figcaption>
+<figcaption><i><b>Diagram of plots and tests available in LotOfCells. A.</b> Barplots of proportions of cell types for all individual samples from different tissues, the tissue class is depicted in the colored boxes on the x-axis. <b>B.</b> Barplots showing the cell sub-type composition of normal and metastatic lymph nodes samples, each bar corresponds to a patient. <b>C.</b> Montecarlo test for the difference in cell type population abundances between tumor and normal lung samples in stage IA. B lymphocyte population is significantly larger in tumor. <b>D.</b> Waffle plots showing B lymphocytes only for all independent patients. The number of total B lymphocytes is depicted in grey. Each square=1\%. <b>E.</b> Waffle plot showing IA stage for tumor and normal lung. All samples are pulled together by condition. <b>F.</b> Symmetric divergence score test between stages IA and IIIA from lung tumor. On the right a scatter violin plot showing the distribution of generated scores vs the observed value. <b>G.</b> Density plots showing expression of INSR gene in tumor and normal lung and brain metastasis endothelial subpopulations. Tumor ECs shows a distinct tail of high expression. <b>H.</b> Barplot of Myeloid cells proportions across cancer stages in lung tumor. <b>I.</b> Cell type proportion changes across cancer stages in lung tumor. Values of the Kendall Tau correlation coefficient per cell type are shown. <b>J.</b> Density plots of the age distribution across cell types. <b>K.</b> Polar plot showing the raw number of cells per tissue. </i></figcaption>
 </figure>
 
 # Manual
